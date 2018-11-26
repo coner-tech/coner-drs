@@ -12,6 +12,10 @@ class RunEventFragment : Fragment() {
 
     val model: RunEventModel by inject(eventScope)
 
+    init {
+        model.event = event
+    }
+
     override val root = titledpane(event.name) {
         isCollapsible = false
         borderpane {
@@ -19,20 +23,27 @@ class RunEventFragment : Fragment() {
             bottom { add(find<RunEventBottomView>(eventScope)) }
         }
     }
-
-    init {
-        model.event = event
-    }
 }
 
 class RunEventTableView : View() {
     val model: RunEventModel by inject()
+    val controller: RunEventController by inject()
 
     override val root = tableview(SortedList(model.runs)) {
         isEditable = true
         setSortPolicy { false }
         readonlyColumn("Sequence", Run::sequence)
-        column("Registration", Run::registrationProperty) {
+        column("Category", Run::categoryProperty) {
+            makeEditable().useChoiceBox(items = model.event.categories)
+        }
+        column("Handicap", Run::handicapProperty) {
+            makeEditable().useChoiceBox(items = model.event.handicaps)
+        }
+        column("Number", Run::numberProperty) {
+            makeEditable().useTextField() {
+                if (model.event.numbers.contains(it.newValue)) it.consume()
+
+            }
         }
         column("Time", Run::rawTime) {
             makeEditable()
@@ -50,6 +61,9 @@ class RunEventTableView : View() {
             makeEditable()
         }
         smartResize()
+        onDoubleClick {
+            controller.addRun()
+        }
     }
 
     init {
@@ -69,6 +83,7 @@ class RunEventBottomView : View() {
         button("Add Run") {
             shortcut("Ctrl+Enter")
             action { controller.addRun() }
+            isDefaultButton = true
         }
     }
 }

@@ -47,6 +47,7 @@ class ChooseEventBottomView : View() {
             action {
                 controller.onClickStart()
             }
+            isDefaultButton = true
         }
     }
 }
@@ -73,11 +74,11 @@ class ChooseEventController : Controller() {
         val events = mutableListOf<Event>()
         val now = LocalDate.now()
         val categories = listOf(
-                Category(name = "Open"),
-                Category(name = "Novice"),
-                Category(name = "Pro")
+                "Open",
+                "Novice",
+                "Pro"
         )
-        val handicaps = arrayOf(
+        val handicaps = listOf(
                 "SS",
                 "AS",
                 "BS",
@@ -87,21 +88,17 @@ class ChooseEventController : Controller() {
                 "FS",
                 "GS",
                 "HS"
-        ).map { Handicap(name = it) }
+        )
         val random = ThreadLocalRandom.current()
 
         for (i in 0..10) {
             val event = Event(date = now.minusMonths(i.toLong()), name = "Event $i")
             event.categories.addAll(categories)
             event.handicaps.addAll(handicaps)
-            for (j in 0..100) {
-                event.registrations.add(
-                        Registration(event = event).apply {
-                            category = categories.random()
-                            handicap = handicaps.random()
-                            number = random.nextInt(0, 999).toString()
-                        }
-                )
+            while (event.numbers.size < 150) {
+                val number = random.nextInt(0, 999).toString()
+                if (event.numbers.contains(number)) continue
+                event.numbers.add(number)
             }
             events += event
         }

@@ -30,6 +30,7 @@ class StartView : View() {
                     action {
                         controller.onClickStart()
                     }
+                    isDefaultButton = true
                 }
             }
         }
