@@ -83,7 +83,6 @@ class RunEventTableView : View() {
     fun onFocusAndEditRunEvent(event: FocusAndEditRunEvent) {
         val row = root.items.indexOf(event.run)
         root.selectionModel.select(event.run)
-        root.edit(row, root.columns[1])
     }
 }
 
@@ -112,6 +111,7 @@ class RunEventController : Controller() {
         val run = Run(event = model.event)
         run.sequence = 1 + model.runs.size
         model.runs.add(run)
+        fire(FocusAndEditRunEvent(run))
     }
 
     fun incrementCones(run: Run) {
