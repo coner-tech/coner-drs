@@ -1,9 +1,7 @@
-package org.coner.rs
+package org.coner.drs
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.SortedList
-import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyCombination
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue

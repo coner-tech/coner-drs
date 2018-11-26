@@ -1,4 +1,4 @@
-package org.coner.rs
+package org.coner.drs
 
 import tornadofx.*
 import java.io.File

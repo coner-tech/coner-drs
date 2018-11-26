@@ -1,13 +1,12 @@
-package org.coner.rs
+package org.coner.drs
 
-import javafx.scene.text.FontSmoothingType
 import org.coner.style.ConerFxStylesheet
 import tornadofx.*
 import tornadofx.Stylesheet
 
-class RsApp : App(
+class DigitalRawSheetApp : App(
         primaryView = MainView::class,
-        stylesheet = org.coner.rs.Stylesheet::class
+        stylesheet = org.coner.drs.Stylesheet::class
 )
 
 class Stylesheet : Stylesheet(ConerFxStylesheet::class) {

@@ -1,4 +1,4 @@
-package org.coner.rs
+package org.coner.drs
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Priority
@@ -7,8 +7,6 @@ import java.time.LocalDate
 import tornadofx.getValue
 import tornadofx.setValue
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 class ChooseEventView : View("Events") {
     override val root = borderpane {

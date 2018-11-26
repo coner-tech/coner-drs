@@ -1,4 +1,4 @@
-package org.coner.rs
+package org.coner.drs
 
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
