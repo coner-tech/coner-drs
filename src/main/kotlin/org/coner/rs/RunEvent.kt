@@ -2,6 +2,8 @@ package org.coner.rs
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.SortedList
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCombination
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue
@@ -40,16 +42,24 @@ class RunEventTableView : View() {
             makeEditable().useChoiceBox(items = model.event.handicaps)
         }
         column("Number", Run::numberProperty) {
-            makeEditable().useTextField() {
-                if (model.event.numbers.contains(it.newValue)) it.consume()
-
-            }
+            makeEditable()
         }
         column("Time", Run::rawTime) {
             makeEditable()
         }
-        column("Cones", Run::cones) {
+        column("Cones", Run::conesProperty) {
             makeEditable()
+        }
+        column("+/-", Run::conesProperty).cellFormat {
+            graphic = hbox {
+                button("+") {
+                    action { controller.incrementCones(this@cellFormat.rowItem) }
+                }
+                button("-") {
+                    action { controller.decrementCones(this@cellFormat.rowItem) }
+                    enableWhen { this@cellFormat.rowItem.conesProperty.greaterThan(0) }
+                }
+            }
         }
         column("Did Not Finish", Run::didNotFinish) {
             makeEditable()
@@ -102,6 +112,14 @@ class RunEventController : Controller() {
         val run = Run(event = model.event)
         run.sequence = 1 + model.runs.size
         model.runs.add(run)
+    }
+
+    fun incrementCones(run: Run) {
+        run.cones++
+    }
+
+    fun decrementCones(run: Run) {
+        run.cones--
     }
 }
 
