@@ -36,4 +36,4 @@ buildNumber.properties
 .mvn/wrapper/maven-wrapper.jar
 
 # DB files
-db/
+/db
