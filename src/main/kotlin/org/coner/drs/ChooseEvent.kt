@@ -1,12 +1,23 @@
 package org.coner.drs
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Priority
+import org.coner.drs.db.DrsIoController
+import org.coner.drs.db.entity.EventDbEntity
+import org.coner.drs.db.entity.toUiEntity
+import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 import java.time.LocalDate
 import tornadofx.getValue
 import tornadofx.setValue
-import java.util.concurrent.ThreadLocalRandom
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
+import org.coner.drs.db.MappedWatchEvent
+import org.coner.drs.db.entity.toDbEntity
+import org.coner.snoozle.db.jvm.EntityEvent
+import java.nio.file.StandardWatchEventKinds
 
 class ChooseEventView : View("Events") {
     override val root = borderpane {
@@ -19,14 +30,31 @@ class ChooseEventTableView : View() {
     val model: ChooseEventModel by inject()
     val controller: ChooseEventController by inject()
     override val root = tableview(model.events) {
-        column("Date", Event::dateProperty)
-        column("Name", Event::nameProperty)
+        column("Date", Event::dateProperty) {
+            makeEditable()
+        }
+        column("Name", Event::nameProperty) {
+            makeEditable()
+        }
+        onEditCommit {
+            controller.save(it)
+        }
         smartResize()
         bindSelected(model.choiceProperty)
     }
 
     init {
         controller.init()
+    }
+
+    override fun onDock() {
+        super.onDock()
+        controller.docked()
+    }
+
+    override fun onUndock() {
+        super.onUndock()
+        controller.undocked()
     }
 }
 
@@ -35,7 +63,7 @@ class ChooseEventBottomView : View() {
     val controller: ChooseEventController by inject()
     override val root = hbox {
         button("New") {
-            action { /* TODO */ }
+            action { controller.addEvent() }
         }
         pane {
             hgrow = Priority.ALWAYS
@@ -55,55 +83,69 @@ class ChooseEventModel : ViewModel() {
     val choiceProperty = SimpleObjectProperty<Event>(this, "event")
     var choice by choiceProperty
 
+    val disposables = CompositeDisposable()
 }
 
 class ChooseEventController : Controller() {
     val model: ChooseEventModel by inject()
+    val io: DrsIoController by inject()
 
     fun init() {
         runAsync {
-            buildRandomEvents()
+            loadEvents()
         } ui {
             model.events.addAll(it)
         }
     }
 
-    private fun buildRandomEvents(): List<Event> {
-        val events = mutableListOf<Event>()
-        val now = LocalDate.now()
-        val categories = listOf(
-                "Open",
-                "Novice",
-                "Pro"
-        )
-        val handicaps = listOf(
-                "SS",
-                "AS",
-                "BS",
-                "CS",
-                "DS",
-                "ES",
-                "FS",
-                "GS",
-                "HS"
-        )
-        val random = ThreadLocalRandom.current()
+    fun loadEvents(): List<Event> {
+        return io.db!!.list<EventDbEntity>()
+                .map { toUiEntity(it)!! }
+    }
 
-        for (i in 0..10) {
-            val event = Event(date = now.minusMonths(i.toLong()), name = "Event $i")
-            event.categories.addAll(categories)
-            event.handicaps.addAll(handicaps)
-            while (event.numbers.size < 150) {
-                val number = random.nextInt(0, 999).toString()
-                if (event.numbers.contains(number)) continue
-                event.numbers.add(number)
-            }
-            events += event
-        }
-        return events
+    fun addEvent() {
+        val event = Event(
+                date = LocalDate.now(),
+                name = "New Event"
+        )
+        io.db!!.put(toDbEntity(event))
+    }
+
+    fun save(event: Event) {
+        io.db!!.put(toDbEntity(event))
     }
 
     fun onClickStart() {
         fire(ChangeToScreenEvent(Screen.RunEvent(model.choice)))
+    }
+
+    fun docked() {
+        model.disposables.add(io.db!!.watchListing<EventDbEntity>()
+                .subscribeOn(Schedulers.io())
+                .map { MappedWatchEvent(
+                        watchEvent = it.watchEvent,
+                        entity = toUiEntity(it.entity)
+                ) }
+                .subscribe { event ->
+                    val considerForAddKinds = arrayOf(
+                            StandardWatchEventKinds.ENTRY_CREATE,
+                            StandardWatchEventKinds.ENTRY_MODIFY
+                    )
+
+                    if (considerForAddKinds.contains(event.watchEvent.kind()) && event.entity != null) {
+                        val index = model.events.indexOfFirst { it.id == event.entity.id }
+                        if (index >= 0) {
+                            model.events[index] = event.entity
+                        } else {
+                            model.events.add(event.entity)
+                        }
+                    } else if (event.watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
+                        model.events.remove(event.entity)
+                    }
+                })
+    }
+
+    fun undocked() {
+        model.disposables.clear()
     }
 }

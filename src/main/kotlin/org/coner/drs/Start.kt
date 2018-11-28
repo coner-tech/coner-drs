@@ -1,5 +1,6 @@
 package org.coner.drs
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 import tornadofx.getValue
@@ -14,9 +15,7 @@ class StartView : View() {
         form {
             fieldset("Paths") {
                 field("Raw Sheet Database") {
-                    textfield(model.rawSheetDatabaseProperty) {
-                        required()
-                    }
+                    text(model.rawSheetDatabaseProperty.stringBinding { it?.absolutePath ?: "" })
                     button("Choose") {
                         action {
                             controller.onClickChooseRawSheetDatabase()
@@ -41,16 +40,16 @@ class StartController : Controller() {
     val model: StartModel by inject()
 
     fun onClickChooseRawSheetDatabase() {
-        val dir = chooseDirectory("") ?: return
-        model.rawSheetDatabase = dir.absolutePath
+        val dir = chooseDirectory("Raw Sheet Database") ?: return
+        model.rawSheetDatabase = dir
     }
 
     fun onClickStart() {
-        fire(ChangeToScreenEvent(Screen.ChooseEvent(File(model.rawSheetDatabase))))
+        fire(ChangeToScreenEvent(Screen.ChooseEvent(model.rawSheetDatabase)))
     }
 }
 
 class StartModel : ViewModel() {
-    val rawSheetDatabaseProperty = SimpleStringProperty(this, "rawSheetDatabase")
+    val rawSheetDatabaseProperty = SimpleObjectProperty<File>(this, "rawSheetDatabase")
     var rawSheetDatabase by rawSheetDatabaseProperty
 }

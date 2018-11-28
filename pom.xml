@@ -14,6 +14,9 @@
         <kotlin.version>1.3.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <tornadofx.version>1.7.18-SNAPSHOT</tornadofx.version>
+        <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
+        <snoozle.version>0.0.0-SNAPSHOT</snoozle.version>
+        <jackson.version>2.9.7</jackson.version>
     </properties>
 
     <dependencies>
@@ -26,6 +29,22 @@
             <groupId>no.tornado</groupId>
             <artifactId>tornadofx</artifactId>
             <version>${tornadofx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.thomasnield</groupId>
+            <artifactId>rxkotlinfx</artifactId>
+            <version>${rxkotlinfx.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>snoozle</artifactId>
+            <version>${snoozle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
         </dependency>
     </dependencies>
 

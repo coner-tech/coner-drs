@@ -1,31 +1,53 @@
 package org.coner.drs
 
+import javafx.beans.property.SimpleObjectProperty
+import org.coner.drs.db.DrsIoController
 import tornadofx.*
 import java.io.File
+import tornadofx.getValue
+import tornadofx.setValue
 
 class MainView : View() {
     val controller: MainController by inject()
+    val model: MainModel by inject()
 
     override val root = stackpane {  }
 
     init {
         root.add<StartView>()
+        model.screen = Screen.Start
         subscribe<ChangeToScreenEvent> { onChangeToScreen(it) }
     }
 
     fun onChangeToScreen(event: ChangeToScreenEvent) {
-        val view = controller.findUIComponentForScreen(event.screen)
+        val view = controller.onChangeToScreen(event.screen)
         root.replaceChildren(view)
     }
 }
 
 class MainController : Controller() {
+    val model: MainModel by inject()
+    val drsIo: DrsIoController by inject()
 
-    fun findUIComponentForScreen(screen: Screen): UIComponent = when(screen) {
-        is Screen.Start -> find<StartView>()
-        is Screen.ChooseEvent -> find<ChooseEventView>()
-        is Screen.RunEvent -> find<RunEventFragment>(RunEventFragment::event to screen.event)
+    fun onChangeToScreen(screen: Screen): UIComponent {
+        val uiComponent = when (screen) {
+            is Screen.Start -> find<StartView>()
+            is Screen.ChooseEvent -> {
+                if (model.screen == Screen.Start && !drsIo.open) {
+                    drsIo.open(screen.dir)
+                }
+                find<ChooseEventView>()
+            }
+            is Screen.RunEvent -> find<RunEventFragment>(RunEventFragment::event to screen.event)
+        }
+        model.screen = screen
+        return uiComponent
     }
+}
+
+class MainModel : ViewModel() {
+    val screenProperty = SimpleObjectProperty<Screen>(this, "screen")
+    var screen by screenProperty
 }
 
 sealed class Screen {

@@ -1,6 +1,7 @@
 package org.coner.drs
 
 import javafx.beans.property.SimpleObjectProperty
+import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
 import tornadofx.*
 import tornadofx.getValue
@@ -34,10 +35,10 @@ class RunEventTableView : View() {
         setSortPolicy { false }
         readonlyColumn("Sequence", Run::sequence)
         column("Category", Run::categoryProperty) {
-            makeEditable().useChoiceBox(items = model.event.categories)
+            makeEditable().useChoiceBox(items = FXCollections.observableArrayList(model.event.categories))
         }
         column("Handicap", Run::handicapProperty) {
-            makeEditable().useChoiceBox(items = model.event.handicaps)
+            makeEditable().useChoiceBox(items = FXCollections.observableArrayList(model.event.handicaps))
         }
         column("Number", Run::numberProperty) {
             makeEditable()

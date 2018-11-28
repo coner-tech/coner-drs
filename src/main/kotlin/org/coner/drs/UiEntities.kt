@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.FXCollections
 import tornadofx.*
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -25,9 +26,9 @@ class Event(
     val nameProperty = SimpleStringProperty(this, "name", name)
     var name by nameProperty
 
-    var categories = observableList<String>()
-    var handicaps = observableList<String>()
-    var numbers = observableList<String>()
+    val categories = FXCollections.observableSet<String>()
+    val handicaps = FXCollections.observableSet<String>()
+    val numbers = FXCollections.observableSet<String>()
 }
 
 class Run(
