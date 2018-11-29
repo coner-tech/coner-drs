@@ -1,6 +1,5 @@
 package org.coner.drs
 
-import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Priority
 import org.coner.drs.db.DrsIoController
@@ -12,11 +11,10 @@ import java.time.LocalDate
 import tornadofx.getValue
 import tornadofx.setValue
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import org.coner.drs.db.MappedWatchEvent
+import org.coner.drs.db.EntityWatchEvent
 import org.coner.drs.db.entity.toDbEntity
-import org.coner.snoozle.db.jvm.EntityEvent
+import org.coner.drs.db.service.EventService
 import java.nio.file.StandardWatchEventKinds
 
 class ChooseEventView : View("Events") {
@@ -88,19 +86,19 @@ class ChooseEventModel : ViewModel() {
 
 class ChooseEventController : Controller() {
     val model: ChooseEventModel by inject()
-    val io: DrsIoController by inject()
+    val service: EventService by inject()
 
     fun init() {
-        runAsync {
-            loadEvents()
-        } ui {
-            model.events.addAll(it)
-        }
+        loadEvents()
     }
 
-    fun loadEvents(): List<Event> {
-        return io.db!!.list<EventDbEntity>()
-                .map { toUiEntity(it)!! }
+    fun loadEvents() {
+        runAsync {
+            service.list()
+        } success {
+            model.events.clear()
+            model.events.addAll(it)
+        }
     }
 
     fun addEvent() {
@@ -108,11 +106,11 @@ class ChooseEventController : Controller() {
                 date = LocalDate.now(),
                 name = "New Event"
         )
-        io.db!!.put(toDbEntity(event))
+        service.save(event)
     }
 
     fun save(event: Event) {
-        io.db!!.put(toDbEntity(event))
+        service.save(event)
     }
 
     fun onClickStart() {
@@ -120,27 +118,24 @@ class ChooseEventController : Controller() {
     }
 
     fun docked() {
-        model.disposables.add(io.db!!.watchListing<EventDbEntity>()
-                .subscribeOn(Schedulers.io())
-                .map { MappedWatchEvent(
-                        watchEvent = it.watchEvent,
-                        entity = toUiEntity(it.entity)
-                ) }
+        model.disposables.add(service.watchList()
                 .subscribe { event ->
                     val considerForAddKinds = arrayOf(
                             StandardWatchEventKinds.ENTRY_CREATE,
                             StandardWatchEventKinds.ENTRY_MODIFY
                     )
-
                     if (considerForAddKinds.contains(event.watchEvent.kind()) && event.entity != null) {
-                        val index = model.events.indexOfFirst { it.id == event.entity.id }
+                        val index = model.events.indexOfFirst { it.id == event.id }
                         if (index >= 0) {
                             model.events[index] = event.entity
                         } else {
                             model.events.add(event.entity)
                         }
                     } else if (event.watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-                        model.events.remove(event.entity)
+                        val index = model.events.indexOfFirst { it.id == event.id }
+                        if (index >= 0) {
+                            model.events.removeAt(index)
+                        }
                     }
                 })
     }
