@@ -3,6 +3,7 @@ package org.coner.drs
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
+import javafx.geometry.Orientation
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue
@@ -70,9 +71,6 @@ class RunEventTableView : View() {
             makeEditable()
         }
         smartResize()
-        onDoubleClick {
-            controller.addRun()
-        }
     }
 
     init {
@@ -87,11 +85,11 @@ class RunEventTableView : View() {
 
 class RunEventBottomView : View() {
     val controller: RunEventController by inject()
-    override val root = hbox {
-        button("Add Run") {
-            shortcut("Ctrl+Enter")
-            action { controller.addRun() }
-            isDefaultButton = true
+    override val root = form {
+        fieldset(text = "Add", labelPosition = Orientation.VERTICAL) {
+            field(text = "Category", orientation = Orientation.HORIZONTAL) {
+
+            }
         }
     }
 }
