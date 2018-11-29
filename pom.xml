@@ -14,6 +14,8 @@
         <kotlin.version>1.3.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <tornadofx.version>1.7.18-SNAPSHOT</tornadofx.version>
+        <controlsfx.version>8.40.14</controlsfx.version>
+        <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
         <snoozle.version>0.0.0-SNAPSHOT</snoozle.version>
         <jackson.version>2.9.7</jackson.version>
@@ -26,9 +28,19 @@
             <version>${kotlin.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>${controlsfx.version}</version>
+        </dependency>
+        <dependency>
             <groupId>no.tornado</groupId>
             <artifactId>tornadofx</artifactId>
             <version>${tornadofx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.tornado</groupId>
+            <artifactId>tornadofx-controlsfx</artifactId>
+            <version>${tornadofx-controlsfx.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.thomasnield</groupId>

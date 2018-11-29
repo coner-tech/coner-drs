@@ -44,28 +44,42 @@ class Run(
     val sequenceProperty = SimpleIntegerProperty(this, "sequence")
     var sequence by sequenceProperty
 
-    val categoryProperty = SimpleStringProperty(this, "category")
+    val categoryProperty = SimpleStringProperty(this, "category", "")
     var category by categoryProperty
 
-    val handicapProperty = SimpleStringProperty(this, "handicap")
+    val handicapProperty = SimpleStringProperty(this, "handicap", "")
     var handicap by handicapProperty
 
-    val numberProperty = SimpleStringProperty(this, "number")
+    val numberProperty = SimpleStringProperty(this, "number", "")
     var number by numberProperty
 
     val rawTimeProperty = SimpleObjectProperty<BigDecimal>(this, "rawTime")
     var rawTime by rawTimeProperty
 
-    val conesProperty = SimpleIntegerProperty(this, "cones")
+    val conesProperty = SimpleIntegerProperty(this, "cones", 0)
     var cones by conesProperty
 
-    val didNotFinishProperty = SimpleBooleanProperty(this, "didNotFinish")
+    val didNotFinishProperty = SimpleBooleanProperty(this, "didNotFinish", false)
     var didNotFinish by didNotFinishProperty
 
-    val disqualifiedProperty = SimpleBooleanProperty(this, "disqualified")
+    val disqualifiedProperty = SimpleBooleanProperty(this, "disqualified", false)
     var disqualified by disqualifiedProperty
 
-    val rerunProperty = SimpleBooleanProperty(this, "rerun")
+    val rerunProperty = SimpleBooleanProperty(this, "rerun", false)
     var rerun by rerunProperty
 
+}
+
+class RunModel : ItemViewModel<Run>() {
+    val id = bind(Run::idProperty)
+    val event = bind(Run::eventProperty)
+    val sequence = bind(Run::sequenceProperty)
+    val category = bind(Run::categoryProperty)
+    val handicap = bind(Run::handicapProperty)
+    val number = bind(Run::numberProperty)
+    val rawTime = bind(Run::rawTimeProperty)
+    val cones = bind(Run::conesProperty)
+    val didNotFinish = bind(Run::didNotFinishProperty)
+    val disqualified = bind(Run::disqualifiedProperty)
+    val rerun = bind(Run::rerunProperty)
 }
