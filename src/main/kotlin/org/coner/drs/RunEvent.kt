@@ -84,11 +84,11 @@ class RunEventTableView : View() {
 class RunEventBottomView : View() {
     private val model: RunEventModel by inject()
     private val controller: RunEventController by inject()
-    private val run: RunModel by inject()
 
+    private lateinit var numberTextField: TextField
     private lateinit var categoryTextField: TextField
     private lateinit var handicapTextField: TextField
-    private lateinit var numberTextField: TextField
+    private lateinit var addButton: Button
 
     init {
         buildNextRun()
@@ -99,123 +99,126 @@ class RunEventBottomView : View() {
             hbox(spacing = 12) {
                 hgrow = Priority.NEVER
                 field(text = "Sequence", orientation = Orientation.HORIZONTAL) {
-                    textfield(run.sequence) {
+                    textfield(model.nextRun.sequence) {
                         isEditable = false
                         prefColumnCount = 4
                     }
                 }
-                field(text = "Category", orientation = Orientation.HORIZONTAL) {
-                    textfield(run.category) {
-                        categoryTextField = this
+                field(text = "Number", orientation = Orientation.HORIZONTAL) {
+                    textfield(model.nextRun.number) {
+                        numberTextField = this
+                        required()
                         TextFields.bindAutoCompletion(this) {
-                            model.categorySuggestions
-                                    .filter { it.isNotBlank() }
-                                    .filter { it.startsWith(run.category.value) }
-                                    .sortedBy { levenshtein(run.category.value, it) }
+                            controller.buildNumberHints()
                         }.apply {
                             setDelay(0)
+                            setOnAutoCompleted {
+                                val singleMatch = controller.onNextRunNumberAutoCompleted()
+                                if (singleMatch != null) {
+                                    controller.autoCompleteNextRun(singleMatch)
+                                }
+                                categoryTextField.requestFocus()
+                            }
                         }
-                        run.itemProperty.onChange {
+                        prefColumnCount = 5
+                        model.nextRun.itemProperty.onChange {
                             onNewRun(this)
                         }
+                    }
+                }
+                field(text = "Category", orientation = Orientation.HORIZONTAL) {
+                    textfield(model.nextRun.category) {
+                        categoryTextField = this
+                        TextFields.bindAutoCompletion(this) {
+                            controller.buildCategoryHints()
+                        }.apply {
+                            setDelay(0)
+                            setOnAutoCompleted {
+                                val singleMatch = controller.onNextRunCategoryAutoCompleted()
+                                if (singleMatch != null) {
+                                    controller.autoCompleteNextRun(singleMatch)
+                                }
+                                handicapTextField.requestFocus()
+                            }
+                        }
+
                         prefColumnCount = 7
                     }
                 }
                 field(text = "Handicap", orientation = Orientation.HORIZONTAL) {
-                    textfield(run.handicap) {
+                    textfield(model.nextRun.handicap) {
                         handicapTextField = this
                         required()
                         TextFields.bindAutoCompletion(this) {
-                            model.handicapSuggestions
-                                    .filter { model.runs.any { someRun ->
-                                        someRun.category == run.category.value
-                                        && someRun.handicap.startsWith(run.handicap.value)
-                                    } }
-                                    .sortedBy { levenshtein(run.handicap.value, it) }
+                            controller.buildHandicapHints()
                         }.apply {
                             setDelay(0)
+                            setOnAutoCompleted {
+                                val singleMatch = controller.onNextRunHandicapAutoCompleted()
+                                if (singleMatch != null) {
+                                    controller.autoCompleteNextRun(singleMatch)
+                                }
+                                addButton.requestFocus()
+                            }
                         }
                         prefColumnCount = 5
                     }
                 }
-                field(text = "Number", orientation = Orientation.HORIZONTAL) {
-                    textfield(run.number) {
-                        numberTextField = this
-                        required()
-                        TextFields.bindAutoCompletion(this) {
-                            model.numberSuggestions
-                                    .filter { model.runs.any { someRun ->
-                                        someRun.category == run.category.value
-                                        && someRun.handicap == run.handicap.value
-                                        && someRun.number.startsWith(run.number.value)
-                                    } }
-                                    .sortedBy { levenshtein(run.number.value, it) }
-                        }.apply {
-                            setDelay(0)
-                        }
-                        prefColumnCount = 5
-                    }
-                }
-                var addButton: Button? = null
                 field(text = "Add", orientation = Orientation.HORIZONTAL) {
                     button("Add") {
                         addButton = this
-                        enableWhen { run.valid }
+                        enableWhen { model.nextRun.valid }
                         action { addRun() }
                         tooltip("Shortcut: Ctrl+Enter")
                     }
                     runLater { this.children.first().isVisible = false }
                 }
-                shortcut("Ctrl+Enter") {
-                    addButton?.requestFocus()
-                    addRun()
+                shortcut("Enter") {
+                    if (model.nextRun.isValid) {
+                        addButton?.requestFocus()
+                        addRun()
+                    }
                 }
             }
         }
     }
 
     fun buildNextRun() {
-        run.item = Run(event = model.event).apply {
+        model.nextRun.item = Run(event = model.event).apply {
             sequenceProperty.bind(model.runs.sizeProperty.plus(1))
         }
     }
 
-    fun onNewRun(category: TextField) {
-        run.validate(decorateErrors = false)
-        category.requestFocus()
+    fun onNewRun(toFocus: TextField) {
+        model.nextRun.validate(decorateErrors = false)
+        toFocus.requestFocus()
     }
 
     fun addRun() {
-        val addRun = run.item
+        val addRun = model.nextRun.item
         val sequence = addRun.sequence
         addRun.sequenceProperty.unbind()
         addRun.sequence = sequence
-        run.commit()
+        model.nextRun.commit()
         model.runs.add(addRun)
         buildNextRun()
-        controller.buildSuggestions()
+        controller.buildRegistrationHints()
     }
 }
 
 
 class RunEventModel : ViewModel() {
     val runs = observableList<Run>()
+    val nextRun: RunModel by inject()
     val eventProperty = SimpleObjectProperty<Event>()
     var event by eventProperty
-
-    val categorySuggestions = observableList<String>()
-    val handicapSuggestions = observableList<String>()
-    val numberSuggestions = observableList<String>()
+    val registrationHints = FXCollections.observableSet<RegistrationHint>()
 }
+
+data class RegistrationHint(val category: String, val handicap: String, val number: String)
 
 class RunEventController : Controller() {
     val model: RunEventModel by inject()
-
-    fun addRun() {
-        val run = Run(event = model.event)
-        run.sequence = 1 + model.runs.size
-        model.runs.add(run)
-    }
 
     fun incrementCones(run: Run) {
         run.cones++
@@ -225,36 +228,93 @@ class RunEventController : Controller() {
         run.cones--
     }
 
-    fun buildSuggestions() {
+    fun buildRegistrationHints() {
         runAsync {
             model.runs.parallelStream()
-                    .map { it.category }
-                    .distinct()
-                    .sorted()
+                    .map { RegistrationHint(
+                            category = it.category,
+                            handicap = it.handicap,
+                            number = it.number
+                    ) }
                     .toList()
         } ui {
-            model.categorySuggestions.clear()
-            model.categorySuggestions.addAll(it)
+            model.registrationHints.clear()
+            model.registrationHints.addAll(it)
         }
-        runAsync {
-            model.runs.parallelStream()
-                    .map { it.handicap }
-                    .distinct()
-                    .sorted()
-                    .toList()
-        } ui {
-            model.handicapSuggestions.clear()
-            model.handicapSuggestions.addAll(it)
+    }
+
+    fun buildNumberHints(): List<String> {
+        if (model.nextRun.number.value.isBlank()) return emptyList()
+        var stream = model.registrationHints.parallelStream()
+                .filter { it.number.startsWith(model.nextRun.number.value) }
+        if (model.nextRun.category.value.isNotBlank()) {
+            stream = stream.filter { it.category == model.nextRun.category.value }
         }
-        runAsync {
-            model.runs.parallelStream()
-                    .map { it.number }
-                    .distinct()
-                    .sorted()
-                    .toList()
-        } ui {
-            model.numberSuggestions.clear()
-            model.numberSuggestions.addAll(it)
+        if (model.nextRun.handicap.value.isNotBlank()) {
+            stream = stream.filter { it.handicap == model.nextRun.handicap.value }
         }
+        return stream.map { it.number }
+                .distinct()
+                .toList()
+                .sortedBy { levenshtein(it, model.nextRun.number.value) }
+    }
+
+    fun buildCategoryHints(): List<String> {
+        if (model.nextRun.category.value.isBlank()) return emptyList()
+        var stream = model.registrationHints.parallelStream()
+                .filter { it.category.startsWith(model.nextRun.category.value) }
+        if (model.nextRun.number.value.isNotBlank()) {
+            stream = stream.filter { it.number == model.nextRun.number.value }
+        }
+        if (model.nextRun.handicap.value.isNotBlank()) {
+            stream = stream.filter { it.handicap == model.nextRun.handicap.value }
+        }
+        return stream.map { it.category }
+                .distinct()
+                .toList()
+                .sortedBy { levenshtein(it, model.nextRun.category.value) }
+    }
+
+    fun buildHandicapHints(): List<String> {
+        if (model.nextRun.handicap.value.isBlank()) return emptyList()
+        var stream = model.registrationHints.stream()
+                .filter { candidate -> candidate.handicap.startsWith(model.nextRun.handicap.value) }
+        if (model.nextRun.number.value.isNotBlank()) {
+            stream = stream.filter { it.number == model.nextRun.number.value }
+        }
+        if (model.nextRun.category.value.isNotBlank()) {
+            stream = stream.filter { it.category == model.nextRun.category.value }
+        }
+        val hints = stream.map { it.handicap }
+                .distinct()
+                .toList()
+                .sortedBy { levenshtein(it, model.nextRun.handicap.value) }
+        println(hints.joinToString(", "))
+        return hints
+    }
+
+    fun onNextRunNumberAutoCompleted(): RegistrationHint? {
+        return model.registrationHints
+                .filter { it.number == model.nextRun.number.value }
+                .singleOrNull()
+    }
+
+    fun onNextRunCategoryAutoCompleted(): RegistrationHint? {
+        return model.registrationHints
+                .filter { it.category == model.nextRun.category.value }
+                .singleOrNull()
+    }
+
+    fun onNextRunHandicapAutoCompleted(): RegistrationHint? {
+        return model.registrationHints
+                .filter { it.handicap == model.nextRun.handicap.value }
+                .singleOrNull()
+
+    }
+
+    fun autoCompleteNextRun(singleMatch: RegistrationHint) {
+        model.nextRun.number.value = singleMatch.number
+        model.nextRun.category.value = singleMatch.category
+        model.nextRun.handicap.value = singleMatch.handicap
     }
 }
