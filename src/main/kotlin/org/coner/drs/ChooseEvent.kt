@@ -1,5 +1,6 @@
 package org.coner.drs
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Priority
 import org.coner.drs.db.DrsIoController
@@ -119,6 +120,7 @@ class ChooseEventController : Controller() {
 
     fun docked() {
         model.disposables.add(service.watchList()
+                .observeOnFx()
                 .subscribe { event ->
                     val considerForAddKinds = arrayOf(
                             StandardWatchEventKinds.ENTRY_CREATE,
