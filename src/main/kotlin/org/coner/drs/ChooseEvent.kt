@@ -15,6 +15,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.disposables.CompositeDisposable
 import org.coner.drs.db.EntityWatchEvent
 import org.coner.drs.db.entity.toDbEntity
+import org.coner.drs.db.entityWatchEventConsumer
 import org.coner.drs.db.service.EventService
 import java.nio.file.StandardWatchEventKinds
 
@@ -121,25 +122,11 @@ class ChooseEventController : Controller() {
     fun docked() {
         model.disposables.add(service.watchList()
                 .observeOnFx()
-                .subscribe { event ->
-                    val considerForAddKinds = arrayOf(
-                            StandardWatchEventKinds.ENTRY_CREATE,
-                            StandardWatchEventKinds.ENTRY_MODIFY
-                    )
-                    if (considerForAddKinds.contains(event.watchEvent.kind()) && event.entity != null) {
-                        val index = model.events.indexOfFirst { it.id == event.id }
-                        if (index >= 0) {
-                            model.events[index] = event.entity
-                        } else {
-                            model.events.add(event.entity)
-                        }
-                    } else if (event.watchEvent.kind() == StandardWatchEventKinds.ENTRY_DELETE) {
-                        val index = model.events.indexOfFirst { it.id == event.id }
-                        if (index >= 0) {
-                            model.events.removeAt(index)
-                        }
-                    }
-                })
+                .subscribe(entityWatchEventConsumer(
+                        idProperty = Event::id,
+                        list = model.events
+                ))
+        )
     }
 
     fun undocked() {
