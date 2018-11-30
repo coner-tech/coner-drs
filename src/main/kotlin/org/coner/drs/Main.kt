@@ -33,7 +33,7 @@ class MainController : Controller() {
         val uiComponent = when (screen) {
             is Screen.Start -> find<StartView>()
             is Screen.ChooseEvent -> {
-                if (model.screen == Screen.Start && !drsIo.open) {
+                if (model.screen == Screen.Start) {
                     drsIo.open(screen.dir)
                 }
                 find<ChooseEventView>()

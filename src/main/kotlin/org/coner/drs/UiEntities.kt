@@ -33,7 +33,16 @@ class Event(
 
 class Run(
         id: UUID = UUID.randomUUID(),
-        event: Event
+        event: Event,
+        sequence: Int = 0,
+        category: String = "",
+        handicap: String = "",
+        number: String = "",
+        rawTime: BigDecimal? = null,
+        cones: Int = 0,
+        didNotFinish: Boolean = false,
+        disqualified: Boolean = false,
+        rerun: Boolean = false
 ) {
     val idProperty = SimpleObjectProperty<UUID>(this, "id", id)
     var id by idProperty
@@ -41,31 +50,31 @@ class Run(
     val eventProperty = SimpleObjectProperty<Event>(this, "event", event)
     var event by eventProperty
 
-    val sequenceProperty = SimpleIntegerProperty(this, "sequence")
+    val sequenceProperty = SimpleIntegerProperty(this, "sequence", sequence)
     var sequence by sequenceProperty
 
-    val categoryProperty = SimpleStringProperty(this, "category", "")
+    val categoryProperty = SimpleStringProperty(this, "category", category)
     var category by categoryProperty
 
-    val handicapProperty = SimpleStringProperty(this, "handicap", "")
+    val handicapProperty = SimpleStringProperty(this, "handicap", handicap)
     var handicap by handicapProperty
 
-    val numberProperty = SimpleStringProperty(this, "number", "")
+    val numberProperty = SimpleStringProperty(this, "number", number)
     var number by numberProperty
 
-    val rawTimeProperty = SimpleObjectProperty<BigDecimal>(this, "rawTime")
+    val rawTimeProperty = SimpleObjectProperty<BigDecimal>(this, "rawTime", rawTime)
     var rawTime by rawTimeProperty
 
-    val conesProperty = SimpleIntegerProperty(this, "cones", 0)
+    val conesProperty = SimpleIntegerProperty(this, "cones", cones)
     var cones by conesProperty
 
-    val didNotFinishProperty = SimpleBooleanProperty(this, "didNotFinish", false)
+    val didNotFinishProperty = SimpleBooleanProperty(this, "didNotFinish", didNotFinish)
     var didNotFinish by didNotFinishProperty
 
-    val disqualifiedProperty = SimpleBooleanProperty(this, "disqualified", false)
+    val disqualifiedProperty = SimpleBooleanProperty(this, "disqualified", disqualified)
     var disqualified by disqualifiedProperty
 
-    val rerunProperty = SimpleBooleanProperty(this, "rerun", false)
+    val rerunProperty = SimpleBooleanProperty(this, "rerun", rerun)
     var rerun by rerunProperty
 
 }

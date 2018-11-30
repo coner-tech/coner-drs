@@ -3,21 +3,13 @@ package org.coner.drs
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.layout.Priority
-import org.coner.drs.db.DrsIoController
-import org.coner.drs.db.entity.EventDbEntity
-import org.coner.drs.db.entity.toUiEntity
-import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 import java.time.LocalDate
 import tornadofx.getValue
 import tornadofx.setValue
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.disposables.CompositeDisposable
-import org.coner.drs.db.EntityWatchEvent
-import org.coner.drs.db.entity.toDbEntity
 import org.coner.drs.db.entityWatchEventConsumer
 import org.coner.drs.db.service.EventService
-import java.nio.file.StandardWatchEventKinds
 
 class ChooseEventView : View("Events") {
     override val root = borderpane {

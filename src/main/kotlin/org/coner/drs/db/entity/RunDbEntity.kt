@@ -1,0 +1,53 @@
+package org.coner.drs.db.entity
+
+import org.coner.drs.Event
+import org.coner.drs.Run
+import org.coner.snoozle.db.Entity
+import org.coner.snoozle.db.EntityPath
+import java.math.BigDecimal
+import java.util.*
+
+@EntityPath("/events/{eventId}/runs/{id}")
+data class RunDbEntity(
+        val id: UUID = UUID.randomUUID(),
+        val eventId: UUID,
+        val sequence: Int,
+        val category: String,
+        val handicap: String,
+        val number: String,
+        val rawTime: BigDecimal?,
+        val cones: Int,
+        val didNotFinish: Boolean,
+        val disqualified: Boolean,
+        val rerun: Boolean
+) : Entity
+
+object RunDbEntityMapper {
+    fun toUiEntity(event: Event, dbEntity: RunDbEntity?) = if (dbEntity != null) Run(
+            id = dbEntity.id,
+            event = event,
+            sequence = dbEntity.sequence,
+            category = dbEntity.category,
+            handicap = dbEntity.handicap,
+            number = dbEntity.number,
+            rawTime = dbEntity.rawTime,
+            cones = dbEntity.cones,
+            didNotFinish = dbEntity.didNotFinish,
+            disqualified = dbEntity.disqualified,
+            rerun = dbEntity.rerun
+    ) else null
+
+    fun toDbEntity(uiEntity: Run) = RunDbEntity(
+            id = uiEntity.id,
+            eventId = uiEntity.event.id,
+            sequence = uiEntity.sequence,
+            category = uiEntity.category,
+            handicap = uiEntity.handicap,
+            number = uiEntity.number,
+            rawTime = uiEntity.rawTime,
+            cones = uiEntity.cones,
+            didNotFinish = uiEntity.didNotFinish,
+            disqualified = uiEntity.disqualified,
+            rerun = uiEntity.rerun
+    )
+}

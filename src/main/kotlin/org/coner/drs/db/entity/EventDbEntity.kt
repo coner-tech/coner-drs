@@ -8,19 +8,23 @@ import java.util.*
 
 @EntityPath("/events/{id}")
 data class EventDbEntity(
-        val id: UUID,
+        val id: UUID = UUID.randomUUID(),
         val date: LocalDate,
         val name: String
 ) : Entity
 
-fun toUiEntity(dbEntity: EventDbEntity?) = if (dbEntity != null) Event(
-        id = dbEntity.id,
-        date = dbEntity.date,
-        name = dbEntity.name
-) else null
+object EventDbEntityMapper {
 
-fun toDbEntity(uiEntity: Event) = EventDbEntity(
-        id = uiEntity.id,
-        date = uiEntity.date,
-        name = uiEntity.name
-)
+    fun toUiEntity(dbEntity: EventDbEntity?) = if (dbEntity != null) Event(
+            id = dbEntity.id,
+            date = dbEntity.date,
+            name = dbEntity.name
+    ) else null
+
+    fun toDbEntity(uiEntity: Event) = EventDbEntity(
+            id = uiEntity.id,
+            date = uiEntity.date,
+            name = uiEntity.name
+    )
+
+}

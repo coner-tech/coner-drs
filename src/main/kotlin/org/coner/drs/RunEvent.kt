@@ -1,5 +1,7 @@
 package org.coner.drs
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.disposables.CompositeDisposable
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
@@ -7,6 +9,8 @@ import javafx.geometry.Orientation
 import javafx.scene.control.Button
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
+import org.coner.drs.db.entityWatchEventConsumer
+import org.coner.drs.db.service.RunService
 import org.coner.drs.util.levenshtein
 import org.controlsfx.control.textfield.TextFields
 import tornadofx.*
@@ -19,9 +23,11 @@ class RunEventFragment : Fragment() {
     val eventScope = Scope()
 
     val model: RunEventModel by inject(eventScope)
+    val controller: RunEventController by inject(eventScope)
 
     init {
         model.event = event
+        controller.init()
     }
 
     override val root = titledpane(event.name) {
@@ -30,6 +36,16 @@ class RunEventFragment : Fragment() {
             center { add(find<RunEventTableView>(eventScope)) }
             bottom { add(find<RunEventBottomView>(eventScope)) }
         }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        controller.docked()
+    }
+
+    override fun onUndock() {
+        super.onUndock()
+        controller.undocked()
     }
 }
 
@@ -77,6 +93,9 @@ class RunEventTableView : View() {
             makeEditable()
         }
         smartResize()
+        onEditCommit {
+            controller.save(it)
+        }
     }
 
 }
@@ -89,10 +108,6 @@ class RunEventBottomView : View() {
     private lateinit var categoryTextField: TextField
     private lateinit var handicapTextField: TextField
     private lateinit var addButton: Button
-
-    init {
-        buildNextRun()
-    }
 
     override val root = form {
         fieldset(text = "Next Run", labelPosition = Orientation.VERTICAL) {
@@ -168,41 +183,24 @@ class RunEventBottomView : View() {
                     button("Add") {
                         addButton = this
                         enableWhen { model.nextRun.valid }
-                        action { addRun() }
+                        action { controller.addNextRun() }
                         tooltip("Shortcut: Ctrl+Enter")
                     }
                     runLater { this.children.first().isVisible = false }
                 }
-                shortcut("Enter") {
+                shortcut("Ctrl+Enter") {
                     if (model.nextRun.isValid) {
                         addButton.requestFocus()
-                        addRun()
+                        controller.addNextRun()
                     }
                 }
             }
         }
     }
 
-    fun buildNextRun() {
-        model.nextRun.item = Run(event = model.event).apply {
-            sequenceProperty.bind(model.runs.sizeProperty.plus(1))
-        }
-    }
-
     fun onNewRun(toFocus: TextField) {
         model.nextRun.validate(decorateErrors = false)
         toFocus.requestFocus()
-    }
-
-    fun addRun() {
-        val addRun = model.nextRun.item
-        val sequence = addRun.sequence
-        addRun.sequenceProperty.unbind()
-        addRun.sequence = sequence
-        model.nextRun.commit()
-        model.runs.add(addRun)
-        buildNextRun()
-        controller.buildRegistrationHints()
     }
 }
 
@@ -213,19 +211,59 @@ class RunEventModel : ViewModel() {
     val eventProperty = SimpleObjectProperty<Event>()
     var event by eventProperty
     val registrationHints = FXCollections.observableSet<RegistrationHint>()
+    val disposables = CompositeDisposable()
 }
 
 data class RegistrationHint(val category: String, val handicap: String, val number: String)
 
 class RunEventController : Controller() {
     val model: RunEventModel by inject()
+    val service: RunService by inject()
+
+    fun init() {
+        service.io.createDrsDbRunsPath(model.event)
+        model.runs.onChange { buildRegistrationHints() }
+        loadRuns()
+        buildNextRun()
+    }
+
+    fun loadRuns() {
+        runAsync {
+            service.list(model.event)
+        } success {
+            model.runs.clear()
+            model.runs.addAll(it)
+        }
+    }
+
+    fun buildNextRun() {
+        model.nextRun.item = Run(event = model.event).apply {
+            sequenceProperty.bind(model.runs.sizeProperty.plus(1))
+        }
+    }
+
+    fun addNextRun() {
+        val addRun = model.nextRun.item
+        val sequence = addRun.sequence
+        addRun.sequenceProperty.unbind()
+        addRun.sequence = sequence
+        model.nextRun.commit()
+        runAsync { service.save(addRun) }
+        buildNextRun()
+    }
+
+    fun save(run: Run) {
+        runAsync { service.save(run) }
+    }
 
     fun incrementCones(run: Run) {
         run.cones++
+        runAsync { save(run) }
     }
 
     fun decrementCones(run: Run) {
         run.cones--
+        save(run)
     }
 
     fun buildRegistrationHints() {
@@ -309,5 +347,19 @@ class RunEventController : Controller() {
         model.nextRun.number.value = singleMatch.number
         model.nextRun.category.value = singleMatch.category
         model.nextRun.handicap.value = singleMatch.handicap
+    }
+
+    fun docked() {
+        model.disposables.add(service.watchList(model.event)
+                .observeOnFx()
+                .subscribe(entityWatchEventConsumer(
+                        idProperty = Run::id,
+                        list = model.runs
+                ))
+        )
+    }
+
+    fun undocked() {
+        model.disposables.clear()
     }
 }
