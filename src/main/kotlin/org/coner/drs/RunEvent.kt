@@ -42,10 +42,10 @@ class RunEventTableView : View() {
         setSortPolicy { false }
         readonlyColumn("Sequence", Run::sequence)
         column("Category", Run::categoryProperty) {
-            makeEditable().useChoiceBox(items = FXCollections.observableArrayList(model.event.categories))
+            makeEditable()
         }
         column("Handicap", Run::handicapProperty) {
-            makeEditable().useChoiceBox(items = FXCollections.observableArrayList(model.event.handicaps))
+            makeEditable()
         }
         column("Number", Run::numberProperty) {
             makeEditable()
@@ -175,7 +175,7 @@ class RunEventBottomView : View() {
                 }
                 shortcut("Enter") {
                     if (model.nextRun.isValid) {
-                        addButton?.requestFocus()
+                        addButton.requestFocus()
                         addRun()
                     }
                 }
@@ -277,8 +277,8 @@ class RunEventController : Controller() {
 
     fun buildHandicapHints(): List<String> {
         if (model.nextRun.handicap.value.isBlank()) return emptyList()
-        var stream = model.registrationHints.stream()
-                .filter { candidate -> candidate.handicap.startsWith(model.nextRun.handicap.value) }
+        var stream = model.registrationHints.parallelStream()
+                .filter { it.handicap.startsWith(model.nextRun.handicap.value) }
         if (model.nextRun.number.value.isNotBlank()) {
             stream = stream.filter { it.number == model.nextRun.number.value }
         }
@@ -289,26 +289,19 @@ class RunEventController : Controller() {
                 .distinct()
                 .toList()
                 .sortedBy { levenshtein(it, model.nextRun.handicap.value) }
-        println(hints.joinToString(", "))
         return hints
     }
 
     fun onNextRunNumberAutoCompleted(): RegistrationHint? {
-        return model.registrationHints
-                .filter { it.number == model.nextRun.number.value }
-                .singleOrNull()
+        return model.registrationHints.singleOrNull { it.number == model.nextRun.number.value }
     }
 
     fun onNextRunCategoryAutoCompleted(): RegistrationHint? {
-        return model.registrationHints
-                .filter { it.category == model.nextRun.category.value }
-                .singleOrNull()
+        return model.registrationHints.singleOrNull { it.category == model.nextRun.category.value }
     }
 
     fun onNextRunHandicapAutoCompleted(): RegistrationHint? {
-        return model.registrationHints
-                .filter { it.handicap == model.nextRun.handicap.value }
-                .singleOrNull()
+        return model.registrationHints.singleOrNull { it.handicap == model.nextRun.handicap.value }
 
     }
 
