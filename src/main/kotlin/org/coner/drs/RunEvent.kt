@@ -37,7 +37,7 @@ class RunEventTableView : View() {
     val model: RunEventModel by inject()
     val controller: RunEventController by inject()
 
-    override val root = tableview(SortedList(model.runs)) {
+    override val root = tableview(SortedList(model.runs, compareBy(Run::sequence))) {
         isEditable = true
         setSortPolicy { false }
         readonlyColumn("Sequence", Run::sequence)
