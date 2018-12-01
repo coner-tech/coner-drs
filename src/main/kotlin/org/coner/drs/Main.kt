@@ -14,14 +14,19 @@ class MainView : View() {
     override val root = stackpane {  }
 
     init {
-        root.add<StartView>()
-        model.screen = Screen.Start
+        onChangeToScreen(ChangeToScreenEvent(Screen.Start))
         subscribe<ChangeToScreenEvent> { onChangeToScreen(it) }
     }
 
     fun onChangeToScreen(event: ChangeToScreenEvent) {
         val view = controller.onChangeToScreen(event.screen)
-        root.replaceChildren(view)
+        if (root.children.isEmpty()) {
+            root.add(view)
+        } else {
+            root.replaceChildren(view)
+        }
+        titleProperty.unbind()
+        titleProperty.bind(view.titleProperty)
     }
 }
 

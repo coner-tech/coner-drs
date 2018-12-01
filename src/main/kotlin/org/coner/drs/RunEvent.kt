@@ -28,7 +28,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import kotlin.streams.toList
 
-class RunEventFragment : Fragment() {
+class RunEventFragment : Fragment("Run Event") {
     val event: Event by param()
     val eventScope = Scope()
 

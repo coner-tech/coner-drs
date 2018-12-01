@@ -16,6 +16,11 @@ class DigitalRawSheetApp : App(
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
         )
+        val uiComponent = stage.uiComponent<UIComponent>()!!
+        stage.titleProperty().bind(
+                stringBinding(uiComponent.titleProperty) {
+                    "Coner Digital Raw Sheet - ${uiComponent.title}"
+                })
     }
 }
 

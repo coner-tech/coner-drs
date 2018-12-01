@@ -7,7 +7,7 @@ import tornadofx.getValue
 import tornadofx.setValue
 import java.io.File
 
-class StartView : View() {
+class StartView : View("Start") {
     val controller: StartController by inject()
     val model: StartModel by inject()
 

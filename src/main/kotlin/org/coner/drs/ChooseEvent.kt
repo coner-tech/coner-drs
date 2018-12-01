@@ -11,7 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.db.service.EventService
 
-class ChooseEventView : View("Events") {
+class ChooseEventView : View("Choose Event") {
     override val root = borderpane {
         center<ChooseEventTableView>()
         bottom<ChooseEventBottomView>()
