@@ -1,7 +1,7 @@
 package org.coner.drs
 
 import javafx.beans.property.SimpleObjectProperty
-import org.coner.drs.db.DrsIoController
+import org.coner.drs.io.DrsIoController
 import tornadofx.*
 import java.io.File
 import tornadofx.getValue

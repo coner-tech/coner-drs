@@ -3,19 +3,29 @@ package org.coner.drs
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.disposables.CompositeDisposable
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
 import javafx.geometry.Orientation
+import javafx.geometry.Pos
 import javafx.scene.control.Button
+import javafx.scene.control.ButtonBar
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
-import org.coner.drs.db.entityWatchEventConsumer
-import org.coner.drs.db.service.RunService
+import javafx.scene.layout.Region
+import javafx.stage.Modality
+import org.coner.drs.io.db.entityWatchEventConsumer
+import org.coner.drs.io.db.service.RunService
+import org.coner.drs.io.timer.TimerService
 import org.coner.drs.util.levenshtein
+import org.coner.timer.model.FinishTriggerElapsedTimeOnly
+import org.coner.timer.output.TimerOutputWriter
 import org.controlsfx.control.textfield.TextFields
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue
+import java.io.File
+import java.io.FileNotFoundException
 import kotlin.streams.toList
 
 class RunEventFragment : Fragment() {
@@ -32,8 +42,12 @@ class RunEventFragment : Fragment() {
 
     override val root = titledpane(event.name) {
         isCollapsible = false
+        prefHeightProperty().bind(parentProperty().select { (it as Region).heightProperty() })
         borderpane {
-            center { add(find<RunEventTableView>(eventScope)) }
+            center {
+                vgrow = Priority.ALWAYS
+                add(find<RunEventTableView>(eventScope))
+            }
             bottom { add(find<RunEventBottomView>(eventScope)) }
         }
     }
@@ -56,6 +70,7 @@ class RunEventTableView : View() {
     override val root = tableview(SortedList(model.runs, compareBy(Run::sequence))) {
         isEditable = true
         setSortPolicy { false }
+        vgrow = Priority.ALWAYS
         readonlyColumn("Sequence", Run::sequence)
         column("Category", Run::categoryProperty) {
             makeEditable()
@@ -101,6 +116,16 @@ class RunEventTableView : View() {
 }
 
 class RunEventBottomView : View() {
+    override val root = hbox {
+        add(find<RunEventAddNextRunView>())
+        pane {
+            hgrow = Priority.ALWAYS
+        }
+        add(find<RunEventTimerView>())
+    }
+}
+
+class RunEventAddNextRunView : View() {
     private val model: RunEventModel by inject()
     private val controller: RunEventController by inject()
 
@@ -204,6 +229,184 @@ class RunEventBottomView : View() {
     }
 }
 
+class RunEventTimerView : View() {
+    val model: RunEventModel by inject()
+    val controller: RunEventController by inject()
+    val timerService: TimerService by inject()
+    override val root = form {
+        alignment = Pos.CENTER_RIGHT
+        fieldset(text = "Timer", labelPosition = Orientation.VERTICAL) {
+            hbox(spacing = 12) {
+                hgrow = Priority.NEVER
+                field("Operation") {
+                    button(model.controlTextProperty) {
+                        enableWhen { model.timerConfigurationProperty.isNotNull }
+                        action { runAsyncWithProgress { controller.toggleTimer() } }
+                    }
+                }
+                field(text = "Configuration") {
+                    button("Configure") {
+                        enableWhen { timerService.model.timerProperty.isNull }
+                        action { showConfiguration() }
+                    }
+                    text(model.timerConfigurationTextProperty)
+                }
+            }
+        }
+    }
+
+    private fun showConfiguration() {
+        find<RunEventTimerConfigurationView>().openModal(
+                modality = Modality.APPLICATION_MODAL,
+                owner = currentWindow,
+                block = true,
+                escapeClosesWindow = true
+        )
+    }
+
+    override fun onDock() {
+        super.onDock()
+        model.controlTextProperty.bind(timerService.model.timerProperty.stringBinding {
+            if (it == null) "Start" else "Stop"
+        })
+        model.timerConfigurationTextProperty.bind(model.timerConfigurationProperty.stringBinding {
+            when (it) {
+                null -> "Not configured"
+                is TimerConfiguration.FileInput -> "File: ${it.file.name}"
+                is TimerConfiguration.SerialPortInput -> "Serial port: ${it.port}"
+            }
+        })
+    }
+
+    override fun onUndock() {
+        super.onUndock()
+        model.controlTextProperty.unbind()
+        model.timerConfigurationTextProperty.unbind()
+    }
+}
+
+class RunEventTimerConfigurationView : View("Configure Timer") {
+
+    private val model: RunEventTimerConfigurationModel by inject()
+    private val runEventModel: RunEventModel by inject()
+    private val timerService: TimerService by inject()
+
+    override val root = form {
+        minWidth = 640.0
+        minHeight = 480.0
+        fieldset(title) {
+            field("Type") {
+                choicebox(property = model.typeProperty, values = model.types)
+            }
+            field("Port") {
+                combobox(property = model.serialPortProperty, values = model.serialPorts).required()
+                button("Refresh") { action { refreshSerialPorts() }  }
+                managedWhen { model.typeProperty.isEqualTo(TimerConfiguration.SerialPortInput.label) }
+                visibleWhen(managedProperty())
+            }
+            field("File") {
+                textfield(model.inputFileProperty) {
+                    required()
+                }
+                button("Choose") { action { chooseInputFile() } }
+                managedWhen { model.typeProperty.isEqualTo(TimerConfiguration.FileInput.label) }
+                visibleWhen(managedProperty())
+            }
+        }
+        buttonbar {
+            button("Clear", ButtonBar.ButtonData.OTHER) {
+                action { clearConfiguration() }
+            }
+            button("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE) {
+                action { close() }
+            }
+            button("Apply", ButtonBar.ButtonData.OK_DONE) {
+                enableWhen {
+                    booleanBinding(model.typeProperty, model.serialPortProperty, model.inputFileProperty) {
+                        when (model.type) {
+                            TimerConfiguration.SerialPortInput.label -> model.serialPort?.isNotBlank() ?: false
+                            TimerConfiguration.FileInput.label -> model.inputFile?.isNotBlank() ?: false
+                            else -> throw IllegalArgumentException("Unrecognized type: ${model.type}")
+                        }
+                    }
+                }
+                action { save() }
+            }
+        }
+    }
+
+    override fun onDock() {
+        super.onDock()
+        refreshSerialPorts()
+    }
+
+    override fun onUndock() {
+        super.onUndock()
+        model.rollback()
+    }
+
+    private fun refreshSerialPorts() {
+        runAsync {
+            timerService.listSerialPorts()
+        } ui {
+            model.serialPorts.clear()
+            model.serialPorts.addAll(it)
+        }
+    }
+
+    private fun chooseInputFile() {
+        val choice = chooseFile(
+                title = "Choose Timer Input File",
+                mode = FileChooserMode.Single,
+                owner = this@RunEventTimerConfigurationView.currentWindow,
+                filters = emptyArray()
+        ).firstOrNull()
+        model.inputFile = choice?.absolutePath
+    }
+
+    private fun save() {
+        runEventModel.timerConfiguration = when (model.type) {
+            TimerConfiguration.SerialPortInput.label -> {
+                TimerConfiguration.SerialPortInput(model.serialPort)
+            }
+            TimerConfiguration.FileInput.label -> {
+                val file = File(model.inputFile)
+                if (!file.exists() || !file.isFile) throw FileNotFoundException("File not found: ${model.inputFile}")
+                TimerConfiguration.FileInput(file)
+            }
+            else -> throw IllegalArgumentException("Unrecognized type: ${model.type}")
+        }
+        close()
+    }
+
+    private fun clearConfiguration() {
+        runEventModel.timerConfiguration = null
+        close()
+    }
+}
+
+class RunEventTimerConfigurationModel : ViewModel() {
+    val types = observableList(
+            TimerConfiguration.SerialPortInput.label,
+            TimerConfiguration.FileInput.label
+    )
+
+    val typeProperty = SimpleStringProperty(this, "type", TimerConfiguration.SerialPortInput.label)
+    var type by typeProperty
+
+    val serialPortProperty = SimpleStringProperty(this, "serialPort")
+    var serialPort by serialPortProperty
+
+    val inputFileProperty = SimpleStringProperty(this, "inputFile")
+    var inputFile by inputFileProperty
+
+
+    val serialPorts = observableList<String>()
+
+}
+
+private val TimerConfiguration.SerialPortInput.Companion.label: String get() = "Serial Port"
+private val TimerConfiguration.FileInput.Companion.label: String get() = "File"
 
 class RunEventModel : ViewModel() {
     val runs = observableList<Run>()
@@ -212,16 +415,27 @@ class RunEventModel : ViewModel() {
     var event by eventProperty
     val registrationHints = FXCollections.observableSet<RegistrationHint>()
     val disposables = CompositeDisposable()
+
+    val controlTextProperty = SimpleStringProperty(this, "controlText")
+    var controlText by controlTextProperty
+
+    val timerConfigurationProperty = SimpleObjectProperty<TimerConfiguration>(this, "timerConfiguration", null)
+    var timerConfiguration by timerConfigurationProperty
+
+    val timerConfigurationTextProperty = SimpleStringProperty(this, "timerConfigurationText", null)
+    var timerConfigurationText by timerConfigurationTextProperty
+
 }
 
 data class RegistrationHint(val category: String, val handicap: String, val number: String)
 
 class RunEventController : Controller() {
     val model: RunEventModel by inject()
-    val service: RunService by inject()
+    val runService: RunService by inject()
+    val timerService: TimerService by inject()
 
     fun init() {
-        service.io.createDrsDbRunsPath(model.event)
+        runService.io.createDrsDbRunsPath(model.event)
         model.runs.onChange { buildRegistrationHints() }
         loadRuns()
         buildNextRun()
@@ -229,7 +443,7 @@ class RunEventController : Controller() {
 
     fun loadRuns() {
         runAsync {
-            service.list(model.event)
+            runService.list(model.event)
         } success {
             model.runs.clear()
             model.runs.addAll(it)
@@ -248,12 +462,12 @@ class RunEventController : Controller() {
         addRun.sequenceProperty.unbind()
         addRun.sequence = sequence
         model.nextRun.commit()
-        runAsync { service.save(addRun) }
+        runAsync { runService.save(addRun) }
         buildNextRun()
     }
 
     fun save(run: Run) {
-        runAsync { service.save(run) }
+        runAsync { runService.save(run) }
     }
 
     fun incrementCones(run: Run) {
@@ -268,12 +482,14 @@ class RunEventController : Controller() {
 
     fun buildRegistrationHints() {
         runAsync {
-            model.runs.parallelStream()
+            val runs = synchronized(model.runs) { model.runs.toList() }
+            runs.parallelStream()
                     .map { RegistrationHint(
                             category = it.category,
                             handicap = it.handicap,
                             number = it.number
                     ) }
+                    .distinct()
                     .toList()
         } ui {
             model.registrationHints.clear()
@@ -283,7 +499,8 @@ class RunEventController : Controller() {
 
     fun buildNumberHints(): List<String> {
         if (model.nextRun.number.value.isBlank()) return emptyList()
-        var stream = model.registrationHints.parallelStream()
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        var stream = registrationHints.parallelStream()
                 .filter { it.number.startsWith(model.nextRun.number.value) }
         if (model.nextRun.category.value.isNotBlank()) {
             stream = stream.filter { it.category == model.nextRun.category.value }
@@ -299,7 +516,8 @@ class RunEventController : Controller() {
 
     fun buildCategoryHints(): List<String> {
         if (model.nextRun.category.value.isBlank()) return emptyList()
-        var stream = model.registrationHints.parallelStream()
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        var stream = registrationHints.parallelStream()
                 .filter { it.category.startsWith(model.nextRun.category.value) }
         if (model.nextRun.number.value.isNotBlank()) {
             stream = stream.filter { it.number == model.nextRun.number.value }
@@ -315,7 +533,8 @@ class RunEventController : Controller() {
 
     fun buildHandicapHints(): List<String> {
         if (model.nextRun.handicap.value.isBlank()) return emptyList()
-        var stream = model.registrationHints.parallelStream()
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        var stream = registrationHints.parallelStream()
                 .filter { it.handicap.startsWith(model.nextRun.handicap.value) }
         if (model.nextRun.number.value.isNotBlank()) {
             stream = stream.filter { it.number == model.nextRun.number.value }
@@ -350,7 +569,7 @@ class RunEventController : Controller() {
     }
 
     fun docked() {
-        model.disposables.add(service.watchList(model.event)
+        model.disposables.add(runService.watchList(model.event)
                 .observeOnFx()
                 .subscribe(entityWatchEventConsumer(
                         idProperty = Run::id,
@@ -361,5 +580,28 @@ class RunEventController : Controller() {
 
     fun undocked() {
         model.disposables.clear()
+        timerService.stop()
+    }
+
+    fun toggleTimer() {
+        if (timerService.model.timer == null) {
+            val config = model.timerConfiguration
+            when (config) {
+                is TimerConfiguration.SerialPortInput -> {
+                    timerService.startCommPortTimer(config.port, timerOutputWriter)
+                }
+                is TimerConfiguration.FileInput -> {
+                    timerService.startFileInputTimer(config.file, timerOutputWriter)
+                }
+            }
+        } else {
+            timerService.stop()
+        }
+    }
+
+    private val timerOutputWriter = object : TimerOutputWriter<FinishTriggerElapsedTimeOnly> {
+        override fun write(input: FinishTriggerElapsedTimeOnly) {
+            runService.addTimeToFirstRunInSequenceWithoutRawTime(model.event, input.et)
+        }
     }
 }

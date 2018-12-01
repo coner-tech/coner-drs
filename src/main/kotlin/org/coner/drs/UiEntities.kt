@@ -11,6 +11,7 @@ import java.time.LocalDate
 import java.util.*
 import tornadofx.getValue
 import tornadofx.setValue
+import java.io.File
 
 class Event(
         id: UUID = UUID.randomUUID(),
@@ -91,4 +92,9 @@ class RunModel : ItemViewModel<Run>() {
     val didNotFinish = bind(Run::didNotFinishProperty)
     val disqualified = bind(Run::disqualifiedProperty)
     val rerun = bind(Run::rerunProperty)
+}
+
+sealed class TimerConfiguration {
+    data class SerialPortInput(val port: String) : TimerConfiguration() { companion object { }}
+    data class FileInput(val file: File) : TimerConfiguration() { companion object { }}
 }

@@ -1,12 +1,12 @@
-package org.coner.drs.db.service
+package org.coner.drs.io.db.service
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.Event
-import org.coner.drs.db.DrsIoController
-import org.coner.drs.db.EntityWatchEvent
-import org.coner.drs.db.entity.EventDbEntity
-import org.coner.drs.db.entity.EventDbEntityMapper
+import org.coner.drs.io.DrsIoController
+import org.coner.drs.io.db.EntityWatchEvent
+import org.coner.drs.io.db.entity.EventDbEntity
+import org.coner.drs.io.db.entity.EventDbEntityMapper
 import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 

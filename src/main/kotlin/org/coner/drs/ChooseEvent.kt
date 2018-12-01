@@ -8,8 +8,8 @@ import java.time.LocalDate
 import tornadofx.getValue
 import tornadofx.setValue
 import io.reactivex.disposables.CompositeDisposable
-import org.coner.drs.db.entityWatchEventConsumer
-import org.coner.drs.db.service.EventService
+import org.coner.drs.io.db.entityWatchEventConsumer
+import org.coner.drs.io.db.service.EventService
 
 class ChooseEventView : View("Events") {
     override val root = borderpane {

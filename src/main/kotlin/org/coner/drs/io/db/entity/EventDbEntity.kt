@@ -1,4 +1,4 @@
-package org.coner.drs.db.entity
+package org.coner.drs.io.db.entity
 
 import org.coner.drs.Event
 import org.coner.snoozle.db.Entity
