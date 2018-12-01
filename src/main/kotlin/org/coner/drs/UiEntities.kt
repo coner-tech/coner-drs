@@ -80,18 +80,13 @@ class Run(
 
 }
 
-class RunModel : ItemViewModel<Run>() {
+class NextDriverModel : ItemViewModel<Run>() {
     val id = bind(Run::idProperty)
     val event = bind(Run::eventProperty)
     val sequence = bind(Run::sequenceProperty)
     val category = bind(Run::categoryProperty)
     val handicap = bind(Run::handicapProperty)
     val number = bind(Run::numberProperty)
-    val rawTime = bind(Run::rawTimeProperty)
-    val cones = bind(Run::conesProperty)
-    val didNotFinish = bind(Run::didNotFinishProperty)
-    val disqualified = bind(Run::disqualifiedProperty)
-    val rerun = bind(Run::rerunProperty)
 }
 
 sealed class TimerConfiguration {

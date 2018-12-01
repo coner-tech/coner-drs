@@ -68,4 +68,24 @@ class RunService : Controller() {
             .sorted(compareByDescending(RunDbEntity::sequence))
             .filter { it.rawTime != null }
             .findFirst().orElse(null)
+
+    fun insertNextDriver(addNextDriver: Run) {
+        val addNextDriverDbEntity = RunDbEntityMapper.toDbEntity(addNextDriver)
+        val runDbEntity = db.list(
+                RunDbEntity::eventId to addNextDriverDbEntity.eventId
+        ).parallelStream()
+                .filter { it.sequence == addNextDriver.sequence }
+                .findFirst()
+                .orElse(RunDbEntity(
+                        eventId = addNextDriverDbEntity.eventId,
+                        sequence = addNextDriverDbEntity.sequence
+                ))
+                .copy(
+                        category = addNextDriverDbEntity.category,
+                        handicap = addNextDriverDbEntity.handicap,
+                        number = addNextDriverDbEntity.number
+                )
+        db.put(runDbEntity)
+    }
+
 }
