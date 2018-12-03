@@ -17,7 +17,8 @@
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
-        <snoozle.version>0.0.0-SNAPSHOT</snoozle.version>
+        <coner-timer.version>0.1.1</coner-timer.version>
+        <snoozle.version>0.1.0</snoozle.version>
         <jackson.version>2.9.7</jackson.version>
     </properties>
 
@@ -61,7 +62,7 @@
         <dependency>
             <groupId>org.coner</groupId>
             <artifactId>coner-timer-library</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>${coner-timer.version}</version>
         </dependency>
     </dependencies>
 
