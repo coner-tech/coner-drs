@@ -496,8 +496,8 @@ class RunEventController : Controller() {
     }
 
     fun buildRegistrationHints() {
+        val runs = synchronized(model.runs) { model.runs.toList() }
         runAsync {
-            val runs = synchronized(model.runs) { model.runs.toList() }
             runs.parallelStream()
                     .map { RegistrationHint(
                             category = it.category,
