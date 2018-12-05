@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
+import javafx.event.EventHandler
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.Button
@@ -17,7 +18,9 @@ import javafx.stage.Modality
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.db.service.RunService
 import org.coner.drs.io.timer.TimerService
+import org.coner.drs.util.bindAutoCompletion
 import org.coner.drs.util.levenshtein
+import org.coner.drs.util.onAutoCompleted
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter
 import org.controlsfx.control.textfield.TextFields
@@ -148,11 +151,9 @@ class RunEventAddNextRunView : View() {
                     textfield(model.nextDriver.number) {
                         numberTextField = this
                         required()
-                        TextFields.bindAutoCompletion(this) {
-                            controller.buildNumberHints()
-                        }.apply {
+                        bindAutoCompletion(suggestionsProvider = { controller.buildNumberHints() }) {
                             setDelay(0)
-                            setOnAutoCompleted {
+                            onAutoCompleted {
                                 val singleMatch = controller.onNextDriverNumberAutoCompleted()
                                 if (singleMatch != null) {
                                     controller.autoCompleteNextDriver(singleMatch)
@@ -169,11 +170,9 @@ class RunEventAddNextRunView : View() {
                 field(text = "Category", orientation = Orientation.HORIZONTAL) {
                     textfield(model.nextDriver.category) {
                         categoryTextField = this
-                        TextFields.bindAutoCompletion(this) {
-                            controller.buildCategoryHints()
-                        }.apply {
+                        bindAutoCompletion(suggestionsProvider = { controller.buildCategoryHints() } ) {
                             setDelay(0)
-                            setOnAutoCompleted {
+                            onAutoCompleted {
                                 val singleMatch = controller.onNextDriverCategoryAutoCompleted()
                                 if (singleMatch != null) {
                                     controller.autoCompleteNextDriver(singleMatch)
@@ -181,7 +180,6 @@ class RunEventAddNextRunView : View() {
                                 handicapTextField.requestFocus()
                             }
                         }
-
                         prefColumnCount = 7
                     }
                 }
@@ -189,11 +187,9 @@ class RunEventAddNextRunView : View() {
                     textfield(model.nextDriver.handicap) {
                         handicapTextField = this
                         required()
-                        TextFields.bindAutoCompletion(this) {
-                            controller.buildHandicapHints()
-                        }.apply {
+                        bindAutoCompletion(suggestionsProvider = { controller.buildHandicapHints() }) {
                             setDelay(0)
-                            setOnAutoCompleted {
+                            onAutoCompleted {
                                 val singleMatch = controller.onNextDriverHandicapAutoCompleted()
                                 if (singleMatch != null) {
                                     controller.autoCompleteNextDriver(singleMatch)
