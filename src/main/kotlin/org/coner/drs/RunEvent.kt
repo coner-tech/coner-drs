@@ -6,9 +6,9 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
-import javafx.event.EventHandler
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
+import javafx.geometry.Side
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.TextField
@@ -23,7 +23,6 @@ import org.coner.drs.util.levenshtein
 import org.coner.drs.util.onAutoCompleted
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter
-import org.controlsfx.control.textfield.TextFields
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue
@@ -47,11 +46,12 @@ class RunEventFragment : Fragment("Run Event") {
         isCollapsible = false
         prefHeightProperty().bind(parentProperty().select { (it as Region).heightProperty() })
         borderpane {
+            left { add(find<RunEventLeftDrawerView>(eventScope)) }
+            right { add(find<RunEventRightDrawerView>(eventScope)) }
             center {
                 vgrow = Priority.ALWAYS
                 add(find<RunEventTableView>(eventScope))
             }
-            bottom { add(find<RunEventBottomView>(eventScope)) }
         }
     }
 
@@ -118,17 +118,19 @@ class RunEventTableView : View() {
 
 }
 
-class RunEventBottomView : View() {
-    override val root = hbox {
-        add(find<RunEventAddNextRunView>())
-        pane {
-            hgrow = Priority.ALWAYS
-        }
-        add(find<RunEventTimerView>())
+class RunEventLeftDrawerView : View() {
+    override val root = drawer(side = Side.LEFT) {
+        item<RunEventAddNextDriverView>(expanded = true, showHeader = true)
     }
 }
 
-class RunEventAddNextRunView : View() {
+class RunEventRightDrawerView : View() {
+    override val root = drawer(side = Side.RIGHT) {
+        item<RunEventTimerView>(showHeader = true)
+    }
+}
+
+class RunEventAddNextDriverView : View("Next Driver") {
     private val model: RunEventModel by inject()
     private val controller: RunEventController by inject()
 
@@ -138,82 +140,80 @@ class RunEventAddNextRunView : View() {
     private lateinit var addButton: Button
 
     override val root = form {
-        fieldset(text = "Next Driver", labelPosition = Orientation.VERTICAL) {
-            hbox(spacing = 12) {
-                hgrow = Priority.NEVER
-                field(text = "Sequence", orientation = Orientation.HORIZONTAL) {
-                    textfield(model.nextDriver.sequence) {
-                        isEditable = false
-                        prefColumnCount = 4
-                    }
+        fieldset(labelPosition = Orientation.VERTICAL) {
+            hgrow = Priority.NEVER
+            field(text = "Sequence") {
+                textfield(model.nextDriver.sequence) {
+                    isEditable = false
+                    prefColumnCount = 4
                 }
-                field(text = "Number", orientation = Orientation.HORIZONTAL) {
-                    textfield(model.nextDriver.number) {
-                        numberTextField = this
-                        required()
-                        bindAutoCompletion(suggestionsProvider = { controller.buildNumberHints() }) {
-                            setDelay(0)
-                            onAutoCompleted {
-                                val singleMatch = controller.onNextDriverNumberAutoCompleted()
-                                if (singleMatch != null) {
-                                    controller.autoCompleteNextDriver(singleMatch)
-                                }
-                                categoryTextField.requestFocus()
+            }
+            field(text = "Number") {
+                textfield(model.nextDriver.number) {
+                    numberTextField = this
+                    required()
+                    bindAutoCompletion(suggestionsProvider = { controller.buildNumberHints() }) {
+                        setDelay(0)
+                        onAutoCompleted {
+                            val singleMatch = controller.onNextDriverNumberAutoCompleted()
+                            if (singleMatch != null) {
+                                controller.autoCompleteNextDriver(singleMatch)
                             }
-                        }
-                        prefColumnCount = 5
-                        model.nextDriver.itemProperty.onChange {
-                            onNewRun(this)
+                            categoryTextField.requestFocus()
                         }
                     }
+                    prefColumnCount = 5
+                    model.nextDriver.itemProperty.onChange {
+                        onNewRun(this)
+                    }
                 }
-                field(text = "Category", orientation = Orientation.HORIZONTAL) {
-                    textfield(model.nextDriver.category) {
-                        categoryTextField = this
-                        bindAutoCompletion(suggestionsProvider = { controller.buildCategoryHints() } ) {
-                            setDelay(0)
-                            onAutoCompleted {
-                                val singleMatch = controller.onNextDriverCategoryAutoCompleted()
-                                if (singleMatch != null) {
-                                    controller.autoCompleteNextDriver(singleMatch)
-                                }
-                                handicapTextField.requestFocus()
+            }
+            field(text = "Category") {
+                textfield(model.nextDriver.category) {
+                    categoryTextField = this
+                    bindAutoCompletion(suggestionsProvider = { controller.buildCategoryHints() } ) {
+                        setDelay(0)
+                        onAutoCompleted {
+                            val singleMatch = controller.onNextDriverCategoryAutoCompleted()
+                            if (singleMatch != null) {
+                                controller.autoCompleteNextDriver(singleMatch)
                             }
+                            handicapTextField.requestFocus()
                         }
-                        prefColumnCount = 7
                     }
+                    prefColumnCount = 7
                 }
-                field(text = "Handicap", orientation = Orientation.HORIZONTAL) {
-                    textfield(model.nextDriver.handicap) {
-                        handicapTextField = this
-                        required()
-                        bindAutoCompletion(suggestionsProvider = { controller.buildHandicapHints() }) {
-                            setDelay(0)
-                            onAutoCompleted {
-                                val singleMatch = controller.onNextDriverHandicapAutoCompleted()
-                                if (singleMatch != null) {
-                                    controller.autoCompleteNextDriver(singleMatch)
-                                }
-                                addButton.requestFocus()
+            }
+            field(text = "Handicap") {
+                textfield(model.nextDriver.handicap) {
+                    handicapTextField = this
+                    required()
+                    bindAutoCompletion(suggestionsProvider = { controller.buildHandicapHints() }) {
+                        setDelay(0)
+                        onAutoCompleted {
+                            val singleMatch = controller.onNextDriverHandicapAutoCompleted()
+                            if (singleMatch != null) {
+                                controller.autoCompleteNextDriver(singleMatch)
                             }
+                            addButton.requestFocus()
                         }
-                        prefColumnCount = 5
                     }
+                    prefColumnCount = 5
                 }
-                field(text = "Add", orientation = Orientation.HORIZONTAL) {
-                    button("Add") {
-                        addButton = this
-                        enableWhen { model.nextDriver.valid }
-                        action { controller.addNextDriver() }
-                        tooltip("Shortcut: Ctrl+Enter")
-                    }
-                    runLater { this.children.first().isVisible = false }
+            }
+            field(text = "Add") {
+                button("Add") {
+                    addButton = this
+                    enableWhen { model.nextDriver.valid }
+                    action { controller.addNextDriver() }
+                    tooltip("Shortcut: Ctrl+Enter")
                 }
-                shortcut("Ctrl+Enter") {
-                    if (model.nextDriver.isValid) {
-                        addButton.requestFocus()
-                        controller.addNextDriver()
-                    }
+                runLater { this.children.first().isVisible = false }
+            }
+            shortcut("Ctrl+Enter") {
+                if (model.nextDriver.isValid) {
+                    addButton.requestFocus()
+                    controller.addNextDriver()
                 }
             }
         }
@@ -230,22 +230,20 @@ class RunEventAddNextRunView : View() {
     }
 }
 
-class RunEventTimerView : View() {
+class RunEventTimerView : View("Timer") {
     val model: RunEventModel by inject()
     val controller: RunEventController by inject()
     val timerService: TimerService by inject()
     override val root = form {
-        alignment = Pos.CENTER_RIGHT
-        fieldset(text = "Timer", labelPosition = Orientation.VERTICAL) {
-            hbox(spacing = 12) {
-                hgrow = Priority.NEVER
-                field("Operation") {
-                    button(model.controlTextProperty) {
-                        enableWhen { model.timerConfigurationProperty.isNotNull }
-                        action { runAsyncWithProgress { controller.toggleTimer() } }
-                    }
+        fieldset(labelPosition = Orientation.VERTICAL) {
+            field("Operation") {
+                button(model.controlTextProperty) {
+                    enableWhen { model.timerConfigurationProperty.isNotNull }
+                    action { runAsyncWithProgress { controller.toggleTimer() } }
                 }
-                field(text = "Configuration") {
+            }
+            field(text = "Configuration") {
+                vbox(spacing = 8) {
                     button("Configure") {
                         enableWhen { timerService.model.timerProperty.isNull }
                         action { showConfiguration() }
