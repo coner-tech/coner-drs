@@ -21,7 +21,10 @@ class DigitalRawSheetApp : App(
                 stringBinding(uiComponent.titleProperty) {
                     "Coner Digital Raw Sheet - ${uiComponent.title}"
                 })
+        stage.minWidth = 1024.0
+        stage.minHeight = 768.0
     }
+
 }
 
 class Stylesheet : Stylesheet(ConerFxStylesheet::class) {
