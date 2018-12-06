@@ -130,9 +130,9 @@ class RunEventRightDrawerView : View() {
     }
 }
 
-class RunEventAddNextDriverView : View("Next Driver") {
-    private val model: RunEventModel by inject()
-    private val controller: RunEventController by inject()
+class RunEventAddNextDriverView : View("Add Next Driver") {
+    private val model: RunEventAddNextDriverModel by inject()
+    private val controller: RunEventAddNextDriverController by inject()
 
     private lateinit var numberTextField: TextField
     private lateinit var categoryTextField: TextField
@@ -228,6 +228,139 @@ class RunEventAddNextDriverView : View("Next Driver") {
         super.onDock()
         controller.buildNextDriver()
     }
+}
+
+class RunEventAddNextDriverModel : ViewModel() {
+
+    val nextDriver: NextDriverModel by inject()
+    val registrationHints = FXCollections.observableSet<RegistrationHint>()
+}
+
+class RunEventAddNextDriverController : Controller() {
+
+    val model: RunEventAddNextDriverModel by inject()
+    val runEventModel: RunEventModel by inject()
+    val runService: RunService by inject()
+
+    init {
+        runEventModel.runs.onChange { buildRegistrationHints() }
+    }
+
+    fun buildNextDriver() {
+        model.nextDriver.item = Run(event = runEventModel.event).apply {
+            sequenceProperty.bind(integerBinding(runEventModel.runs) {
+                val runs = kotlin.synchronized(runEventModel.runs) { runEventModel.runs.toList() }
+                val firstRunWithoutDriver = runs.parallelStream()
+                        .filter { it.category.isBlank() && it.handicap.isBlank() && it.number.isBlank() }
+                        .sorted(kotlin.comparisons.compareBy(org.coner.drs.Run::sequence))
+                        .findFirst().orElse(null)
+                if (firstRunWithoutDriver == null) {
+                    runs.size + 1
+                } else {
+                    firstRunWithoutDriver.sequence
+                }
+            })
+        }
+    }
+
+    fun addNextDriver() {
+        val addRun = model.nextDriver.item
+        val sequence = addRun.sequence
+        addRun.sequenceProperty.unbind()
+        addRun.sequence = sequence
+        model.nextDriver.commit()
+        runAsync { runService.insertNextDriver(addRun) }
+        buildNextDriver()
+    }
+
+    fun buildRegistrationHints() {
+        val runs = synchronized(runEventModel.runs) { runEventModel.runs.toList() }
+        runAsync {
+            runs.parallelStream()
+                    .map { RegistrationHint(
+                            category = it.category,
+                            handicap = it.handicap,
+                            number = it.number
+                    ) }
+                    .distinct()
+                    .toList()
+        } ui {
+            model.registrationHints.clear()
+            model.registrationHints.addAll(it)
+        }
+    }
+
+    fun buildNumberHints(): List<String> {
+        if (model.nextDriver.number.value.isBlank()) return emptyList()
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        var stream = registrationHints.parallelStream()
+                .filter { it.number.startsWith(model.nextDriver.number.value) }
+        if (model.nextDriver.category.value.isNotBlank()) {
+            stream = stream.filter { it.category == model.nextDriver.category.value }
+        }
+        if (model.nextDriver.handicap.value.isNotBlank()) {
+            stream = stream.filter { it.handicap == model.nextDriver.handicap.value }
+        }
+        return stream.map { it.number }
+                .distinct()
+                .toList()
+                .sortedBy { levenshtein(it, model.nextDriver.number.value) }
+    }
+
+    fun buildCategoryHints(): List<String> {
+        if (model.nextDriver.category.value.isBlank()) return emptyList()
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        var stream = registrationHints.parallelStream()
+                .filter { it.category.startsWith(model.nextDriver.category.value) }
+        if (model.nextDriver.number.value.isNotBlank()) {
+            stream = stream.filter { it.number == model.nextDriver.number.value }
+        }
+        if (model.nextDriver.handicap.value.isNotBlank()) {
+            stream = stream.filter { it.handicap == model.nextDriver.handicap.value }
+        }
+        return stream.map { it.category }
+                .distinct()
+                .toList()
+                .sortedBy { levenshtein(it, model.nextDriver.category.value) }
+    }
+
+    fun buildHandicapHints(): List<String> {
+        if (model.nextDriver.handicap.value.isBlank()) return emptyList()
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        var stream = registrationHints.parallelStream()
+                .filter { it.handicap.startsWith(model.nextDriver.handicap.value) }
+        if (model.nextDriver.number.value.isNotBlank()) {
+            stream = stream.filter { it.number == model.nextDriver.number.value }
+        }
+        if (model.nextDriver.category.value.isNotBlank()) {
+            stream = stream.filter { it.category == model.nextDriver.category.value }
+        }
+        val hints = stream.map { it.handicap }
+                .distinct()
+                .toList()
+                .sortedBy { levenshtein(it, model.nextDriver.handicap.value) }
+        return hints
+    }
+
+    fun onNextDriverNumberAutoCompleted(): RegistrationHint? {
+        return model.registrationHints.singleOrNull { it.number == model.nextDriver.number.value }
+    }
+
+    fun onNextDriverCategoryAutoCompleted(): RegistrationHint? {
+        return model.registrationHints.singleOrNull { it.category == model.nextDriver.category.value }
+    }
+
+    fun onNextDriverHandicapAutoCompleted(): RegistrationHint? {
+        return model.registrationHints.singleOrNull { it.handicap == model.nextDriver.handicap.value }
+
+    }
+
+    fun autoCompleteNextDriver(singleMatch: RegistrationHint) {
+        model.nextDriver.number.value = singleMatch.number
+        model.nextDriver.category.value = singleMatch.category
+        model.nextDriver.handicap.value = singleMatch.handicap
+    }
+
 }
 
 class RunEventTimerView : View("Timer") {
@@ -409,10 +542,8 @@ private val TimerConfiguration.FileInput.Companion.label: String get() = "File"
 
 class RunEventModel : ViewModel() {
     val runs = observableList<Run>()
-    val nextDriver: NextDriverModel by inject()
     val eventProperty = SimpleObjectProperty<Event>()
     var event by eventProperty
-    val registrationHints = FXCollections.observableSet<RegistrationHint>()
     val disposables = CompositeDisposable()
 
     val controlTextProperty = SimpleStringProperty(this, "controlText")
@@ -435,7 +566,6 @@ class RunEventController : Controller() {
 
     fun init() {
         runService.io.createDrsDbRunsPath(model.event)
-        model.runs.onChange { buildRegistrationHints() }
         loadRuns()
     }
 
@@ -446,33 +576,6 @@ class RunEventController : Controller() {
             model.runs.clear()
             model.runs.addAll(it)
         }
-    }
-
-    fun buildNextDriver() {
-        model.nextDriver.item = Run(event = model.event).apply {
-            sequenceProperty.bind(integerBinding(model.runs) {
-                val runs = synchronized(model.runs) { model.runs.toList() }
-                val firstRunWithoutDriver = runs.parallelStream()
-                        .filter { it.category.isBlank() && it.handicap.isBlank() && it.number.isBlank() }
-                        .sorted(compareBy(Run::sequence))
-                        .findFirst().orElse(null)
-                if (firstRunWithoutDriver == null) {
-                    runs.size + 1
-                } else {
-                    firstRunWithoutDriver.sequence
-                }
-            })
-        }
-    }
-
-    fun addNextDriver() {
-        val addRun = model.nextDriver.item
-        val sequence = addRun.sequence
-        addRun.sequenceProperty.unbind()
-        addRun.sequence = sequence
-        model.nextDriver.commit()
-        runAsync { runService.insertNextDriver(addRun) }
-        buildNextDriver()
     }
 
     fun save(run: Run) {
@@ -487,94 +590,6 @@ class RunEventController : Controller() {
     fun decrementCones(run: Run) {
         run.cones--
         save(run)
-    }
-
-    fun buildRegistrationHints() {
-        val runs = synchronized(model.runs) { model.runs.toList() }
-        runAsync {
-            runs.parallelStream()
-                    .map { RegistrationHint(
-                            category = it.category,
-                            handicap = it.handicap,
-                            number = it.number
-                    ) }
-                    .distinct()
-                    .toList()
-        } ui {
-            model.registrationHints.clear()
-            model.registrationHints.addAll(it)
-        }
-    }
-
-    fun buildNumberHints(): List<String> {
-        if (model.nextDriver.number.value.isBlank()) return emptyList()
-        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        var stream = registrationHints.parallelStream()
-                .filter { it.number.startsWith(model.nextDriver.number.value) }
-        if (model.nextDriver.category.value.isNotBlank()) {
-            stream = stream.filter { it.category == model.nextDriver.category.value }
-        }
-        if (model.nextDriver.handicap.value.isNotBlank()) {
-            stream = stream.filter { it.handicap == model.nextDriver.handicap.value }
-        }
-        return stream.map { it.number }
-                .distinct()
-                .toList()
-                .sortedBy { levenshtein(it, model.nextDriver.number.value) }
-    }
-
-    fun buildCategoryHints(): List<String> {
-        if (model.nextDriver.category.value.isBlank()) return emptyList()
-        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        var stream = registrationHints.parallelStream()
-                .filter { it.category.startsWith(model.nextDriver.category.value) }
-        if (model.nextDriver.number.value.isNotBlank()) {
-            stream = stream.filter { it.number == model.nextDriver.number.value }
-        }
-        if (model.nextDriver.handicap.value.isNotBlank()) {
-            stream = stream.filter { it.handicap == model.nextDriver.handicap.value }
-        }
-        return stream.map { it.category }
-                .distinct()
-                .toList()
-                .sortedBy { levenshtein(it, model.nextDriver.category.value) }
-    }
-
-    fun buildHandicapHints(): List<String> {
-        if (model.nextDriver.handicap.value.isBlank()) return emptyList()
-        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        var stream = registrationHints.parallelStream()
-                .filter { it.handicap.startsWith(model.nextDriver.handicap.value) }
-        if (model.nextDriver.number.value.isNotBlank()) {
-            stream = stream.filter { it.number == model.nextDriver.number.value }
-        }
-        if (model.nextDriver.category.value.isNotBlank()) {
-            stream = stream.filter { it.category == model.nextDriver.category.value }
-        }
-        val hints = stream.map { it.handicap }
-                .distinct()
-                .toList()
-                .sortedBy { levenshtein(it, model.nextDriver.handicap.value) }
-        return hints
-    }
-
-    fun onNextDriverNumberAutoCompleted(): RegistrationHint? {
-        return model.registrationHints.singleOrNull { it.number == model.nextDriver.number.value }
-    }
-
-    fun onNextDriverCategoryAutoCompleted(): RegistrationHint? {
-        return model.registrationHints.singleOrNull { it.category == model.nextDriver.category.value }
-    }
-
-    fun onNextDriverHandicapAutoCompleted(): RegistrationHint? {
-        return model.registrationHints.singleOrNull { it.handicap == model.nextDriver.handicap.value }
-
-    }
-
-    fun autoCompleteNextDriver(singleMatch: RegistrationHint) {
-        model.nextDriver.number.value = singleMatch.number
-        model.nextDriver.category.value = singleMatch.category
-        model.nextDriver.handicap.value = singleMatch.handicap
     }
 
     fun docked() {
