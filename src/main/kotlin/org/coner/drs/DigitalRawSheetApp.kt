@@ -2,6 +2,7 @@ package org.coner.drs
 
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import org.coner.drs.ui.main.MainView
 import org.coner.style.ConerFxStylesheet
 import tornadofx.*
 import tornadofx.Stylesheet

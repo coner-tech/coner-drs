@@ -1,11 +1,6 @@
-package org.coner.drs
+package org.coner.drs.ui.start
 
-import javafx.beans.property.SimpleObjectProperty
-import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
-import tornadofx.getValue
-import tornadofx.setValue
-import java.io.File
 
 class StartView : View("Start") {
     val controller: StartController by inject()
@@ -34,22 +29,4 @@ class StartView : View("Start") {
             }
         }
     }
-}
-
-class StartController : Controller() {
-    val model: StartModel by inject()
-
-    fun onClickChooseRawSheetDatabase() {
-        val dir = chooseDirectory("Raw Sheet Database") ?: return
-        model.rawSheetDatabase = dir
-    }
-
-    fun onClickStart() {
-        fire(ChangeToScreenEvent(Screen.ChooseEvent(model.rawSheetDatabase)))
-    }
-}
-
-class StartModel : ViewModel() {
-    val rawSheetDatabaseProperty = SimpleObjectProperty<File>(this, "rawSheetDatabase")
-    var rawSheetDatabase by rawSheetDatabaseProperty
 }
