@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import javafx.collections.transformation.SortedList
 import javafx.geometry.Orientation
-import javafx.geometry.Pos
 import javafx.geometry.Side
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
@@ -15,6 +14,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
 import javafx.stage.Modality
+import javafx.util.StringConverter
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.db.service.RunService
 import org.coner.drs.io.timer.TimerService
@@ -120,7 +120,7 @@ class RunEventTableView : View() {
 
 class RunEventLeftDrawerView : View() {
     override val root = drawer(side = Side.LEFT) {
-        item<RunEventAddNextDriverView>(expanded = true, showHeader = true)
+        item<RunEventAddNextDriverView>(expanded = true)
     }
 }
 
@@ -140,7 +140,7 @@ class RunEventAddNextDriverView : View("Add Next Driver") {
     private lateinit var addButton: Button
 
     override val root = form {
-        fieldset(labelPosition = Orientation.VERTICAL) {
+        fieldset(text = title, labelPosition = Orientation.VERTICAL) {
             hgrow = Priority.NEVER
             field(text = "Sequence") {
                 textfield(model.nextDriver.sequence) {
@@ -148,75 +148,59 @@ class RunEventAddNextDriverView : View("Add Next Driver") {
                     prefColumnCount = 4
                 }
             }
-            field(text = "Number") {
-                textfield(model.nextDriver.number) {
+            field(text = "Numbers") {
+                textfield(model.numbersFieldProperty) {
                     numberTextField = this
                     required()
-                    bindAutoCompletion(suggestionsProvider = { controller.buildNumberHints() }) {
+                    bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
                         setDelay(0)
                         onAutoCompleted {
-                            val singleMatch = controller.onNextDriverNumberAutoCompleted()
-                            if (singleMatch != null) {
-                                controller.autoCompleteNextDriver(singleMatch)
-                            }
-                            categoryTextField.requestFocus()
+                            controller.autoCompleteNextDriver(it.completion)
                         }
                     }
                     prefColumnCount = 5
                     model.nextDriver.itemProperty.onChange {
                         onNewRun(this)
                     }
+                    promptTextProperty().bind(model.driverAutoCompleteOrderPreferenceProperty.stringBinding { it?.text })
                 }
             }
-            field(text = "Category") {
-                textfield(model.nextDriver.category) {
-                    categoryTextField = this
-                    bindAutoCompletion(suggestionsProvider = { controller.buildCategoryHints() } ) {
-                        setDelay(0)
-                        onAutoCompleted {
-                            val singleMatch = controller.onNextDriverCategoryAutoCompleted()
-                            if (singleMatch != null) {
-                                controller.autoCompleteNextDriver(singleMatch)
-                            }
-                            handicapTextField.requestFocus()
-                        }
-                    }
-                    prefColumnCount = 7
-                }
-            }
-            field(text = "Handicap") {
-                textfield(model.nextDriver.handicap) {
-                    handicapTextField = this
-                    required()
-                    bindAutoCompletion(suggestionsProvider = { controller.buildHandicapHints() }) {
-                        setDelay(0)
-                        onAutoCompleted {
-                            val singleMatch = controller.onNextDriverHandicapAutoCompleted()
-                            if (singleMatch != null) {
-                                controller.autoCompleteNextDriver(singleMatch)
-                            }
-                            addButton.requestFocus()
-                        }
-                    }
-                    prefColumnCount = 5
-                }
-            }
-            field(text = "Add") {
+            buttonbar {
                 button("Add") {
                     addButton = this
                     enableWhen { model.nextDriver.valid }
                     action { controller.addNextDriver() }
                     tooltip("Shortcut: Ctrl+Enter")
+                    isDefaultButton = true
                 }
-                runLater { this.children.first().isVisible = false }
             }
             shortcut("Ctrl+Enter") {
                 if (model.nextDriver.isValid) {
-                    addButton.requestFocus()
                     controller.addNextDriver()
                 }
             }
         }
+        pane {
+            vgrow = Priority.ALWAYS
+        }
+        fieldset(text = "Preferences" ,labelPosition = Orientation.VERTICAL) {
+            field("Driver Auto-Complete Order") {
+                choicebox(
+                        property = model.driverAutoCompleteOrderPreferenceProperty,
+                        values = model.driverAutoCompleteOrderPreferences
+                ) {
+                    converter = DriverAutoCompleteOrderPreferenceStringConverter()
+                }
+            }
+        }
+    }
+
+    private inner class DriverAutoCompleteOrderPreferenceStringConverter(
+    ) : StringConverter<DriverAutoCompleteOrderPreference>() {
+        override fun toString(p0: DriverAutoCompleteOrderPreference) = p0.text
+
+        override fun fromString(p0: String) = model.driverAutoCompleteOrderPreferences.first { it.text == p0 }
+
     }
 
     fun onNewRun(toFocus: TextField) {
@@ -234,6 +218,66 @@ class RunEventAddNextDriverModel : ViewModel() {
 
     val nextDriver: NextDriverModel by inject()
     val registrationHints = FXCollections.observableSet<RegistrationHint>()
+
+    val numbersFieldProperty = SimpleStringProperty(this, "numbers", "")
+    var numbersField by numbersFieldProperty
+
+    val driverAutoCompleteOrderPreferenceProperty = SimpleObjectProperty<DriverAutoCompleteOrderPreference>(
+            this,
+            "driverAutoCompleteOrderPreference",
+            DriverAutoCompleteOrderPreference.NumberCategoryHandicap
+    )
+    var driverAutoCompleteOrderPreference by driverAutoCompleteOrderPreferenceProperty
+
+    val driverAutoCompleteOrderPreferences = listOf(
+            DriverAutoCompleteOrderPreference.NumberCategoryHandicap,
+            DriverAutoCompleteOrderPreference.CategoryHandicapNumber
+    )
+}
+
+sealed class DriverAutoCompleteOrderPreference {
+    abstract val text: String
+    abstract val stringConverter: StringConverter<RegistrationHint>
+
+    object NumberCategoryHandicap : DriverAutoCompleteOrderPreference() {
+        override val text = "Number Category Handicap"
+        override val stringConverter = object : StringConverter<RegistrationHint>() {
+            override fun toString(p0: RegistrationHint) = arrayOf(
+                    p0.number,
+                    p0.category,
+                    p0.handicap
+            ).filterNot { it.isBlank() }.joinToString(" ")
+
+            override fun fromString(p0: String): RegistrationHint {
+                val split = p0.split(" ")
+                return when(split.size) {
+                    2 -> RegistrationHint(number = split[0], category = "", handicap = split[1])
+                    3 -> RegistrationHint(number = split[0], category = split[1], handicap = split[2])
+                    else -> throw IllegalArgumentException("Invalid registration hint: $p0")
+                }
+            }
+        }
+    }
+
+    object CategoryHandicapNumber : DriverAutoCompleteOrderPreference() {
+        override val text = "Category Handicap Number"
+        override val stringConverter = object : StringConverter<RegistrationHint>() {
+            override fun toString(p0: RegistrationHint) = arrayOf(
+                    p0.category,
+                    p0.handicap,
+                    p0.number
+            ).filterNot { it.isBlank() }.joinToString(" ")
+
+            override fun fromString(p0: String): RegistrationHint {
+                val split = p0.split(" ")
+                return when (split.size) {
+                    2 -> RegistrationHint(category = "", handicap = split[0], number = split[1])
+                    3 -> RegistrationHint(category = split[0], handicap = split[1], number = split[2])
+                    else -> throw IllegalArgumentException("Invalid registration hint: $p0")
+                }
+            }
+        }
+    }
 }
 
 class RunEventAddNextDriverController : Controller() {
@@ -261,6 +305,8 @@ class RunEventAddNextDriverController : Controller() {
                 }
             })
         }
+        model.numbersField = ""
+        model.validate(decorateErrors = false)
     }
 
     fun addNextDriver() {
@@ -290,75 +336,22 @@ class RunEventAddNextDriverController : Controller() {
         }
     }
 
-    fun buildNumberHints(): List<String> {
-        if (model.nextDriver.number.value.isBlank()) return emptyList()
+    fun buildNumbersHints(): List<String> {
+        if (model.numbersField.isBlank()) return emptyList()
         val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        var stream = registrationHints.parallelStream()
-                .filter { it.number.startsWith(model.nextDriver.number.value) }
-        if (model.nextDriver.category.value.isNotBlank()) {
-            stream = stream.filter { it.category == model.nextDriver.category.value }
-        }
-        if (model.nextDriver.handicap.value.isNotBlank()) {
-            stream = stream.filter { it.handicap == model.nextDriver.handicap.value }
-        }
-        return stream.map { it.number }
-                .distinct()
+        val converter = model.driverAutoCompleteOrderPreference.stringConverter
+        return registrationHints.parallelStream()
+                .map { converter.toString(it) }
+                .filter { it.startsWith(model.numbersField) }
+                .sorted { left, right -> levenshtein(left, right) }
                 .toList()
-                .sortedBy { levenshtein(it, model.nextDriver.number.value) }
     }
 
-    fun buildCategoryHints(): List<String> {
-        if (model.nextDriver.category.value.isBlank()) return emptyList()
-        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        var stream = registrationHints.parallelStream()
-                .filter { it.category.startsWith(model.nextDriver.category.value) }
-        if (model.nextDriver.number.value.isNotBlank()) {
-            stream = stream.filter { it.number == model.nextDriver.number.value }
-        }
-        if (model.nextDriver.handicap.value.isNotBlank()) {
-            stream = stream.filter { it.handicap == model.nextDriver.handicap.value }
-        }
-        return stream.map { it.category }
-                .distinct()
-                .toList()
-                .sortedBy { levenshtein(it, model.nextDriver.category.value) }
-    }
-
-    fun buildHandicapHints(): List<String> {
-        if (model.nextDriver.handicap.value.isBlank()) return emptyList()
-        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        var stream = registrationHints.parallelStream()
-                .filter { it.handicap.startsWith(model.nextDriver.handicap.value) }
-        if (model.nextDriver.number.value.isNotBlank()) {
-            stream = stream.filter { it.number == model.nextDriver.number.value }
-        }
-        if (model.nextDriver.category.value.isNotBlank()) {
-            stream = stream.filter { it.category == model.nextDriver.category.value }
-        }
-        val hints = stream.map { it.handicap }
-                .distinct()
-                .toList()
-                .sortedBy { levenshtein(it, model.nextDriver.handicap.value) }
-        return hints
-    }
-
-    fun onNextDriverNumberAutoCompleted(): RegistrationHint? {
-        return model.registrationHints.singleOrNull { it.number == model.nextDriver.number.value }
-    }
-
-    fun onNextDriverCategoryAutoCompleted(): RegistrationHint? {
-        return model.registrationHints.singleOrNull { it.category == model.nextDriver.category.value }
-    }
-
-    fun onNextDriverHandicapAutoCompleted(): RegistrationHint? {
-        return model.registrationHints.singleOrNull { it.handicap == model.nextDriver.handicap.value }
-
-    }
-
-    fun autoCompleteNextDriver(singleMatch: RegistrationHint) {
-        model.nextDriver.number.value = singleMatch.number
-        model.nextDriver.category.value = singleMatch.category
-        model.nextDriver.handicap.value = singleMatch.handicap
+    fun autoCompleteNextDriver(completion: String) {
+        val nextDriver = model.driverAutoCompleteOrderPreference.stringConverter.fromString(completion)
+        model.nextDriver.number.value = nextDriver.number
+        model.nextDriver.category.value = nextDriver.category
+        model.nextDriver.handicap.value = nextDriver.handicap
     }
 
 }

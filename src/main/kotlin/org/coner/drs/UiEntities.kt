@@ -81,7 +81,6 @@ class Run(
 }
 
 class NextDriverModel : ItemViewModel<Run>() {
-    val id = bind(Run::idProperty)
     val event = bind(Run::eventProperty)
     val sequence = bind(Run::sequenceProperty)
     val category = bind(Run::categoryProperty)
