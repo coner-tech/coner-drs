@@ -20,7 +20,6 @@ import org.coner.drs.io.db.service.RunService
 import org.coner.drs.io.timer.TimerService
 import org.coner.drs.util.bindAutoCompletion
 import org.coner.drs.util.levenshtein
-import org.coner.drs.util.onAutoCompleted
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter
 import tornadofx.*
@@ -154,9 +153,6 @@ class RunEventAddNextDriverView : View("Add Next Driver") {
                     required()
                     bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
                         setDelay(0)
-                        onAutoCompleted {
-                            controller.autoCompleteNextDriver(it.completion)
-                        }
                     }
                     prefColumnCount = 5
                     model.nextDriver.itemProperty.onChange {
@@ -288,6 +284,9 @@ class RunEventAddNextDriverController : Controller() {
 
     init {
         runEventModel.runs.onChange { buildRegistrationHints() }
+        model.driverAutoCompleteOrderPreferenceProperty.addListener { observable, old, new ->
+            reformatNumbersField(old, new)
+        }
     }
 
     fun buildNextDriver() {
@@ -310,10 +309,16 @@ class RunEventAddNextDriverController : Controller() {
     }
 
     fun addNextDriver() {
-        val addRun = model.nextDriver.item
-        val sequence = addRun.sequence
-        addRun.sequenceProperty.unbind()
-        addRun.sequence = sequence
+        val addRun = model.nextDriver.item.let {
+            val sequence = it.sequence
+            it.sequenceProperty.unbind()
+            it.sequence = sequence
+            val nextDriverNumbers = model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbersField)
+            it.number = nextDriverNumbers.number
+            it.category = nextDriverNumbers.category
+            it.handicap = nextDriverNumbers.handicap
+            it
+        }
         model.nextDriver.commit()
         runAsync { runService.insertNextDriver(addRun) }
         buildNextDriver()
@@ -347,11 +352,16 @@ class RunEventAddNextDriverController : Controller() {
                 .toList()
     }
 
-    fun autoCompleteNextDriver(completion: String) {
-        val nextDriver = model.driverAutoCompleteOrderPreference.stringConverter.fromString(completion)
-        model.nextDriver.number.value = nextDriver.number
-        model.nextDriver.category.value = nextDriver.category
-        model.nextDriver.handicap.value = nextDriver.handicap
+    fun reformatNumbersField(old: DriverAutoCompleteOrderPreference, new: DriverAutoCompleteOrderPreference) {
+        val numbers = model.numbersField
+        model.numbersField = try {
+            if (numbers?.isNotBlank() == true) {
+                val registrationHint = old.stringConverter.fromString(numbers)
+                new.stringConverter.toString(registrationHint)
+            } else ""
+        } catch (t: Throwable) {
+            ""
+        }
     }
 
 }
