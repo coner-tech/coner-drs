@@ -20,6 +20,7 @@
         <coner-timer.version>0.1.1</coner-timer.version>
         <snoozle.version>0.1.0</snoozle.version>
         <jackson.version>2.9.7</jackson.version>
+        <crispy-fish.version>0.2.0</crispy-fish.version>
     </properties>
 
     <dependencies>
@@ -63,6 +64,11 @@
             <groupId>org.coner</groupId>
             <artifactId>coner-timer-library</artifactId>
             <version>${coner-timer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>crispy-fish-library</artifactId>
+            <version>${crispy-fish.version}</version>
         </dependency>
     </dependencies>
 

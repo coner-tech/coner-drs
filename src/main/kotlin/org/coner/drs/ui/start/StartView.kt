@@ -8,12 +8,20 @@ class StartView : View("Start") {
 
     override val root = stackpane {
         form {
-            fieldset("Paths") {
-                field("Raw Sheet Database") {
+            fieldset("Databases") {
+                field("Coner Digital Raw Sheet") {
                     text(model.rawSheetDatabaseProperty.stringBinding { it?.absolutePath ?: "" })
                     button("Choose") {
                         action {
                             controller.onClickChooseRawSheetDatabase()
+                        }
+                    }
+                }
+                field("Crispy Fish") {
+                    text(model.crispyFishDatabaseProperty.stringBinding { it?.absolutePath ?: ""})
+                    button("Choose") {
+                        action {
+                            controller.onClickChooseCrispyFishDatabase()
                         }
                     }
                 }

@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
+import org.coner.crispyfish.filetype.classdefinition.ClassDefinitionFile
+import org.coner.crispyfish.filetype.ecf.EventControlFile
 import tornadofx.*
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -16,7 +18,9 @@ import java.io.File
 class Event(
         id: UUID = UUID.randomUUID(),
         date: LocalDate,
-        name: String
+        name: String,
+        classDefinitionFile: ClassDefinitionFile,
+        eventControlFile: EventControlFile
 ) {
     val idProperty = SimpleObjectProperty<UUID>(this, "id", id)
     var id by idProperty
@@ -26,6 +30,21 @@ class Event(
 
     val nameProperty = SimpleStringProperty(this, "name", name)
     var name by nameProperty
+
+    val classDefinitionFileProperty = SimpleObjectProperty<ClassDefinitionFile>(
+            this,
+            "classDefinitionFile",
+            classDefinitionFile
+    )
+    var classDefinitionFile by classDefinitionFileProperty
+
+    val eventControlFileProperty = SimpleObjectProperty<EventControlFile>(
+            this,
+            "eventControlFile",
+            eventControlFile
+    )
+    var eventControlFile by eventControlFileProperty
+
 
     val categories = FXCollections.observableSet<String>()
     val handicaps = FXCollections.observableSet<String>()

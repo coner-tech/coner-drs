@@ -5,6 +5,6 @@ import java.io.File
 
 sealed class Screen {
     object Start : Screen()
-    class ChooseEvent(val dir: File) : Screen()
+    class ChooseEvent(val pathToDrsDb: File, val pathToCfDb: File) : Screen()
     class RunEvent(val event: Event) : Screen()
 }

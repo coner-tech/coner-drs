@@ -14,9 +14,10 @@ import java.nio.file.Files
 class DrsIoController : Controller() {
     val model: DrsIoModel by inject()
 
-    fun open(pathToDrsDatabase: File) {
+    fun open(pathToDrsDatabase: File, pathToCrispyFishDatabase: File) {
         if (model.db != null) throw IllegalStateException("Database is already open")
         model.pathToDrsDatabase = pathToDrsDatabase
+        model.pathToCrispyFishDatabase = pathToCrispyFishDatabase
         createDrsDbPath()
         createDrsDbEventsPath()
         model.db = Database(
@@ -70,5 +71,6 @@ class DrsIoController : Controller() {
 class DrsIoModel : ViewModel() {
     var db: Database? = null
     var pathToDrsDatabase: File? = null
+    var pathToCrispyFishDatabase: File? = null
     val open: Boolean get() = db != null
 }

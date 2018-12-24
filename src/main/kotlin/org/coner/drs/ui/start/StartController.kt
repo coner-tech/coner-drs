@@ -8,11 +8,19 @@ class StartController : Controller() {
     val model: StartModel by inject()
 
     fun onClickChooseRawSheetDatabase() {
-        val dir = chooseDirectory("Raw Sheet Database") ?: return
+        val dir = chooseDirectory("Coner Digital Raw Sheet Database") ?: return
         model.rawSheetDatabase = dir
     }
 
+    fun onClickChooseCrispyFishDatabase() {
+        val dir = chooseDirectory("Crispy Fish Database") ?: return
+        model.crispyFishDatabase = dir
+    }
+
     fun onClickStart() {
-        fire(ChangeToScreenEvent(Screen.ChooseEvent(model.rawSheetDatabase)))
+        fire(ChangeToScreenEvent(Screen.ChooseEvent(
+                pathToDrsDb = model.rawSheetDatabase,
+                pathToCfDb = model.crispyFishDatabase
+        )))
     }
 }

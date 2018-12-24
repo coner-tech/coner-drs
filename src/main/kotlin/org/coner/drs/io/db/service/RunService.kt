@@ -18,9 +18,10 @@ class RunService : Controller() {
 
     val io: DrsIoController by inject(FX.defaultScope)
     private val db = io.model.db!!
+    private val eventService: EventService by inject(FX.defaultScope)
 
     fun list(event: Event): List<Run> = db.list(
-            RunDbEntity::eventId to EventDbEntityMapper.toDbEntity(event).id
+            RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id
     ).map { RunDbEntityMapper.toUiEntity(event = event, dbEntity = it) as Run }
 
     fun save(run: Run) {
@@ -28,7 +29,7 @@ class RunService : Controller() {
     }
 
     fun watchList(event: Event): Observable<EntityWatchEvent<Run>> {
-        return db.watchListing(RunDbEntity::eventId to EventDbEntityMapper.toDbEntity(event).id)
+        return db.watchListing(RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id)
                 .subscribeOn(Schedulers.io())
                 .map { EntityWatchEvent(
                         watchEvent = it.watchEvent,
@@ -38,7 +39,7 @@ class RunService : Controller() {
     }
 
     fun addTimeToFirstRunInSequenceWithoutRawTime(event: Event, time: BigDecimal) {
-        val eventDbEntity = EventDbEntityMapper.toDbEntity(event)
+        val eventDbEntity = eventService.mapper.toDbEntity(event)
         val firstRunInSequenceWithoutTimeOptional = db.list(
                 RunDbEntity::eventId to eventDbEntity.id
         ).parallelStream()

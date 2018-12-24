@@ -14,12 +14,13 @@ class EventService : Controller() {
 
     val io: DrsIoController by inject()
     private val db = io.model.db!!
+    val mapper by lazy { EventDbEntityMapper(io.model.pathToCrispyFishDatabase!!) }
 
     fun list(): List<Event> = db.list<EventDbEntity>()
-            .map { EventDbEntityMapper.toUiEntity(it) as Event }
+            .map { mapper.toUiEntity(it) as Event }
 
     fun save(event: Event) {
-        db.put(EventDbEntityMapper.toDbEntity(event))
+        db.put(mapper.toDbEntity(event))
     }
 
     fun watchList(): Observable<EntityWatchEvent<Event>> = db.watchListing<EventDbEntity>()
@@ -27,6 +28,6 @@ class EventService : Controller() {
             .map { EntityWatchEvent(
                     watchEvent = it.watchEvent,
                     id = it.id,
-                    entity = EventDbEntityMapper.toUiEntity(it.entity)
+                    entity = mapper.toUiEntity(it.entity)
             ) }
 }

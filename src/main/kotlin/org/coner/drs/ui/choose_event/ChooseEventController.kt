@@ -1,6 +1,7 @@
 package org.coner.drs.ui.choose_event
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import org.coner.crispyfish.filetype.ecf.EventControlFile
 import org.coner.drs.Event
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.db.service.EventService
@@ -27,11 +28,7 @@ class ChooseEventController : Controller() {
     }
 
     fun addEvent() {
-        val event = Event(
-                date = LocalDate.now(),
-                name = "New Event"
-        )
-        service.save(event)
+        // TODO: wizard
     }
 
     fun save(event: Event) {
