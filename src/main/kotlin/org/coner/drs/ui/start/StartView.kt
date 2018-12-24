@@ -10,7 +10,9 @@ class StartView : View("Start") {
         form {
             fieldset("Databases") {
                 field("Coner Digital Raw Sheet") {
-                    text(model.rawSheetDatabaseProperty.stringBinding { it?.absolutePath ?: "" })
+                    textfield(model.rawSheetDatabaseProperty.stringBinding { it?.absolutePath ?: "" }) {
+                        isEditable = false
+                    }
                     button("Choose") {
                         action {
                             controller.onClickChooseRawSheetDatabase()
@@ -18,7 +20,9 @@ class StartView : View("Start") {
                     }
                 }
                 field("Crispy Fish") {
-                    text(model.crispyFishDatabaseProperty.stringBinding { it?.absolutePath ?: ""})
+                    textfield(model.crispyFishDatabaseProperty.stringBinding { it?.absolutePath ?: ""}) {
+                        isEditable = false
+                    }
                     button("Choose") {
                         action {
                             controller.onClickChooseCrispyFishDatabase()

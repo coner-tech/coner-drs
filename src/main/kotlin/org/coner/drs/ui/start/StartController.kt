@@ -3,6 +3,7 @@ package org.coner.drs.ui.start
 import org.coner.drs.ui.main.ChangeToScreenEvent
 import org.coner.drs.ui.main.Screen
 import tornadofx.*
+import java.io.File
 
 class StartController : Controller() {
     val model: StartModel by inject()
@@ -18,9 +19,13 @@ class StartController : Controller() {
     }
 
     fun onClickStart() {
-        fire(ChangeToScreenEvent(Screen.ChooseEvent(
-                pathToDrsDb = model.rawSheetDatabase,
-                pathToCfDb = model.crispyFishDatabase
-        )))
+        model.commit {
+            fire(ChangeToScreenEvent(Screen.ChooseEvent(
+                    pathToDrsDb = model.rawSheetDatabase,
+                    pathToCfDb = model.crispyFishDatabase
+            )))
+        }
     }
+
+
 }

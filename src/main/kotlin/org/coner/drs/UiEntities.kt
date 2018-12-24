@@ -19,8 +19,7 @@ class Event(
         id: UUID = UUID.randomUUID(),
         date: LocalDate,
         name: String,
-        classDefinitionFile: ClassDefinitionFile,
-        eventControlFile: EventControlFile
+        crispyFishMetadata: CrispyFishMetadata
 ) {
     val idProperty = SimpleObjectProperty<UUID>(this, "id", id)
     var id by idProperty
@@ -31,24 +30,34 @@ class Event(
     val nameProperty = SimpleStringProperty(this, "name", name)
     var name by nameProperty
 
-    val classDefinitionFileProperty = SimpleObjectProperty<ClassDefinitionFile>(
-            this,
-            "classDefinitionFile",
-            classDefinitionFile
+    val crispyFishMetadataProperty = SimpleObjectProperty<CrispyFishMetadata>(
+            this, "crispyFishMetadata", crispyFishMetadata
     )
-    var classDefinitionFile by classDefinitionFileProperty
-
-    val eventControlFileProperty = SimpleObjectProperty<EventControlFile>(
-            this,
-            "eventControlFile",
-            eventControlFile
-    )
-    var eventControlFile by eventControlFileProperty
+    var crispyFishMetadata by crispyFishMetadataProperty
 
 
     val categories = FXCollections.observableSet<String>()
     val handicaps = FXCollections.observableSet<String>()
     val numbers = FXCollections.observableSet<String>()
+
+    class CrispyFishMetadata(
+            classDefinitionFile: File,
+            eventControlFile: File
+    ) {
+        val classDefinitionFileProperty = SimpleObjectProperty<File>(
+                this,
+                "classDefinitionFile",
+                classDefinitionFile
+        )
+        var classDefinitionFile by classDefinitionFileProperty
+
+        val eventControlFileProperty = SimpleObjectProperty<File>(
+                this,
+                "eventControlFile",
+                eventControlFile
+        )
+        var eventControlFile by eventControlFileProperty
+    }
 }
 
 class Run(

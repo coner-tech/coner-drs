@@ -1,16 +1,36 @@
 package org.coner.drs
 
+import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import net.harawata.appdirs.AppDirs
+import net.harawata.appdirs.AppDirsFactory
 import org.coner.drs.ui.main.MainView
 import org.coner.style.ConerFxStylesheet
 import tornadofx.*
 import tornadofx.Stylesheet
+import java.net.URI
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.util.*
 
 class DigitalRawSheetApp : App(
         primaryView = MainView::class,
         stylesheet = org.coner.drs.Stylesheet::class
 ) {
+
+    val drsProperties by lazy {
+        PropertyResourceBundle(resources.url("/drs.properties").openStream())
+    }
+
+    override val configBasePath: Path = Paths.get(URI.create("file://" + AppDirsFactory.getInstance()
+            .getUserConfigDir(
+                    "digital-raw-sheet",
+                    drsProperties.getString("coner-drs.version"),
+                    "coner"
+            )
+    ))
+
     override fun start(stage: Stage) {
         super.start(stage)
         stage.icons.addAll(
@@ -26,6 +46,10 @@ class DigitalRawSheetApp : App(
         stage.minHeight = 768.0
     }
 
+}
+
+fun main(args: Array<String>) {
+    Application.launch(DigitalRawSheetApp::class.java, *args)
 }
 
 class Stylesheet : Stylesheet(ConerFxStylesheet::class) {
