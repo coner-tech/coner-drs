@@ -1,4 +1,4 @@
-package org.coner.drs.io.db.service
+package org.coner.drs.io.service
 
 import io. reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -7,7 +7,6 @@ import org.coner.drs.Run
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.EventDbEntity
-import org.coner.drs.io.db.entity.EventDbEntityMapper
 import org.coner.drs.io.db.entity.RunDbEntity
 import org.coner.drs.io.db.entity.RunDbEntityMapper
 import org.coner.snoozle.db.jvm.watchListing

@@ -17,9 +17,9 @@ import java.io.File
 
 class Event(
         id: UUID = UUID.randomUUID(),
-        date: LocalDate,
-        name: String,
-        crispyFishMetadata: CrispyFishMetadata
+        date: LocalDate = LocalDate.now(),
+        name: String = "",
+        crispyFishMetadata: CrispyFishMetadata = CrispyFishMetadata()
 ) {
     val idProperty = SimpleObjectProperty<UUID>(this, "id", id)
     var id by idProperty
@@ -35,14 +35,14 @@ class Event(
     )
     var crispyFishMetadata by crispyFishMetadataProperty
 
-
     val categories = FXCollections.observableSet<String>()
     val handicaps = FXCollections.observableSet<String>()
     val numbers = FXCollections.observableSet<String>()
+    val registrations = FXCollections.observableSet<Registration>()
 
     class CrispyFishMetadata(
-            classDefinitionFile: File,
-            eventControlFile: File
+            classDefinitionFile: File = File(""),
+            eventControlFile: File = File("")
     ) {
         val classDefinitionFileProperty = SimpleObjectProperty<File>(
                 this,
@@ -58,6 +58,40 @@ class Event(
         )
         var eventControlFile by eventControlFileProperty
     }
+}
+
+class EventModel : ItemViewModel<Event>(Event()) {
+    val date = bind(Event::dateProperty, autocommit = true)
+    val name = bind(Event::nameProperty, autocommit = true)
+    val crispyFishMetadata = bind(Event::crispyFishMetadataProperty, autocommit = true)
+}
+
+class Registration(
+        category: String,
+        handicap: String,
+        number: String,
+        name: String,
+        carModel: String,
+        carColor: String
+) {
+    val categoryProperty = SimpleStringProperty(this, "category", category)
+    var category by categoryProperty
+
+    val handicapProperty = SimpleStringProperty(this, "handicap", handicap)
+    var handicap by handicapProperty
+
+    val numberProperty = SimpleStringProperty(this, "number", number)
+    var number by numberProperty
+
+    val nameProperty = SimpleStringProperty(this, "name", name)
+    var name by nameProperty
+
+    val carModelProperty = SimpleStringProperty(this, "carModel", carModel)
+    var carModel by carModelProperty
+
+    val carColorProperty = SimpleStringProperty(this, "carColor", carColor)
+    var carColor by carColorProperty
+
 }
 
 class Run(

@@ -4,7 +4,7 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import org.coner.drs.Run
 import org.coner.drs.TimerConfiguration
 import org.coner.drs.io.db.entityWatchEventConsumer
-import org.coner.drs.io.db.service.RunService
+import org.coner.drs.io.service.RunService
 import org.coner.drs.io.timer.TimerService
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter

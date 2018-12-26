@@ -62,6 +62,10 @@ class DrsIoController : Controller() {
         }
     }
 
+    fun isInsideCrispyFishDatabase(file: File): Boolean {
+        return file.startsWith(model.pathToCrispyFishDatabase!!)
+    }
+
     fun close() {
         model.db = null
         model.pathToDrsDatabase = null

@@ -1,8 +1,11 @@
 package org.coner.drs.io.db.entity
 
+import javafx.beans.value.ObservableValue
 import org.coner.drs.Event
+import org.coner.drs.EventModel
 import org.coner.snoozle.db.Entity
 import org.coner.snoozle.db.EntityPath
+import tornadofx.*
 import java.io.File
 import java.time.LocalDate
 import java.util.*
@@ -49,5 +52,4 @@ class EventDbEntityMapper(
                 )
             }
         )
-
 }

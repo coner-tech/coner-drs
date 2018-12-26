@@ -1,7 +1,7 @@
 package org.coner.drs.ui.run_event
 
 import org.coner.drs.Run
-import org.coner.drs.io.db.service.RunService
+import org.coner.drs.io.service.RunService
 import org.coner.drs.util.levenshtein
 import tornadofx.*
 import kotlin.streams.toList
