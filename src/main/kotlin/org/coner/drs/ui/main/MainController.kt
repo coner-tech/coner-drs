@@ -3,7 +3,7 @@ package org.coner.drs.ui.main
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.ui.runevent.RunEventFragment
 import org.coner.drs.ui.start.StartView
-import org.coner.drs.ui.choose_event.ChooseEventView
+import org.coner.drs.ui.chooseevent.ChooseEventView
 import tornadofx.*
 
 class MainController : Controller() {
