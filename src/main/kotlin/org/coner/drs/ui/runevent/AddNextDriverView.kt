@@ -12,11 +12,6 @@ class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
     private val controller: AddNextDriverController by inject()
 
-    private lateinit var numberTextField: TextField
-    private lateinit var categoryTextField: TextField
-    private lateinit var handicapTextField: TextField
-    private lateinit var addButton: Button
-
     override val root = form {
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
             hgrow = Priority.NEVER
@@ -28,7 +23,6 @@ class AddNextDriverView : View("Add Next Driver") {
             }
             field(text = "Numbers") {
                 textfield(model.numbersFieldProperty) {
-                    numberTextField = this
                     required()
                     bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
                         setDelay(0)
@@ -42,7 +36,6 @@ class AddNextDriverView : View("Add Next Driver") {
             }
             buttonbar {
                 button("Add") {
-                    addButton = this
                     enableWhen { model.nextDriver.valid }
                     action { controller.addNextDriver() }
                     tooltip("Shortcut: Ctrl+Enter")
