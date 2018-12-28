@@ -5,8 +5,6 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
-import org.coner.crispyfish.filetype.classdefinition.ClassDefinitionFile
-import org.coner.crispyfish.filetype.ecf.EventControlFile
 import tornadofx.*
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -63,7 +61,11 @@ class Event(
 class EventModel : ItemViewModel<Event>(Event()) {
     val date = bind(Event::dateProperty, autocommit = true)
     val name = bind(Event::nameProperty, autocommit = true)
-    val crispyFishMetadata = bind(Event::crispyFishMetadataProperty, autocommit = true)
+}
+
+class EventCrispyFishMetadataModel : ItemViewModel<Event.CrispyFishMetadata>(Event.CrispyFishMetadata()) {
+    val eventControlFile = bind(Event.CrispyFishMetadata::eventControlFileProperty, autocommit = true)
+    val classDefinitionFile = bind(Event.CrispyFishMetadata::classDefinitionFileProperty, autocommit = true)
 }
 
 class Registration(

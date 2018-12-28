@@ -62,8 +62,16 @@ class DrsIoController : Controller() {
         }
     }
 
-    fun isInsideCrispyFishDatabase(file: File): Boolean {
-        return file.startsWith(model.pathToCrispyFishDatabase!!)
+    fun isInsideCrispyFishDatabase(file: File, recursion: Int = 0): Boolean {
+        check(recursion <= 1) { "Recursion exceeded maximum of 1" }
+        if (file.isAbsolute) {
+            return file.canonicalFile.startsWith(model.pathToCrispyFishDatabase!!)
+        } else {
+            return isInsideCrispyFishDatabase(
+                    model.pathToCrispyFishDatabase!!.resolve(file),
+                    recursion + 1
+            )
+        }
     }
 
     fun close() {

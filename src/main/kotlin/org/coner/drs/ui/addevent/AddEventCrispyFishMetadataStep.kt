@@ -3,86 +3,83 @@ package org.coner.drs.ui.addevent
 import javafx.beans.binding.StringBinding
 import javafx.beans.value.ObservableValue
 import javafx.stage.FileChooser
-import org.coner.drs.Event
+import javafx.util.StringConverter
+import org.coner.drs.EventCrispyFishMetadataModel
 import org.coner.drs.EventModel
 import org.coner.drs.io.service.EventService
+import org.coner.drs.util.requireFileWithinCrispyFishDatabase
 import tornadofx.*
 import java.io.File
 
 class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") {
     val event: EventModel by inject()
+    val crispyFishMetadata: EventCrispyFishMetadataModel by inject()
     val controller: CreateEventCrispyFishMetadataStepController by inject()
     val eventService: EventService by inject()
 
     override val root = form {
         fieldset(title) {
             field("Event Control File") {
-                textfield(bindRelativePathToCrispyFishFile(event.crispyFishMetadata.value.eventControlFileProperty)) {
+                textfield(
+                        property = crispyFishMetadata.eventControlFile,
+                        converter = CrispyFishDatabaseRelativeFileConverter()
+                ) {
                     isEditable = false
-                    validator(
-                            control = this,
-                            property = event.crispyFishMetadata,
-                            trigger = ValidationTrigger.OnChange()
-                    ) {
-                        when {
-                            it == null -> error("Field is required")
-                            !eventService.io.isInsideCrispyFishDatabase(
-                                    event.crispyFishMetadata.value.eventControlFile
-                            ) -> {
-                                error("File must be inside Crispy Fish Database")
-                            }
-                            else -> null
-                        }
-                    }
+                    required()
+                    requireFileWithinCrispyFishDatabase()
                 }
                 button("Choose") {
                     action { controller.onClickChooseEventControlFile() }
                 }
             }
-            field("Class Definitions File") {
-                textfield(bindRelativePathToCrispyFishFile(event.crispyFishMetadata.value.classDefinitionFileProperty)) {
+            field("Class Definition File") {
+                textfield(
+                        property = crispyFishMetadata.classDefinitionFile,
+                        converter = CrispyFishDatabaseRelativeFileConverter()
+                ) {
                     isEditable = false
-                    validator(
-                        control = this,
-                        property = event.crispyFishMetadata,
-                        trigger = ValidationTrigger.OnChange()
-                    ) {
-                        when {
-                            it == null -> error("Field is required")
-                            !eventService.io.isInsideCrispyFishDatabase(
-                                    event.crispyFishMetadata.value.classDefinitionFile
-                            ) -> {
-                                error("File must be inside Crispy Fish Database")
-                            }
-                            else -> null
-                        }
-                    }
+                    required()
+                    requireFileWithinCrispyFishDatabase()
                 }
                 button("Choose") {
-                    action { controller.onClickChooseClassDefinitionsFile() }
+                    action { controller.onClickChooseClassDefinitionFile() }
                 }
             }
         }
     }
 
-    fun bindRelativePathToCrispyFishFile(fileValue: ObservableValue<File>): StringBinding {
-        return fileValue.stringBinding {
-            try {
-                it?.toRelativeString(eventService.io.model.pathToCrispyFishDatabase!!)
+
+
+    private inner class CrispyFishDatabaseRelativeFileConverter : StringConverter<File?>() {
+        override fun toString(file: File?): String {
+            return try {
+                file?.toRelativeString(eventService.io.model.pathToCrispyFishDatabase!!)
+                        ?: ""
             } catch (e: Throwable) {
                 ""
             }
         }
+
+        override fun fromString(file: String?): File {
+            if (file == null) return File("")
+            return File(eventService.io.model.pathToCrispyFishDatabase!!.resolve(file).absolutePath)
+        }
     }
 
-    override val complete = event.valid(
-            event.crispyFishMetadata // TODO: find out if/why this isn't updating
+    override val complete = crispyFishMetadata.valid(
+            crispyFishMetadata.eventControlFile,
+            crispyFishMetadata.classDefinitionFile
     )
+
+    override fun onSave() {
+        super.onSave()
+        event.item.crispyFishMetadata = crispyFishMetadata.item
+    }
 }
 
 class CreateEventCrispyFishMetadataStepController : Controller() {
-    val event: EventModel by inject()
     val eventService: EventService by inject()
+    val crispyFishMetadata: EventCrispyFishMetadataModel by inject()
 
     fun onClickChooseEventControlFile() {
         val crispyFishDatabase = eventService.io.model.pathToCrispyFishDatabase!!
@@ -94,34 +91,34 @@ class CreateEventCrispyFishMetadataStepController : Controller() {
                 owner = FX.primaryStage.owner,
                 mode = FileChooserMode.Single
         ) {
-            val currentFile = event.crispyFishMetadata.value.eventControlFile
+            val currentFile = crispyFishMetadata.eventControlFile.value
             initialDirectory = if (currentFile?.startsWith(crispyFishDatabase) == true)
                 currentFile.parentFile
             else
                 crispyFishDatabase
         }.firstOrNull() ?: return
-        event.crispyFishMetadata.value.eventControlFile = file
-        event.validate(fields = *arrayOf(event.crispyFishMetadata))
+        crispyFishMetadata.eventControlFile.value = file
+        crispyFishMetadata.commit(crispyFishMetadata.eventControlFile)
     }
 
-    fun onClickChooseClassDefinitionsFile() {
+    fun onClickChooseClassDefinitionFile() {
         val crispyFishDatabase = eventService.io.model.pathToCrispyFishDatabase!!
         val file = chooseFile(
-                title = "Choose Crispy Fish Class Definitions File",
+                title = "Choose Crispy Fish Class Definition File",
                 filters = arrayOf(FileChooser.ExtensionFilter(
-                        "Crispy Fish Class Definitions", "*.def"
+                        "Crispy Fish Class Definition File", "*.def"
                 )),
                 owner = FX.primaryStage.owner,
                 mode = FileChooserMode.Single
         ) {
-            val currentFile = event.crispyFishMetadata.value.classDefinitionFile
+            val currentFile = crispyFishMetadata.classDefinitionFile.value
             initialDirectory = if (currentFile?.startsWith(crispyFishDatabase) == true)
                 currentFile.parentFile
             else
                 crispyFishDatabase
         }.firstOrNull() ?: return
-        event.crispyFishMetadata.value.classDefinitionFile = file
-        event.validate(fields = *arrayOf(event.crispyFishMetadata))
+        crispyFishMetadata.classDefinitionFile.value = file
+        crispyFishMetadata.commit(crispyFishMetadata.classDefinitionFile)
     }
 
 }
