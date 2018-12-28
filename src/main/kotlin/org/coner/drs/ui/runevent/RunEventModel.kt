@@ -4,14 +4,17 @@ import io.reactivex.disposables.CompositeDisposable
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.coner.drs.Event
+import org.coner.drs.Registration
 import org.coner.drs.Run
 import org.coner.drs.TimerConfiguration
 import tornadofx.*
 
 class RunEventModel : ViewModel() {
     val runs = observableList<Run>()
+    val registrations = observableList<Registration>()
     val eventProperty = SimpleObjectProperty<Event>()
     var event by eventProperty
+
     val disposables = CompositeDisposable()
 
     val controlTextProperty = SimpleStringProperty(this, "controlText")

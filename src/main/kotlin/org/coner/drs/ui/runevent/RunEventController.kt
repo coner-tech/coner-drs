@@ -4,6 +4,7 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import org.coner.drs.Run
 import org.coner.drs.TimerConfiguration
 import org.coner.drs.io.db.entityWatchEventConsumer
+import org.coner.drs.io.service.RegistrationService
 import org.coner.drs.io.service.RunService
 import org.coner.drs.io.timer.TimerService
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
@@ -12,12 +13,14 @@ import tornadofx.*
 
 class RunEventController : Controller() {
     val model: RunEventModel by inject()
+    val registrationService: RegistrationService by inject()
     val runService: RunService by inject()
     val timerService: TimerService by inject()
 
     fun init() {
         runService.io.createDrsDbRunsPath(model.event)
         loadRuns()
+        loadRegistrations()
     }
 
     fun loadRuns() {
@@ -26,6 +29,15 @@ class RunEventController : Controller() {
         } success {
             model.runs.clear()
             model.runs.addAll(it)
+        }
+    }
+
+    fun loadRegistrations() {
+        runAsync {
+            registrationService.list(model.event)
+        } ui {
+            model.registrations.clear()
+            model.registrations.addAll(it)
         }
     }
 

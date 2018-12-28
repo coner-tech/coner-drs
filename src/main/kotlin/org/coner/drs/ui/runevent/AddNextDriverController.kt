@@ -13,7 +13,7 @@ class AddNextDriverController : Controller() {
     val runService: RunService by inject()
 
     init {
-        runEventModel.runs.onChange { buildRegistrationHints() }
+        runEventModel.registrations.onChange { buildRegistrationHints() }
         model.driverAutoCompleteOrderPreferenceProperty.addListener { observable, old, new ->
             reformatNumbersField(old, new)
         }
@@ -55,9 +55,9 @@ class AddNextDriverController : Controller() {
     }
 
     fun buildRegistrationHints() {
-        val runs = synchronized(runEventModel.runs) { runEventModel.runs.toList() }
+        val registrations = synchronized(runEventModel.registrations) { runEventModel.registrations.toList() }
         runAsync {
-            runs.parallelStream()
+            registrations.parallelStream()
                     .map {
                         RegistrationHint(
                                 category = it.category,
