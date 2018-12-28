@@ -1,4 +1,4 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
 import org.coner.drs.Run
 import org.coner.drs.io.service.RunService

@@ -1,4 +1,4 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import org.coner.drs.Run

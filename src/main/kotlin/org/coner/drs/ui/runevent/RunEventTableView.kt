@@ -1,4 +1,4 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
 import javafx.collections.transformation.SortedList
 import javafx.scene.layout.Priority
