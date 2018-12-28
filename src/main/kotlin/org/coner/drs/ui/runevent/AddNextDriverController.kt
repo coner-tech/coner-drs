@@ -1,6 +1,9 @@
 package org.coner.drs.ui.runevent
 
+import javafx.collections.SetChangeListener
+import org.coner.drs.Registration
 import org.coner.drs.Run
+import org.coner.drs.io.service.RegistrationService
 import org.coner.drs.io.service.RunService
 import org.coner.drs.util.levenshtein
 import tornadofx.*
@@ -14,9 +17,25 @@ class AddNextDriverController : Controller() {
 
     init {
         runEventModel.registrations.onChange { buildRegistrationHints() }
+        model.registrationHints.addListener { change: SetChangeListener.Change<out RegistrationHint>? ->
+            buildRegistrationHintsToRegistrationsMap()
+        }
         model.driverAutoCompleteOrderPreferenceProperty.addListener { observable, old, new ->
             reformatNumbersField(old, new)
         }
+        model.registrationForNumbersProperty.bind(model.numbersFieldProperty.objectBinding(model.numbersFieldProperty) {
+            val hint = try {
+                model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbersField)
+            } catch (t: Throwable) {
+                null
+            } ?: return@objectBinding null
+            val registration = runEventModel.registrations.firstOrNull {
+                it.number == hint.number
+                && it.category == hint.category
+                && it.handicap == hint.handicap
+            }
+            registration
+        })
     }
 
     fun buildNextDriver() {
@@ -70,6 +89,25 @@ class AddNextDriverController : Controller() {
         } ui {
             model.registrationHints.clear()
             model.registrationHints.addAll(it)
+        }
+    }
+
+    fun buildRegistrationHintsToRegistrationsMap() {
+        val registrations = synchronized(runEventModel.registrations) { runEventModel.registrations.toList() }
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        val map = mutableMapOf<RegistrationHint, Registration>()
+        runAsync {
+            registrationHints.forEach { hint ->
+                map[hint] = registrations.single {
+                    it.number == hint.number
+                            && it.category == hint.category
+                            && it.handicap == hint.handicap
+                }
+            }
+            map
+        } ui {
+            model.registrationHintsToRegistrations.clear()
+            model.registrationHintsToRegistrations.putAll(map)
         }
     }
 

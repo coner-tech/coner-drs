@@ -48,6 +48,25 @@ class AddNextDriverView : View("Add Next Driver") {
                 }
             }
         }
+        fieldset("Identity", labelPosition = Orientation.VERTICAL) {
+            field("Name") {
+                textfield(model.registrationForNumbersProperty.select { it.nameProperty }) {
+                    isEditable = false
+                }
+            }
+        }
+        fieldset("Car", labelPosition = Orientation.VERTICAL) {
+            field("Model") {
+                textfield(model.registrationForNumbersProperty.select { it.carModelProperty }) {
+                    isEditable = false
+                }
+            }
+            field("Color") {
+                textfield(model.registrationForNumbersProperty.select { it.carColorProperty }) {
+                    isEditable = false
+                }
+            }
+        }
         pane {
             vgrow = Priority.ALWAYS
         }
