@@ -1,5 +1,7 @@
 package org.coner.drs.ui.runevent
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import com.github.thomasnield.rxkotlinfx.onChangedObservable
 import javafx.collections.SetChangeListener
 import org.coner.drs.Registration
 import org.coner.drs.Run
@@ -7,6 +9,7 @@ import org.coner.drs.io.service.RegistrationService
 import org.coner.drs.io.service.RunService
 import org.coner.drs.util.levenshtein
 import tornadofx.*
+import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
 class AddNextDriverController : Controller() {
@@ -17,9 +20,10 @@ class AddNextDriverController : Controller() {
 
     init {
         runEventModel.registrations.onChange { buildRegistrationHints() }
-        model.registrationHints.addListener { change: SetChangeListener.Change<out RegistrationHint>? ->
-            buildRegistrationHintsToRegistrationsMap()
-        }
+        model.registrationHints.onChangedObservable()
+                .observeOnFx()
+                .debounce(100, TimeUnit.MILLISECONDS)
+                .subscribe { buildRegistrationHintsToRegistrationsMap() }
         model.driverAutoCompleteOrderPreferenceProperty.addListener { observable, old, new ->
             reformatNumbersField(old, new)
         }
