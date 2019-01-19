@@ -72,9 +72,9 @@ class Registration(
         category: String,
         handicap: String,
         number: String,
-        name: String,
-        carModel: String,
-        carColor: String
+        name: String? = null,
+        carModel: String? = null,
+        carColor: String? = null
 ) {
     val categoryProperty = SimpleStringProperty(this, "category", category)
     var category by categoryProperty
@@ -100,9 +100,7 @@ class Run(
         id: UUID = UUID.randomUUID(),
         event: Event,
         sequence: Int = 0,
-        category: String = "",
-        handicap: String = "",
-        number: String = "",
+        registration: Registration? = null,
         rawTime: BigDecimal? = null,
         cones: Int = 0,
         didNotFinish: Boolean = false,
@@ -118,14 +116,21 @@ class Run(
     val sequenceProperty = SimpleIntegerProperty(this, "sequence", sequence)
     var sequence by sequenceProperty
 
-    val categoryProperty = SimpleStringProperty(this, "category", category)
-    var category by categoryProperty
+    val registrationProperty = SimpleObjectProperty<Registration>(this, "registration", registration)
+    var registration by registrationProperty
 
-    val handicapProperty = SimpleStringProperty(this, "handicap", handicap)
-    var handicap by handicapProperty
+    val registrationCategoryProperty = registrationProperty.select(Registration::categoryProperty)
+    val registrationCategory by registrationCategoryProperty
 
-    val numberProperty = SimpleStringProperty(this, "number", number)
-    var number by numberProperty
+    val registrationHandicapProperty = registrationProperty.select(Registration::handicapProperty)
+    val registrationHandicap by registrationHandicapProperty
+
+    val registrationNumberProperty = registrationProperty.select(Registration::numberProperty)
+    val registrationNumber by registrationNumberProperty
+
+    val registrationDriverNameProperty = registrationProperty.select(Registration::nameProperty)
+    val registrationCarModelProperty = registrationProperty.select(Registration::carModelProperty)
+    val registrationCarColorProperty = registrationProperty.select(Registration::carColorProperty)
 
     val rawTimeProperty = SimpleObjectProperty<BigDecimal>(this, "rawTime", rawTime)
     var rawTime by rawTimeProperty
@@ -147,9 +152,7 @@ class Run(
 class NextDriverModel : ItemViewModel<Run>() {
     val event = bind(Run::eventProperty)
     val sequence = bind(Run::sequenceProperty)
-    val category = bind(Run::categoryProperty)
-    val handicap = bind(Run::handicapProperty)
-    val number = bind(Run::numberProperty)
+    val registration = bind(Run::registrationProperty)
 }
 
 sealed class TimerConfiguration {

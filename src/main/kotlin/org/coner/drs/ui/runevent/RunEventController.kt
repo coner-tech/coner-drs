@@ -1,6 +1,14 @@
 package org.coner.drs.ui.runevent
 
+import com.github.thomasnield.rxkotlinfx.changes
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Observable
+import io.reactivex.Scheduler
+import io.reactivex.Single
+import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function
+import io.reactivex.schedulers.Schedulers
+import org.coner.drs.Registration
 import org.coner.drs.Run
 import org.coner.drs.TimerConfiguration
 import org.coner.drs.io.db.entityWatchEventConsumer
@@ -18,26 +26,19 @@ class RunEventController : Controller() {
     val timerService: TimerService by inject()
 
     fun init() {
-        loadRuns()
-        loadRegistrations()
-    }
-
-    fun loadRuns() {
-        runAsync {
-            runService.list(model.event)
-        } success {
-            model.runs.clear()
-            model.runs.addAll(it)
-        }
-    }
-
-    fun loadRegistrations() {
-        runAsync {
-            registrationService.list(model.event)
-        } ui {
-            model.registrations.clear()
-            model.registrations.addAll(it)
-        }
+        Single.zip(
+                registrationService.list(model.event),
+                runService.list(model.event),
+                BiFunction { registrations: List<Registration>, runs: List<Run> ->
+                    registrations to runs
+                }
+        ).subscribeOn(Schedulers.io())
+                .observeOnFx()
+                .subscribe { (registrations, runs) ->
+                    model.registrations.setAll(registrations)
+                    model.runs.setAll(runs)
+                    runService.hydrateWithRegistrationMetadata(runs, registrations)
+                }
     }
 
     fun save(run: Run) {
@@ -55,7 +56,7 @@ class RunEventController : Controller() {
     }
 
     fun docked() {
-        model.disposables.add(runService.watchList(model.event)
+        model.disposables.add(runService.watchList(model.event, model.registrations)
                 .observeOnFx()
                 .subscribe(entityWatchEventConsumer(
                         idProperty = Run::id,

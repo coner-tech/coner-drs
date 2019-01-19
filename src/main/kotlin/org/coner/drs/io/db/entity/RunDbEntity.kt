@@ -1,6 +1,7 @@
 package org.coner.drs.io.db.entity
 
 import org.coner.drs.Event
+import org.coner.drs.Registration
 import org.coner.drs.Run
 import org.coner.snoozle.db.Entity
 import org.coner.snoozle.db.EntityPath
@@ -27,9 +28,11 @@ object RunDbEntityMapper {
             id = dbEntity.id,
             event = event,
             sequence = dbEntity.sequence,
-            category = dbEntity.category,
-            handicap = dbEntity.handicap,
-            number = dbEntity.number,
+            registration = Registration(
+                    category = dbEntity.category,
+                    handicap = dbEntity.handicap,
+                    number = dbEntity.number
+            ),
             rawTime = dbEntity.rawTime,
             cones = dbEntity.cones,
             didNotFinish = dbEntity.didNotFinish,
@@ -37,17 +40,17 @@ object RunDbEntityMapper {
             rerun = dbEntity.rerun
     ) else null
 
-    fun toDbEntity(uiEntity: Run) = RunDbEntity(
-            id = uiEntity.id,
-            eventId = uiEntity.event.id,
-            sequence = uiEntity.sequence,
-            category = uiEntity.category,
-            handicap = uiEntity.handicap,
-            number = uiEntity.number,
-            rawTime = uiEntity.rawTime,
-            cones = uiEntity.cones,
-            didNotFinish = uiEntity.didNotFinish,
-            disqualified = uiEntity.disqualified,
-            rerun = uiEntity.rerun
+    fun toDbEntity(uiRun: Run) = RunDbEntity(
+            id = uiRun.id,
+            eventId = uiRun.event.id,
+            sequence = uiRun.sequence,
+            category = uiRun.registrationCategory,
+            handicap = uiRun.registrationHandicap,
+            number = uiRun.registrationNumber,
+            rawTime = uiRun.rawTime,
+            cones = uiRun.cones,
+            didNotFinish = uiRun.didNotFinish,
+            disqualified = uiRun.disqualified,
+            rerun = uiRun.rerun
     )
 }

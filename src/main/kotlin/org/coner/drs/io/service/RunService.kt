@@ -1,8 +1,10 @@
 package org.coner.drs.io.service
 
 import io. reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.Event
+import org.coner.drs.Registration
 import org.coner.drs.Run
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
@@ -19,21 +21,25 @@ class RunService : Controller() {
     private val db = io.model.db!!
     private val eventService: EventService by inject(FX.defaultScope)
 
-    fun list(event: Event): List<Run> = db.list(
+    fun list(event: Event): Single<List<Run>> = Single.fromCallable { db.list(
             RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id
-    ).map { RunDbEntityMapper.toUiEntity(event = event, dbEntity = it) as Run }
+    ).map {
+        RunDbEntityMapper.toUiEntity(event = event, dbEntity = it) as Run
+    } }
 
     fun save(run: Run) {
         db.put(RunDbEntityMapper.toDbEntity(run))
     }
 
-    fun watchList(event: Event): Observable<EntityWatchEvent<Run>> {
+    fun watchList(event: Event, registrations: List<Registration>): Observable<EntityWatchEvent<Run>> {
         return db.watchListing(RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id)
                 .subscribeOn(Schedulers.io())
                 .map { EntityWatchEvent(
                         watchEvent = it.watchEvent,
                         id = it.id,
-                        entity = RunDbEntityMapper.toUiEntity(event, it.entity)
+                        entity = RunDbEntityMapper.toUiEntity(event, it.entity).apply {
+                            if (this != null) hydrateWithRegistrationMetadata(this, registrations)
+                        }
                 ) }
     }
 
@@ -86,6 +92,29 @@ class RunService : Controller() {
                         number = addNextDriverDbEntity.number
                 )
         db.put(runDbEntity)
+    }
+
+    fun hydrateWithRegistrationMetadata(runs: List<Run>, registrations: List<Registration>) {
+        for (run in runs) {
+            hydrateWithRegistrationMetadata(run, registrations)
+        }
+    }
+
+    fun hydrateWithRegistrationMetadata(run: Run, registrations: List<Registration>, destructive: Boolean = false) {
+        val category = run.registrationCategory
+        val handicap = run.registrationHandicap
+        val number = run.registrationNumber
+        if (category == null || handicap == null || number == null) return
+        val hydratedRegistration = registrations.firstOrNull {
+            it.category == category
+            && it.handicap == handicap
+            && it.number == number
+        }
+        run.registration = when {
+            hydratedRegistration != null -> hydratedRegistration
+            destructive -> Registration(category = category, handicap = handicap, number = number)
+            else -> return
+        }
     }
 
 }

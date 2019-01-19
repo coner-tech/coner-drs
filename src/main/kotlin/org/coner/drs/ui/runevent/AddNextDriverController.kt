@@ -47,7 +47,11 @@ class AddNextDriverController : Controller() {
             sequenceProperty.bind(integerBinding(runEventModel.runs) {
                 val runs = synchronized(runEventModel.runs) { runEventModel.runs.toList() }
                 val firstRunWithoutDriver = runs.parallelStream()
-                        .filter { it.category.isBlank() && it.handicap.isBlank() && it.number.isBlank() }
+                        .filter {
+                            it.registrationCategory.isBlank()
+                                    && it.registrationHandicap.isBlank()
+                                    && it.registrationNumber.isBlank()
+                        }
                         .sorted(compareBy(Run::sequence))
                         .findFirst().orElse(null)
                 if (firstRunWithoutDriver == null) {
@@ -66,10 +70,7 @@ class AddNextDriverController : Controller() {
             val sequence = it.sequence
             it.sequenceProperty.unbind()
             it.sequence = sequence
-            val nextDriverNumbers = model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbersField)
-            it.number = nextDriverNumbers.number
-            it.category = nextDriverNumbers.category
-            it.handicap = nextDriverNumbers.handicap
+            it.registration = model.registrationForNumbers
             it
         }
         model.nextDriver.commit()

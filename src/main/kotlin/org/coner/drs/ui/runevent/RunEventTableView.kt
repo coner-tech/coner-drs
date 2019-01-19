@@ -14,20 +14,18 @@ class RunEventTableView : View() {
         setSortPolicy { false }
         vgrow = Priority.ALWAYS
         readonlyColumn("Sequence", Run::sequence)
-        column("Category", Run::categoryProperty) {
-            makeEditable()
+        column("Category", Run::registrationCategoryProperty) {
         }
-        column("Handicap", Run::handicapProperty) {
-            makeEditable()
+        column("Handicap", Run::registrationHandicapProperty) {
         }
-        column("Number", Run::numberProperty) {
-            makeEditable()
+        column("Number", Run::registrationNumberProperty) {
         }
+        column("Name", Run::registrationDriverNameProperty)
+        column("Car Model", Run::registrationCarModelProperty)
+        column("Car Color", Run::registrationCarColorProperty)
         column("Time", Run::rawTime) {
-            makeEditable()
         }
         column("Cones", Run::conesProperty) {
-            makeEditable()
         }
         column("+/-", Run::conesProperty).cellFormat {
             graphic = hbox {
