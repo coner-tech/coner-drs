@@ -19,7 +19,6 @@ class DrsIoController : Controller() {
         model.pathToDrsDatabase = pathToDrsDatabase
         model.pathToCrispyFishDatabase = pathToCrispyFishDatabase
         createDrsDbPath()
-        createDrsDbEventsPath()
         model.db = Database(
                 root = pathToDrsDatabase,
                 objectMapper = jacksonObjectMapper()
@@ -35,30 +34,9 @@ class DrsIoController : Controller() {
     }
 
     fun createDrsDbPath() {
-        // TODO: Snoozle should auto-create these
         val pathToDrsDbPath = model.pathToDrsDatabase?.toPath()
         if (Files.notExists(pathToDrsDbPath)) {
             Files.createDirectories(pathToDrsDbPath)
-        }
-    }
-
-    fun createDrsDbEventsPath() {
-        // TODO: Snoozle should auto-create these
-        val pathToEvents = model.pathToDrsDatabase?.toPath()
-                ?.resolve("events")
-        if (Files.notExists(pathToEvents)) {
-            Files.createDirectories(pathToEvents)
-        }
-    }
-
-    fun createDrsDbRunsPath(event: Event) {
-        // TODO: Snoozle should auto-create these
-        val pathToRuns = model.pathToDrsDatabase?.toPath()
-                ?.resolve("events")
-                ?.resolve(event.id.toString())
-                ?.resolve("runs")
-        if (Files.notExists(pathToRuns)) {
-            Files.createDirectories(pathToRuns)
         }
     }
 

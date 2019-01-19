@@ -18,7 +18,6 @@ class RunEventController : Controller() {
     val timerService: TimerService by inject()
 
     fun init() {
-        runService.io.createDrsDbRunsPath(model.event)
         loadRuns()
         loadRegistrations()
     }

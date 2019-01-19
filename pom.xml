@@ -18,8 +18,9 @@
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
+        <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.1.0</snoozle.version>
+        <snoozle.version>0.1.1</snoozle.version>
         <jackson.version>2.9.7</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.2</appdirs.version>
@@ -57,6 +58,11 @@
             <groupId>org.coner</groupId>
             <artifactId>snoozle</artifactId>
             <version>${snoozle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.helmbold</groupId>
+            <artifactId>rxfilewatcher</artifactId>
+            <version>${rxfilewatcher.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
