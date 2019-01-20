@@ -56,12 +56,21 @@ class RunEventController : Controller() {
     }
 
     fun docked() {
-        model.disposables.add(runService.watchList(model.event, model.registrations)
-                .observeOnFx()
-                .subscribe(entityWatchEventConsumer(
-                        idProperty = Run::id,
-                        list = model.runs
-                ))
+        model.disposables.addAll(
+                runService.watchList(model.event, model.registrations)
+                    .subscribeOn(Schedulers.io())
+                    .observeOnFx()
+                    .subscribe(entityWatchEventConsumer(
+                            idProperty = Run::id,
+                            list = model.runs
+                    )),
+                registrationService.watchList(model.event)
+                        .subscribeOn(Schedulers.io())
+                        .observeOnFx()
+                        .subscribe {
+                            model.registrations.setAll(it)
+                            runService.hydrateWithRegistrationMetadata(model.runs, it, true)
+                        }
         )
     }
 

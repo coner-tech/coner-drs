@@ -94,9 +94,9 @@ class RunService : Controller() {
         db.put(runDbEntity)
     }
 
-    fun hydrateWithRegistrationMetadata(runs: List<Run>, registrations: List<Registration>) {
+    fun hydrateWithRegistrationMetadata(runs: List<Run>, registrations: List<Registration>, destructive: Boolean = false) {
         for (run in runs) {
-            hydrateWithRegistrationMetadata(run, registrations)
+            hydrateWithRegistrationMetadata(run, registrations, destructive)
         }
     }
 
