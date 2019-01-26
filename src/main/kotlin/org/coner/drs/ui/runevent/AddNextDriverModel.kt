@@ -1,10 +1,13 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
 import org.coner.drs.NextDriverModel
+import org.coner.drs.Registration
 import tornadofx.*
+import tornadofx.getValue
+import tornadofx.setValue
 
 class AddNextDriverModel : ViewModel() {
 
@@ -13,6 +16,9 @@ class AddNextDriverModel : ViewModel() {
 
     val numbersFieldProperty = SimpleStringProperty(this, "numbers", "")
     var numbersField by numbersFieldProperty
+
+    val registrationForNumbersProperty = SimpleObjectProperty<Registration>(this, "registration")
+    var registrationForNumbers by registrationForNumbersProperty
 
     val driverAutoCompleteOrderPreferenceProperty = SimpleObjectProperty<DriverAutoCompleteOrderPreference>(
             this,
@@ -25,4 +31,5 @@ class AddNextDriverModel : ViewModel() {
             DriverAutoCompleteOrderPreference.NumberCategoryHandicap,
             DriverAutoCompleteOrderPreference.CategoryHandicapNumber
     )
+    val registrationHintsToRegistrations = FXCollections.observableHashMap<RegistrationHint, Registration>()
 }

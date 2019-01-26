@@ -1,4 +1,4 @@
-package org.coner.drs.ui.choose_event
+package org.coner.drs.ui.chooseevent
 
 import tornadofx.*
 

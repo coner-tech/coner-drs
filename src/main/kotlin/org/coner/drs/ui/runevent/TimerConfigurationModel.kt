@@ -1,4 +1,4 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
 import javafx.beans.property.SimpleStringProperty
 import org.coner.drs.TimerConfiguration

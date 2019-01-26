@@ -1,9 +1,15 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import com.github.thomasnield.rxkotlinfx.onChangedObservable
+import javafx.collections.SetChangeListener
+import org.coner.drs.Registration
 import org.coner.drs.Run
-import org.coner.drs.io.db.service.RunService
+import org.coner.drs.io.service.RegistrationService
+import org.coner.drs.io.service.RunService
 import org.coner.drs.util.levenshtein
 import tornadofx.*
+import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
 class AddNextDriverController : Controller() {
@@ -13,10 +19,27 @@ class AddNextDriverController : Controller() {
     val runService: RunService by inject()
 
     init {
-        runEventModel.runs.onChange { buildRegistrationHints() }
+        runEventModel.registrations.onChange { buildRegistrationHints() }
+        model.registrationHints.onChangedObservable()
+                .observeOnFx()
+                .debounce(100, TimeUnit.MILLISECONDS)
+                .subscribe { buildRegistrationHintsToRegistrationsMap() }
         model.driverAutoCompleteOrderPreferenceProperty.addListener { observable, old, new ->
             reformatNumbersField(old, new)
         }
+        model.registrationForNumbersProperty.bind(model.numbersFieldProperty.objectBinding(model.numbersFieldProperty) {
+            val hint = try {
+                model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbersField)
+            } catch (t: Throwable) {
+                null
+            } ?: return@objectBinding null
+            val registration = runEventModel.registrations.firstOrNull {
+                it.number == hint.number
+                && it.category == hint.category
+                && it.handicap == hint.handicap
+            }
+            registration
+        })
     }
 
     fun buildNextDriver() {
@@ -24,7 +47,11 @@ class AddNextDriverController : Controller() {
             sequenceProperty.bind(integerBinding(runEventModel.runs) {
                 val runs = synchronized(runEventModel.runs) { runEventModel.runs.toList() }
                 val firstRunWithoutDriver = runs.parallelStream()
-                        .filter { it.category.isBlank() && it.handicap.isBlank() && it.number.isBlank() }
+                        .filter {
+                            it.registrationCategory.isBlank()
+                                    && it.registrationHandicap.isBlank()
+                                    && it.registrationNumber.isBlank()
+                        }
                         .sorted(compareBy(Run::sequence))
                         .findFirst().orElse(null)
                 if (firstRunWithoutDriver == null) {
@@ -43,10 +70,7 @@ class AddNextDriverController : Controller() {
             val sequence = it.sequence
             it.sequenceProperty.unbind()
             it.sequence = sequence
-            val nextDriverNumbers = model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbersField)
-            it.number = nextDriverNumbers.number
-            it.category = nextDriverNumbers.category
-            it.handicap = nextDriverNumbers.handicap
+            it.registration = model.registrationForNumbers
             it
         }
         model.nextDriver.commit()
@@ -55,9 +79,9 @@ class AddNextDriverController : Controller() {
     }
 
     fun buildRegistrationHints() {
-        val runs = synchronized(runEventModel.runs) { runEventModel.runs.toList() }
+        val registrations = synchronized(runEventModel.registrations) { runEventModel.registrations.toList() }
         runAsync {
-            runs.parallelStream()
+            registrations.parallelStream()
                     .map {
                         RegistrationHint(
                                 category = it.category,
@@ -70,6 +94,25 @@ class AddNextDriverController : Controller() {
         } ui {
             model.registrationHints.clear()
             model.registrationHints.addAll(it)
+        }
+    }
+
+    fun buildRegistrationHintsToRegistrationsMap() {
+        val registrations = synchronized(runEventModel.registrations) { runEventModel.registrations.toList() }
+        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
+        val map = mutableMapOf<RegistrationHint, Registration>()
+        runAsync {
+            registrationHints.forEach { hint ->
+                map[hint] = registrations.single {
+                    it.number == hint.number
+                            && it.category == hint.category
+                            && it.handicap == hint.handicap
+                }
+            }
+            map
+        } ui {
+            model.registrationHintsToRegistrations.clear()
+            model.registrationHintsToRegistrations.putAll(map)
         }
     }
 

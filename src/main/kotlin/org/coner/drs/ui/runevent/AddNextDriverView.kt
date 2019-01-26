@@ -1,4 +1,4 @@
-package org.coner.drs.ui.run_event
+package org.coner.drs.ui.runevent
 
 import javafx.geometry.Orientation
 import javafx.scene.control.Button
@@ -12,11 +12,6 @@ class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
     private val controller: AddNextDriverController by inject()
 
-    private lateinit var numberTextField: TextField
-    private lateinit var categoryTextField: TextField
-    private lateinit var handicapTextField: TextField
-    private lateinit var addButton: Button
-
     override val root = form {
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
             hgrow = Priority.NEVER
@@ -28,7 +23,6 @@ class AddNextDriverView : View("Add Next Driver") {
             }
             field(text = "Numbers") {
                 textfield(model.numbersFieldProperty) {
-                    numberTextField = this
                     required()
                     bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
                         setDelay(0)
@@ -42,7 +36,6 @@ class AddNextDriverView : View("Add Next Driver") {
             }
             buttonbar {
                 button("Add") {
-                    addButton = this
                     enableWhen { model.nextDriver.valid }
                     action { controller.addNextDriver() }
                     tooltip("Shortcut: Ctrl+Enter")
@@ -52,6 +45,25 @@ class AddNextDriverView : View("Add Next Driver") {
             shortcut("Ctrl+Enter") {
                 if (model.nextDriver.isValid) {
                     controller.addNextDriver()
+                }
+            }
+        }
+        fieldset("Identity", labelPosition = Orientation.VERTICAL) {
+            field("Name") {
+                textfield(model.registrationForNumbersProperty.select { it.nameProperty }) {
+                    isEditable = false
+                }
+            }
+        }
+        fieldset("Car", labelPosition = Orientation.VERTICAL) {
+            field("Model") {
+                textfield(model.registrationForNumbersProperty.select { it.carModelProperty }) {
+                    isEditable = false
+                }
+            }
+            field("Color") {
+                textfield(model.registrationForNumbersProperty.select { it.carColorProperty }) {
+                    isEditable = false
                 }
             }
         }

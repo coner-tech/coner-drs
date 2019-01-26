@@ -11,15 +11,20 @@
     <description>Digital Raw Sheets - reduce the drag of working raw sheets</description>
 
     <properties>
+        <coner-drs.version>${project.version}</coner-drs.version>
         <kotlin.version>1.3.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <tornadofx.version>1.7.18-SNAPSHOT</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
+        <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.1.0</snoozle.version>
+        <snoozle.version>0.1.2</snoozle.version>
         <jackson.version>2.9.7</jackson.version>
+        <crispy-fish.version>0.2.0</crispy-fish.version>
+        <appdirs.version>1.0.2</appdirs.version>
+        <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -55,6 +60,11 @@
             <version>${snoozle.version}</version>
         </dependency>
         <dependency>
+            <groupId>de.helmbold</groupId>
+            <artifactId>rxfilewatcher</artifactId>
+            <version>${rxfilewatcher.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
@@ -63,6 +73,17 @@
             <groupId>org.coner</groupId>
             <artifactId>coner-timer-library</artifactId>
             <version>${coner-timer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>crispy-fish-library</artifactId>
+            <version>${crispy-fish.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.harawata</groupId>
+            <artifactId>appdirs</artifactId>
+            <version>${appdirs.version}</version>
         </dependency>
     </dependencies>
 
@@ -88,6 +109,31 @@
                         <goals> <goal>test-compile</goal> </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>${properties-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-project-properties-into-build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.outputDirectory}/drs.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <mainClass>org.coner.drs.DigitalRawSheetAppKt</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>

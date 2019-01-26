@@ -14,11 +14,11 @@ import java.nio.file.Files
 class DrsIoController : Controller() {
     val model: DrsIoModel by inject()
 
-    fun open(pathToDrsDatabase: File) {
+    fun open(pathToDrsDatabase: File, pathToCrispyFishDatabase: File) {
         if (model.db != null) throw IllegalStateException("Database is already open")
         model.pathToDrsDatabase = pathToDrsDatabase
+        model.pathToCrispyFishDatabase = pathToCrispyFishDatabase
         createDrsDbPath()
-        createDrsDbEventsPath()
         model.db = Database(
                 root = pathToDrsDatabase,
                 objectMapper = jacksonObjectMapper()
@@ -34,30 +34,21 @@ class DrsIoController : Controller() {
     }
 
     fun createDrsDbPath() {
-        // TODO: Snoozle should auto-create these
         val pathToDrsDbPath = model.pathToDrsDatabase?.toPath()
         if (Files.notExists(pathToDrsDbPath)) {
             Files.createDirectories(pathToDrsDbPath)
         }
     }
 
-    fun createDrsDbEventsPath() {
-        // TODO: Snoozle should auto-create these
-        val pathToEvents = model.pathToDrsDatabase?.toPath()
-                ?.resolve("events")
-        if (Files.notExists(pathToEvents)) {
-            Files.createDirectories(pathToEvents)
-        }
-    }
-
-    fun createDrsDbRunsPath(event: Event) {
-        // TODO: Snoozle should auto-create these
-        val pathToRuns = model.pathToDrsDatabase?.toPath()
-                ?.resolve("events")
-                ?.resolve(event.id.toString())
-                ?.resolve("runs")
-        if (Files.notExists(pathToRuns)) {
-            Files.createDirectories(pathToRuns)
+    fun isInsideCrispyFishDatabase(file: File, recursion: Int = 0): Boolean {
+        check(recursion <= 1) { "Recursion exceeded maximum of 1" }
+        if (file.isAbsolute) {
+            return file.canonicalFile.startsWith(model.pathToCrispyFishDatabase!!)
+        } else {
+            return isInsideCrispyFishDatabase(
+                    model.pathToCrispyFishDatabase!!.resolve(file),
+                    recursion + 1
+            )
         }
     }
 
@@ -70,5 +61,6 @@ class DrsIoController : Controller() {
 class DrsIoModel : ViewModel() {
     var db: Database? = null
     var pathToDrsDatabase: File? = null
+    var pathToCrispyFishDatabase: File? = null
     val open: Boolean get() = db != null
 }

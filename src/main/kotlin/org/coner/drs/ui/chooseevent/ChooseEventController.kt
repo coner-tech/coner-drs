@@ -1,13 +1,13 @@
-package org.coner.drs.ui.choose_event
+package org.coner.drs.ui.chooseevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import org.coner.drs.Event
 import org.coner.drs.io.db.entityWatchEventConsumer
-import org.coner.drs.io.db.service.EventService
+import org.coner.drs.io.service.EventService
+import org.coner.drs.ui.addevent.AddEventWizard
 import org.coner.drs.ui.main.ChangeToScreenEvent
 import org.coner.drs.ui.main.Screen
 import tornadofx.*
-import java.time.LocalDate
 
 class ChooseEventController : Controller() {
     val model: ChooseEventModel by inject()
@@ -27,11 +27,11 @@ class ChooseEventController : Controller() {
     }
 
     fun addEvent() {
-        val event = Event(
-                date = LocalDate.now(),
-                name = "New Event"
-        )
-        service.save(event)
+        val wizard = find<AddEventWizard>(AddEventWizard.Scope(scope))
+        wizard.onComplete {
+            service.save(wizard.event.item)
+        }
+        wizard.openModal()
     }
 
     fun save(event: Event) {
