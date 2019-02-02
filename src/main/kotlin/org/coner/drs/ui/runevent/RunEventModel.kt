@@ -3,6 +3,7 @@ package org.coner.drs.ui.runevent
 import io.reactivex.disposables.CompositeDisposable
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.collections.transformation.SortedList
 import org.coner.drs.Event
 import org.coner.drs.Registration
 import org.coner.drs.Run
@@ -11,6 +12,7 @@ import tornadofx.*
 
 class RunEventModel : ViewModel() {
     val runs = observableList<Run>()
+    val runsSortedBySequence = SortedList(runs, compareBy(Run::sequence))
     val registrations = observableList<Registration>()
     val eventProperty = SimpleObjectProperty<Event>()
     var event by eventProperty

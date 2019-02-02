@@ -94,6 +94,21 @@ class Registration(
     val carColorProperty = SimpleStringProperty(this, "carColor", carColor)
     var carColor by carColorProperty
 
+    fun clone(
+            category: String? = null,
+            handicap: String? = null,
+            number: String? = null,
+            name: String? = null,
+            carModel: String? = null,
+            carColor: String? = null
+    ) = Registration(
+            category = category ?: this.category,
+            handicap = handicap ?: this.handicap,
+            number = number ?: this.number,
+            name = name ?: this.name,
+            carModel = carModel ?: this.carModel,
+            carColor = carColor ?: this.carColor
+    )
 }
 
 class Run(

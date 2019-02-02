@@ -42,7 +42,9 @@ class RunEventController : Controller() {
     }
 
     fun save(run: Run) {
-        runAsync { runService.save(run) }
+        runAsync {
+            runService.save(run)
+        }
     }
 
     fun incrementCones(run: Run) {
