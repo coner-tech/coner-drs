@@ -4,10 +4,10 @@ import io.reactivex.disposables.CompositeDisposable
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.transformation.SortedList
-import org.coner.drs.Event
-import org.coner.drs.Registration
-import org.coner.drs.Run
-import org.coner.drs.TimerConfiguration
+import org.coner.drs.domain.entity.Event
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.entity.TimerConfiguration
 import tornadofx.*
 
 class RunEventModel : ViewModel() {

@@ -2,11 +2,11 @@ package org.coner.drs.ui.runevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.onChangedObservable
-import javafx.collections.SetChangeListener
-import org.coner.drs.Registration
-import org.coner.drs.Run
-import org.coner.drs.io.service.RegistrationService
-import org.coner.drs.io.service.RunService
+import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.entity.RegistrationHint
+import org.coner.drs.io.service.RunIoService
 import org.coner.drs.util.levenshtein
 import tornadofx.*
 import java.util.concurrent.TimeUnit
@@ -16,7 +16,7 @@ class AddNextDriverController : Controller() {
 
     val model: AddNextDriverModel by inject()
     val runEventModel: RunEventModel by inject()
-    val runService: RunService by inject()
+    val runIoService: RunIoService by inject()
 
     init {
         runEventModel.registrations.onChange { buildRegistrationHints() }
@@ -74,7 +74,7 @@ class AddNextDriverController : Controller() {
             it
         }
         model.nextDriver.commit()
-        runAsync { runService.insertNextDriver(addRun) }
+        runAsync { runIoService.insertNextDriver(addRun) }
         buildNextDriver()
     }
 

@@ -1,9 +1,9 @@
 package org.coner.drs.ui.chooseevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
-import org.coner.drs.Event
+import org.coner.drs.domain.entity.Event
 import org.coner.drs.io.db.entityWatchEventConsumer
-import org.coner.drs.io.service.EventService
+import org.coner.drs.io.service.EventIoService
 import org.coner.drs.ui.addevent.AddEventWizard
 import org.coner.drs.ui.main.ChangeToScreenEvent
 import org.coner.drs.ui.main.Screen
@@ -11,7 +11,7 @@ import tornadofx.*
 
 class ChooseEventController : Controller() {
     val model: ChooseEventModel by inject()
-    val service: EventService by inject()
+    val service: EventIoService by inject()
 
     fun init() {
         loadEvents()

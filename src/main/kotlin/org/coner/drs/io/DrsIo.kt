@@ -3,7 +3,6 @@ package org.coner.drs.io
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.coner.drs.Event
 import org.coner.drs.io.db.entity.EventDbEntity
 import org.coner.drs.io.db.entity.RunDbEntity
 import org.coner.snoozle.db.Database

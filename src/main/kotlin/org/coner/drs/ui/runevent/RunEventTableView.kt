@@ -1,7 +1,7 @@
 package org.coner.drs.ui.runevent
 
 import javafx.scene.layout.Priority
-import org.coner.drs.Run
+import org.coner.drs.domain.entity.Run
 import tornadofx.*
 
 class RunEventTableView : View() {
@@ -57,6 +57,15 @@ class RunEventTableView : View() {
             setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
         }
         smartResize()
+        contextmenu {
+            item(name = "Change Driver") {
+                enableWhen(selectionModel.selectedItemProperty().isNotNull)
+                action {
+                    val run = selectedItem ?: return@action
+                    controller.showChangeDriver(run)
+                }
+            }
+        }
     }
 
 }

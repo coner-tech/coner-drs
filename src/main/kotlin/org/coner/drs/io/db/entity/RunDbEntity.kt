@@ -1,8 +1,8 @@
 package org.coner.drs.io.db.entity
 
-import org.coner.drs.Event
-import org.coner.drs.Registration
-import org.coner.drs.Run
+import org.coner.drs.domain.entity.Event
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.entity.Run
 import org.coner.snoozle.db.Entity
 import org.coner.snoozle.db.EntityPath
 import java.math.BigDecimal

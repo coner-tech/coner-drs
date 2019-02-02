@@ -1,7 +1,9 @@
 package org.coner.drs.ui.runevent
 
 import javafx.scene.control.TableColumn
-import org.coner.drs.Run
+import org.coner.drs.domain.entity.Run
+import org.coner.drs.ui.changedriver.ChangeRunDriverFragment
+import org.coner.drs.ui.changedriver.ChangeRunDriverScope
 import tornadofx.*
 
 class RunEventTableController : Controller() {
@@ -39,6 +41,20 @@ class RunEventTableController : Controller() {
     fun decrementCones(run: Run) {
         run.cones--
         controller.save(run)
+    }
+
+    fun showChangeDriver(run: Run) {
+        val scope = ChangeRunDriverScope(
+                registrationService = find(),
+                registrations = controller.model.registrations,
+                driverAutoCompleteOrderPreference = find<AddNextDriverModel>().driverAutoCompleteOrderPreference,
+                registrationHints = find<AddNextDriverModel>().registrationHints
+        )
+        val fragment = find<ChangeRunDriverFragment>(
+                scope,
+                ChangeRunDriverFragment::run to run
+        )
+        fragment.openModal()
     }
 
 }

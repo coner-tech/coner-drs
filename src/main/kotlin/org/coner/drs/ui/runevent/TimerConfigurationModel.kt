@@ -1,7 +1,7 @@
 package org.coner.drs.ui.runevent
 
 import javafx.beans.property.SimpleStringProperty
-import org.coner.drs.TimerConfiguration
+import org.coner.drs.domain.entity.TimerConfiguration
 import tornadofx.*
 
 class TimerConfigurationModel : ViewModel() {

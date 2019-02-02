@@ -1,4 +1,4 @@
-package org.coner.drs.ui.runevent
+package org.coner.drs.domain.entity
 
 import javafx.util.StringConverter
 

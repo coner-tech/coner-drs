@@ -1,12 +1,10 @@
 package org.coner.drs.ui.addevent
 
-import javafx.beans.binding.StringBinding
-import javafx.beans.value.ObservableValue
 import javafx.stage.FileChooser
 import javafx.util.StringConverter
-import org.coner.drs.EventCrispyFishMetadataModel
-import org.coner.drs.EventModel
-import org.coner.drs.io.service.EventService
+import org.coner.drs.domain.model.EventCrispyFishMetadataModel
+import org.coner.drs.domain.model.EventModel
+import org.coner.drs.io.service.EventIoService
 import org.coner.drs.util.requireFileWithinCrispyFishDatabase
 import tornadofx.*
 import java.io.File
@@ -15,7 +13,7 @@ class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") 
     val event: EventModel by inject()
     val crispyFishMetadata: EventCrispyFishMetadataModel by inject()
     val controller: CreateEventCrispyFishMetadataStepController by inject()
-    val eventService: EventService by inject()
+    val eventService: EventIoService by inject()
 
     override val root = form {
         fieldset(title) {
@@ -78,7 +76,7 @@ class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") 
 }
 
 class CreateEventCrispyFishMetadataStepController : Controller() {
-    val eventService: EventService by inject()
+    val eventService: EventIoService by inject()
     val crispyFishMetadata: EventCrispyFishMetadataModel by inject()
 
     fun onClickChooseEventControlFile() {

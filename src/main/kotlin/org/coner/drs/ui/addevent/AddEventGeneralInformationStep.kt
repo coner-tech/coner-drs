@@ -1,6 +1,6 @@
 package org.coner.drs.ui.addevent
 
-import org.coner.drs.EventModel
+import org.coner.drs.domain.model.EventModel
 import org.coner.drs.io.DrsIoController
 import tornadofx.*
 

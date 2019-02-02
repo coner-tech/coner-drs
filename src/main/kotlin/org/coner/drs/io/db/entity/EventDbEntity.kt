@@ -1,11 +1,8 @@
 package org.coner.drs.io.db.entity
 
-import javafx.beans.value.ObservableValue
-import org.coner.drs.Event
-import org.coner.drs.EventModel
+import org.coner.drs.domain.entity.Event
 import org.coner.snoozle.db.Entity
 import org.coner.snoozle.db.EntityPath
-import tornadofx.*
 import java.io.File
 import java.time.LocalDate
 import java.util.*
@@ -29,16 +26,16 @@ class EventDbEntityMapper(
 ) {
 
     fun toUiEntity(dbEntity: EventDbEntity?) = if (dbEntity != null) Event(
-                id = dbEntity.id,
-                date = dbEntity.date,
-                name = dbEntity.name,
-                crispyFishMetadata = with(dbEntity.crispyFishMetadata) {
-                    Event.CrispyFishMetadata(
-                            classDefinitionFile = crispyFishDatabase.resolve(classDefinitionFile),
-                            eventControlFile = crispyFishDatabase.resolve(eventControlFile)
-                    )
-                }
-        )
+            id = dbEntity.id,
+            date = dbEntity.date,
+            name = dbEntity.name,
+            crispyFishMetadata = with(dbEntity.crispyFishMetadata) {
+                Event.CrispyFishMetadata(
+                        classDefinitionFile = crispyFishDatabase.resolve(classDefinitionFile),
+                        eventControlFile = crispyFishDatabase.resolve(eventControlFile)
+                )
+            }
+    )
     else null
 
     fun toDbEntity(uiEntity: Event) = EventDbEntity(

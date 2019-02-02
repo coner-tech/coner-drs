@@ -1,6 +1,6 @@
 package org.coner.drs.ui.main
 
-import org.coner.drs.Event
+import org.coner.drs.domain.entity.Event
 import java.io.File
 
 sealed class Screen {
