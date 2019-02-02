@@ -47,16 +47,6 @@ class RunEventController : Controller() {
         }
     }
 
-    fun incrementCones(run: Run) {
-        run.cones++
-        runAsync { save(run) }
-    }
-
-    fun decrementCones(run: Run) {
-        run.cones--
-        save(run)
-    }
-
     fun docked() {
         model.disposables.addAll(
                 runService.watchList(model.event, model.registrations)

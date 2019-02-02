@@ -1,8 +1,6 @@
 package org.coner.drs.ui.runevent
 
-import javafx.event.EventHandler
 import javafx.scene.control.TableColumn
-import org.coner.drs.Registration
 import org.coner.drs.Run
 import tornadofx.*
 
@@ -30,6 +28,16 @@ class RunEventTableController : Controller() {
     fun onEditCommitBooleanPenalty(event: TableColumn.CellEditEvent<Run, Boolean>) {
         val run = event.rowValue
         event.tableColumn.setValue(run, event.newValue)
+        controller.save(run)
+    }
+
+    fun incrementCones(run: Run) {
+        run.cones++
+        controller.save(run)
+    }
+
+    fun decrementCones(run: Run) {
+        run.cones--
         controller.save(run)
     }
 

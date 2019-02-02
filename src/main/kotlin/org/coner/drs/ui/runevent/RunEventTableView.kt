@@ -36,11 +36,11 @@ class RunEventTableView : View() {
         column("+/-", Run::conesProperty).cellFormat {
             graphic = hbox {
                 button("+") {
-                    action { runEventController.incrementCones(this@cellFormat.rowItem) }
+                    action { controller.incrementCones(rowItem) }
                 }
                 button("-") {
-                    action { runEventController.decrementCones(this@cellFormat.rowItem) }
-                    enableWhen { this@cellFormat.rowItem.conesProperty.greaterThan(0) }
+                    action { controller.decrementCones(rowItem) }
+                    enableWhen { rowItem.conesProperty.greaterThan(0) }
                 }
             }
         }
