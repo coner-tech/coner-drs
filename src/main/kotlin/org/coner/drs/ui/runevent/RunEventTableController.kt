@@ -44,17 +44,16 @@ class RunEventTableController : Controller() {
     }
 
     fun showChangeDriver(run: Run) {
+        val runEventModel: RunEventModel = find()
+        val addNextDriverModel: AddNextDriverModel = find()
         val scope = ChangeRunDriverScope(
-                registrationService = find(),
-                registrations = controller.model.registrations,
-                driverAutoCompleteOrderPreference = find<AddNextDriverModel>().driverAutoCompleteOrderPreference,
-                registrationHints = find<AddNextDriverModel>().registrationHints
+                runEventScope = scope,
+                run = run,
+                registrations = runEventModel.registrations,
+                driverAutoCompleteOrderPreference = addNextDriverModel.driverAutoCompleteOrderPreference,
+                registrationHints = addNextDriverModel.registrationHints
         )
-        val fragment = find<ChangeRunDriverFragment>(
-                scope,
-                ChangeRunDriverFragment::run to run
-        )
-        fragment.openModal()
+        find<ChangeRunDriverFragment>(scope).openModal()
     }
 
 }

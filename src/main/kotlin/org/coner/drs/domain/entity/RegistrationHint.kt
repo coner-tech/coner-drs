@@ -8,4 +8,10 @@ object RegistrationHintMapper {
             handicap = registration.handicap,
             number = registration.number
     )
+
+    fun toRegistration(registrationHint: RegistrationHint) = Registration(
+            category = registrationHint.category,
+            handicap = registrationHint.handicap,
+            number = registrationHint.number
+    )
 }

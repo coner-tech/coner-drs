@@ -1,5 +1,6 @@
 package org.coner.drs.ui.runevent
 
+import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.domain.entity.Run
 import tornadofx.*
@@ -58,7 +59,10 @@ class RunEventTableView : View() {
         }
         smartResize()
         contextmenu {
-            item(name = "Change Driver") {
+            item(
+                    name = "Change Driver",
+                    keyCombination = KeyCombination.keyCombination("Ctrl+D"))
+            {
                 enableWhen(selectionModel.selectedItemProperty().isNotNull)
                 action {
                     val run = selectedItem ?: return@action
