@@ -1,4 +1,4 @@
-package org.coner.drs.io.service
+package org.coner.drs.io.gateway
 
 import io. reactivex.Observable
 import io.reactivex.Single
@@ -15,11 +15,11 @@ import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 import java.math.BigDecimal
 
-class RunIoService : Controller() {
+class RunGateway : Controller() {
 
     val io: DrsIoController by inject(FX.defaultScope)
     private val db = io.model.db!!
-    private val eventService: EventIoService by inject(FX.defaultScope)
+    private val eventService: EventGateway by inject(FX.defaultScope)
 
     fun list(event: Event): Single<List<Run>> = Single.fromCallable { db.list(
             RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id

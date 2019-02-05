@@ -1,4 +1,4 @@
-package org.coner.drs.io.service
+package org.coner.drs.io.gateway
 
 import de.helmbold.rxfilewatcher.PathObservables
 import io.reactivex.Observable
@@ -10,7 +10,7 @@ import org.coner.drs.io.crispyfish.buildEventControlFile
 import tornadofx.*
 import java.nio.file.Path
 
-class RegistrationIoService : Controller() {
+class RegistrationGateway : Controller() {
 
     fun list(event: Event): Single<List<Registration>> = Single.fromCallable {
         event.buildEventControlFile()

@@ -1,6 +1,5 @@
 package org.coner.drs.io.timer
 
-import javafx.beans.property.SimpleObjectProperty
 import org.coner.timer.Timer
 import org.coner.timer.input.mapper.JACTimerInputMapper
 import org.coner.timer.input.reader.InputStreamTimerInputReader
@@ -12,8 +11,6 @@ import org.coner.timer.util.PureJavaCommWrapper
 import purejavacomm.CommPortIdentifier
 import tornadofx.*
 import java.io.File
-import tornadofx.getValue
-import tornadofx.setValue
 
 class TimerService : Controller() {
 
@@ -65,7 +62,3 @@ class TimerService : Controller() {
     }
 }
 
-class TimerModel : ViewModel() {
-    val timerProperty = SimpleObjectProperty<Timer<*, *>>(this, "timer", null)
-    var timer by timerProperty
-}

@@ -1,4 +1,4 @@
-package org.coner.drs.io.service
+package org.coner.drs.io.gateway
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
@@ -10,7 +10,7 @@ import org.coner.drs.io.db.entity.EventDbEntityMapper
 import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 
-class EventIoService : Controller() {
+class EventGateway : Controller() {
 
     val io: DrsIoController by inject()
     private val db = io.model.db!!

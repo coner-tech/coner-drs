@@ -6,7 +6,7 @@ import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
 import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.Run
-import org.coner.drs.io.service.RunIoService
+import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 
 class ChangeRunDriverScope(
@@ -16,7 +16,7 @@ class ChangeRunDriverScope(
         driverAutoCompleteOrderPreference: DriverAutoCompleteOrderPreference,
         registrationHints: Set<RegistrationHint>
 ) : Scope(
-        find<RunIoService>(runEventScope),
+        find<RunGateway>(runEventScope),
         find<RegistrationService>(runEventScope)
 ) {
     init {

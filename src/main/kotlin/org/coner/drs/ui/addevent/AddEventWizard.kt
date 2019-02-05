@@ -2,7 +2,7 @@ package org.coner.drs.ui.addevent
 
 import org.coner.drs.domain.model.EventModel
 import org.coner.drs.io.DrsIoController
-import org.coner.drs.io.service.EventIoService
+import org.coner.drs.io.gateway.EventGateway
 import tornadofx.*
 
 class AddEventWizard : Wizard(
@@ -23,7 +23,7 @@ class AddEventWizard : Wizard(
     override val canGoNext = currentPageComplete
 
     class Scope(source: tornadofx.Scope) : tornadofx.Scope(
-            FX.find<EventIoService>(source),
+            FX.find<EventGateway>(source),
             FX.find<DrsIoController>(source)
     )
 }

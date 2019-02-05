@@ -7,7 +7,7 @@ import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RegistrationService
-import org.coner.drs.io.service.RunIoService
+import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 import java.util.concurrent.TimeUnit
 
@@ -15,7 +15,7 @@ class AddNextDriverController : Controller() {
 
     val model: AddNextDriverModel by inject()
     val runEventModel: RunEventModel by inject()
-    val runIoService: RunIoService by inject()
+    val runGateway: RunGateway by inject()
     val registrationService: RegistrationService by inject()
 
     init {
@@ -74,7 +74,7 @@ class AddNextDriverController : Controller() {
             it
         }
         model.nextDriver.commit()
-        runAsync { runIoService.insertNextDriver(addRun) }
+        runAsync { runGateway.insertNextDriver(addRun) }
         buildNextDriver()
     }
 

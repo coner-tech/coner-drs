@@ -1,16 +1,14 @@
 package org.coner.drs.ui.changedriver
 
-import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.RegistrationHintMapper
 import org.coner.drs.domain.service.RegistrationService
-import org.coner.drs.io.crispyfish.RegistrationMapper
-import org.coner.drs.io.service.RunIoService
+import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 
 class ChangeRunDriverController : Controller() {
 
     val model: ChangeRunDriverModel by inject()
-    val runService: RunIoService by inject()
+    val runService: RunGateway by inject()
     val registrationService: RegistrationService by inject()
 
     init {

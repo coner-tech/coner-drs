@@ -56,10 +56,3 @@ class DrsIoController : Controller() {
         model.pathToDrsDatabase = null
     }
 }
-
-class DrsIoModel : ViewModel() {
-    var db: Database? = null
-    var pathToDrsDatabase: File? = null
-    var pathToCrispyFishDatabase: File? = null
-    val open: Boolean get() = db != null
-}
