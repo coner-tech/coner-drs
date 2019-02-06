@@ -8,7 +8,7 @@ import tornadofx.*
 class ChangeRunDriverController : Controller() {
 
     val model: ChangeRunDriverModel by inject()
-    val runService: RunGateway by inject()
+    val runGateway: RunGateway by inject()
     val registrationService: RegistrationService by inject()
 
     init {
@@ -40,7 +40,7 @@ class ChangeRunDriverController : Controller() {
     fun changeDriver() {
         val run = model.run
         run.registration = model.registrationForNumbers
-        runService.save(run)
+        runGateway.save(run)
     }
 
 }

@@ -13,7 +13,7 @@ class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") 
     val event: EventModel by inject()
     val crispyFishMetadata: EventCrispyFishMetadataModel by inject()
     val controller: CreateEventCrispyFishMetadataStepController by inject()
-    val eventService: EventGateway by inject()
+    val eventGateway: EventGateway by inject()
 
     override val root = form {
         fieldset(title) {
@@ -51,7 +51,7 @@ class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") 
     private inner class CrispyFishDatabaseRelativeFileConverter : StringConverter<File?>() {
         override fun toString(file: File?): String {
             return try {
-                file?.toRelativeString(eventService.io.model.pathToCrispyFishDatabase!!)
+                file?.toRelativeString(eventGateway.io.model.pathToCrispyFishDatabase!!)
                         ?: ""
             } catch (e: Throwable) {
                 ""
@@ -60,7 +60,7 @@ class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") 
 
         override fun fromString(file: String?): File {
             if (file == null) return File("")
-            return File(eventService.io.model.pathToCrispyFishDatabase!!.resolve(file).absolutePath)
+            return File(eventGateway.io.model.pathToCrispyFishDatabase!!.resolve(file).absolutePath)
         }
     }
 
@@ -76,11 +76,11 @@ class AddEventCrispyFishMetadataStepFragment : Fragment("Crispy Fish Metadata") 
 }
 
 class CreateEventCrispyFishMetadataStepController : Controller() {
-    val eventService: EventGateway by inject()
+    val eventGateway: EventGateway by inject()
     val crispyFishMetadata: EventCrispyFishMetadataModel by inject()
 
     fun onClickChooseEventControlFile() {
-        val crispyFishDatabase = eventService.io.model.pathToCrispyFishDatabase!!
+        val crispyFishDatabase = eventGateway.io.model.pathToCrispyFishDatabase!!
         val file = chooseFile(
                 title = "Choose Event Control File",
                 filters = arrayOf(FileChooser.ExtensionFilter(
@@ -100,7 +100,7 @@ class CreateEventCrispyFishMetadataStepController : Controller() {
     }
 
     fun onClickChooseClassDefinitionFile() {
-        val crispyFishDatabase = eventService.io.model.pathToCrispyFishDatabase!!
+        val crispyFishDatabase = eventGateway.io.model.pathToCrispyFishDatabase!!
         val file = chooseFile(
                 title = "Choose Crispy Fish Class Definition File",
                 filters = arrayOf(FileChooser.ExtensionFilter(

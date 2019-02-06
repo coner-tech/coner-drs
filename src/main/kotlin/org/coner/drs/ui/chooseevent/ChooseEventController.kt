@@ -11,7 +11,7 @@ import tornadofx.*
 
 class ChooseEventController : Controller() {
     val model: ChooseEventModel by inject()
-    val service: EventGateway by inject()
+    val eventGateway: EventGateway by inject()
 
     fun init() {
         loadEvents()
@@ -19,7 +19,7 @@ class ChooseEventController : Controller() {
 
     fun loadEvents() {
         runAsync {
-            service.list()
+            eventGateway.list()
         } success {
             model.events.clear()
             model.events.addAll(it)
@@ -29,13 +29,13 @@ class ChooseEventController : Controller() {
     fun addEvent() {
         val wizard = find<AddEventWizard>(AddEventWizard.Scope(scope))
         wizard.onComplete {
-            service.save(wizard.event.item)
+            eventGateway.save(wizard.event.item)
         }
         wizard.openModal()
     }
 
     fun save(event: Event) {
-        service.save(event)
+        eventGateway.save(event)
     }
 
     fun onClickStart() {
@@ -43,7 +43,7 @@ class ChooseEventController : Controller() {
     }
 
     fun docked() {
-        model.disposables.add(service.watchList()
+        model.disposables.add(eventGateway.watchList()
                 .observeOnFx()
                 .subscribe(entityWatchEventConsumer(
                         idProperty = Event::id,
