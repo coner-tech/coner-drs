@@ -28,11 +28,6 @@ class Event(
     )
     var crispyFishMetadata by crispyFishMetadataProperty
 
-    val categories = FXCollections.observableSet<String>()
-    val handicaps = FXCollections.observableSet<String>()
-    val numbers = FXCollections.observableSet<String>()
-    val registrations = FXCollections.observableSet<Registration>()
-
     class CrispyFishMetadata(
             classDefinitionFile: File = File(""),
             eventControlFile: File = File("")
