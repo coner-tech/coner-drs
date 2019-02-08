@@ -3,7 +3,6 @@ package org.coner.drs
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import net.harawata.appdirs.AppDirs
 import net.harawata.appdirs.AppDirsFactory
 import org.coner.drs.ui.main.MainView
 import org.coner.style.ConerFxStylesheet

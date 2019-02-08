@@ -2,21 +2,21 @@ package org.coner.drs.ui.runevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.onChangedObservable
-import javafx.collections.SetChangeListener
-import org.coner.drs.Registration
-import org.coner.drs.Run
-import org.coner.drs.io.service.RegistrationService
-import org.coner.drs.io.service.RunService
-import org.coner.drs.util.levenshtein
+import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.entity.RegistrationHint
+import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.service.RegistrationService
+import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 import java.util.concurrent.TimeUnit
-import kotlin.streams.toList
 
 class AddNextDriverController : Controller() {
 
     val model: AddNextDriverModel by inject()
     val runEventModel: RunEventModel by inject()
-    val runService: RunService by inject()
+    val runGateway: RunGateway by inject()
+    val registrationService: RegistrationService by inject()
 
     init {
         runEventModel.registrations.onChange { buildRegistrationHints() }
@@ -74,23 +74,13 @@ class AddNextDriverController : Controller() {
             it
         }
         model.nextDriver.commit()
-        runAsync { runService.insertNextDriver(addRun) }
+        runAsync { runGateway.insertNextDriver(addRun) }
         buildNextDriver()
     }
 
     fun buildRegistrationHints() {
-        val registrations = synchronized(runEventModel.registrations) { runEventModel.registrations.toList() }
         runAsync {
-            registrations.parallelStream()
-                    .map {
-                        RegistrationHint(
-                                category = it.category,
-                                handicap = it.handicap,
-                                number = it.number
-                        )
-                    }
-                    .distinct()
-                    .toList()
+            registrationService.buildRegistrationHints(runEventModel.registrations)
         } ui {
             model.registrationHints.clear()
             model.registrationHints.addAll(it)
@@ -117,14 +107,11 @@ class AddNextDriverController : Controller() {
     }
 
     fun buildNumbersHints(): List<String> {
-        if (model.numbersField.isBlank()) return emptyList()
-        val registrationHints = synchronized(model.registrationHints) { model.registrationHints.toList() }
-        val converter = model.driverAutoCompleteOrderPreference.stringConverter
-        return registrationHints.parallelStream()
-                .map { converter.toString(it) }
-                .filter { it.startsWith(model.numbersField) }
-                .sorted { left, right -> levenshtein(left, right) }
-                .toList()
+        return registrationService.buildNumbersFieldHints(
+                numbersField = model.numbersField,
+                registrationHints = model.registrationHints,
+                autoCompleteOrderPreference = model.driverAutoCompleteOrderPreference
+        )
     }
 
     fun reformatNumbersField(old: DriverAutoCompleteOrderPreference, new: DriverAutoCompleteOrderPreference) {

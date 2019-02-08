@@ -1,11 +1,11 @@
-package org.coner.drs.io.service
+package org.coner.drs.io.gateway
 
 import io. reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
-import org.coner.drs.Event
-import org.coner.drs.Registration
-import org.coner.drs.Run
+import org.coner.drs.domain.entity.Event
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.entity.Run
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.EventDbEntity
@@ -15,14 +15,14 @@ import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 import java.math.BigDecimal
 
-class RunService : Controller() {
+class RunGateway : Controller() {
 
     val io: DrsIoController by inject(FX.defaultScope)
     private val db = io.model.db!!
-    private val eventService: EventService by inject(FX.defaultScope)
+    private val eventGateway: EventGateway by inject(FX.defaultScope)
 
     fun list(event: Event): Single<List<Run>> = Single.fromCallable { db.list(
-            RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id
+            RunDbEntity::eventId to eventGateway.mapper.toDbEntity(event).id
     ).map {
         RunDbEntityMapper.toUiEntity(event = event, dbEntity = it) as Run
     } }
@@ -32,7 +32,7 @@ class RunService : Controller() {
     }
 
     fun watchList(event: Event, registrations: List<Registration>): Observable<EntityWatchEvent<Run>> {
-        return db.watchListing(RunDbEntity::eventId to eventService.mapper.toDbEntity(event).id)
+        return db.watchListing(RunDbEntity::eventId to eventGateway.mapper.toDbEntity(event).id)
                 .subscribeOn(Schedulers.io())
                 .map { EntityWatchEvent(
                         watchEvent = it.watchEvent,
@@ -44,7 +44,7 @@ class RunService : Controller() {
     }
 
     fun addTimeToFirstRunInSequenceWithoutRawTime(event: Event, time: BigDecimal) {
-        val eventDbEntity = eventService.mapper.toDbEntity(event)
+        val eventDbEntity = eventGateway.mapper.toDbEntity(event)
         val firstRunInSequenceWithoutTimeOptional = db.list(
                 RunDbEntity::eventId to eventDbEntity.id
         ).parallelStream()

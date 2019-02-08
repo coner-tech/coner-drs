@@ -3,8 +3,10 @@ package org.coner.drs.ui.runevent
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.FXCollections
-import org.coner.drs.NextDriverModel
-import org.coner.drs.Registration
+import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
+import org.coner.drs.domain.model.NextDriverModel
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.entity.RegistrationHint
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue

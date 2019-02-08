@@ -1,6 +1,6 @@
 package org.coner.drs.ui.chooseevent
 
-import org.coner.drs.Event
+import org.coner.drs.domain.entity.Event
 import tornadofx.*
 
 class ChooseEventTableView : View() {

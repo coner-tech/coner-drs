@@ -5,7 +5,7 @@ import org.coner.crispyfish.model.Registration
 object RegistrationMapper {
 
     fun toUiEntity(crispyFishEntity: Registration) = with(crispyFishEntity) {
-        org.coner.drs.Registration(
+        org.coner.drs.domain.entity.Registration(
                 category = category?.abbreviation ?: "",
                 handicap = handicap.abbreviation,
                 number = number,

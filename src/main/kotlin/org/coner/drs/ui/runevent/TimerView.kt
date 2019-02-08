@@ -2,7 +2,7 @@ package org.coner.drs.ui.runevent
 
 import javafx.geometry.Orientation
 import javafx.stage.Modality
-import org.coner.drs.TimerConfiguration
+import org.coner.drs.domain.entity.TimerConfiguration
 import org.coner.drs.io.timer.TimerService
 import tornadofx.*
 

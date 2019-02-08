@@ -2,7 +2,7 @@ package org.coner.drs.io.crispyfish
 
 import org.coner.crispyfish.filetype.classdefinition.ClassDefinitionFile
 import org.coner.crispyfish.filetype.ecf.EventControlFile
-import org.coner.drs.Event
+import org.coner.drs.domain.entity.Event
 
 fun Event.buildEventControlFile() = EventControlFile(
         file = crispyFishMetadata.eventControlFile,

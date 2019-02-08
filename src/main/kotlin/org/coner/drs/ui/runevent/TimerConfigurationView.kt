@@ -1,7 +1,7 @@
 package org.coner.drs.ui.runevent
 
 import javafx.scene.control.ButtonBar
-import org.coner.drs.TimerConfiguration
+import org.coner.drs.domain.entity.TimerConfiguration
 import org.coner.drs.io.timer.TimerService
 import tornadofx.*
 import java.io.File

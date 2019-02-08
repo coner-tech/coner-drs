@@ -1,21 +1,16 @@
-package org.coner.drs.io.service
+package org.coner.drs.io.gateway
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import org.coner.crispyfish.filetype.classdefinition.ClassDefinitionFile
-import org.coner.crispyfish.filetype.ecf.EventControlFile
-import org.coner.drs.Event
-import org.coner.drs.Registration
+import org.coner.drs.domain.entity.Event
 import org.coner.drs.io.DrsIoController
-import org.coner.drs.io.crispyfish.RegistrationMapper
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.EventDbEntity
 import org.coner.drs.io.db.entity.EventDbEntityMapper
 import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
-import java.io.File
 
-class EventService : Controller() {
+class EventGateway : Controller() {
 
     val io: DrsIoController by inject()
     private val db = io.model.db!!

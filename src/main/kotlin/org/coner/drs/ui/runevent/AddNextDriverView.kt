@@ -1,10 +1,10 @@
 package org.coner.drs.ui.runevent
 
 import javafx.geometry.Orientation
-import javafx.scene.control.Button
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.util.StringConverter
+import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
 import org.coner.drs.util.bindAutoCompletion
 import tornadofx.*
 
