@@ -4,7 +4,6 @@ import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
 import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.RegistrationHintMapper
-import org.coner.drs.util.levenshtein
 import tornadofx.*
 import kotlin.streams.toList
 
@@ -21,7 +20,7 @@ class RegistrationService : Controller() {
         return registrationHints.parallelStream()
                 .map { converter.toString(it) }
                 .filter { it.startsWith(numbersField) }
-                .sorted { left, right -> levenshtein(left, right) }
+                .sorted()
                 .toList()
     }
 
