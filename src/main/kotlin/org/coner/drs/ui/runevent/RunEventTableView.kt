@@ -61,8 +61,8 @@ class RunEventTableView : View() {
         contextmenu {
             item(
                     name = "Change Driver",
-                    keyCombination = KeyCombination.keyCombination("Ctrl+D"))
-            {
+                    keyCombination = KeyCombination.keyCombination("Ctrl+D")
+            ) {
                 enableWhen(selectionModel.selectedItemProperty().isNotNull)
                 action {
                     val run = selectedItem ?: return@action
