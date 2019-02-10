@@ -5,6 +5,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.util.StringConverter
 import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
+import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.bindAutoCompletion
 import tornadofx.*
 
@@ -31,6 +32,7 @@ class AddNextDriverView : View("Add Next Driver") {
                     model.nextDriver.itemProperty.onChange {
                         onNewRun(this)
                     }
+                    textFormatter = UpperCaseTextFormatter()
                     promptTextProperty().bind(model.driverAutoCompleteOrderPreferenceProperty.stringBinding { it?.text })
                 }
             }

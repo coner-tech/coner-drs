@@ -4,6 +4,7 @@ import javafx.geometry.Orientation
 import javafx.scene.control.ButtonBar
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.bindAutoCompletion
 import tornadofx.*
 
@@ -27,6 +28,7 @@ class ChangeRunDriverFragment : Fragment("Change Run Driver") {
                     bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
                         setDelay(0)
                     }
+                    textFormatter = UpperCaseTextFormatter()
                     runLater { requestFocus() }
                 }
             }
