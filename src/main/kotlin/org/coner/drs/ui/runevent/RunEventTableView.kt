@@ -15,18 +15,7 @@ class RunEventTableView : View() {
         setSortPolicy { false }
         vgrow = Priority.ALWAYS
         readonlyColumn("Sequence", Run::sequence)
-        column("Category", Run::registrationCategoryProperty) {
-            makeEditable()
-            setOnEditCommit { controller.onEditCommitRegistrationCategory(it) }
-        }
-        column("Handicap", Run::registrationHandicapProperty) {
-            makeEditable()
-            setOnEditCommit { controller.onEditCommitRegistrationHandicap(it) }
-        }
-        column("Number", Run::registrationNumberProperty) {
-            makeEditable()
-            setOnEditCommit { controller.onEditCommitRegistrationNumber(it) }
-        }
+        column("Numbers", Run::registrationNumbersProperty)
         column("Name", Run::registrationDriverNameProperty)
         column("Car Model", Run::registrationCarModelProperty)
         column("Car Color", Run::registrationCarColorProperty)

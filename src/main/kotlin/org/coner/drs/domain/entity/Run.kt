@@ -3,6 +3,7 @@ package org.coner.drs.domain.entity
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 import java.math.BigDecimal
 import java.util.*
@@ -38,6 +39,20 @@ class Run(
 
     val registrationNumberProperty = registrationProperty.select(Registration::numberProperty)
     val registrationNumber by registrationNumberProperty
+
+    private val registrationNumbersBinding = registrationProperty.stringBinding(
+            registrationProperty.select(Registration::categoryProperty),
+            registrationProperty.select(Registration::handicapProperty),
+            registrationProperty.select(Registration::numberProperty)
+    ) { registration ->
+        arrayOf(registration?.category, registration?.handicap, registration?.number)
+                .filter { !it.isNullOrBlank() }
+                .joinToString(" ")
+    }
+    val registrationNumbersProperty = SimpleStringProperty(this, "registrationNumbers", "").apply {
+        bind(registrationNumbersBinding)
+    }
+    val registrationNumbers by registrationNumbersProperty
 
     val registrationDriverNameProperty = registrationProperty.select(Registration::nameProperty)
     val registrationCarModelProperty = registrationProperty.select(Registration::carModelProperty)
