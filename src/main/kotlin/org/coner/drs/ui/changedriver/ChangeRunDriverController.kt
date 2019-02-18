@@ -1,5 +1,6 @@
 package org.coner.drs.ui.changedriver
 
+import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.RegistrationHintMapper
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.io.gateway.RunGateway
@@ -17,23 +18,22 @@ class ChangeRunDriverController : Controller() {
 
     fun findRegistrationForNumbers() {
         val registrationHint = try {
-            model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbers)
+            RegistrationHint("", "", "") // TODO
         } catch (t: Throwable) {
             model.registrationForNumbers = null
             return
         }
-        model.registrationForNumbers = model.registrations.firstOrNull {
+        model.registrationForNumbers = model.registrations.singleOrNull {
             it.category == registrationHint.category
                     && it.handicap == registrationHint.handicap
                     && it.number == registrationHint.number
-        } ?: RegistrationHintMapper.toRegistration(registrationHint)
+        }
     }
 
     fun buildNumbersHints(): List<String> {
         return registrationService.buildNumbersFieldHints(
                 numbersField = model.numbers,
-                registrationHints = model.registrationHints,
-                autoCompleteOrderPreference = model.driverAutoCompleteOrderPreference
+                registrationHints = model.registrationHints
         )
     }
 

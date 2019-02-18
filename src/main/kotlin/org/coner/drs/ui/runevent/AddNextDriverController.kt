@@ -2,7 +2,6 @@ package org.coner.drs.ui.runevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import com.github.thomasnield.rxkotlinfx.onChangedObservable
-import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.Run
@@ -24,22 +23,6 @@ class AddNextDriverController : Controller() {
                 .observeOnFx()
                 .debounce(100, TimeUnit.MILLISECONDS)
                 .subscribe { buildRegistrationHintsToRegistrationsMap() }
-        model.driverAutoCompleteOrderPreferenceProperty.addListener { observable, old, new ->
-            reformatNumbersField(old, new)
-        }
-        model.registrationForNumbersProperty.bind(model.numbersFieldProperty.objectBinding(model.numbersFieldProperty) {
-            val hint = try {
-                model.driverAutoCompleteOrderPreference.stringConverter.fromString(model.numbersField)
-            } catch (t: Throwable) {
-                null
-            } ?: return@objectBinding null
-            val registration = runEventModel.registrations.firstOrNull {
-                it.number == hint.number
-                && it.category == hint.category
-                && it.handicap == hint.handicap
-            }
-            registration
-        })
     }
 
     fun buildNextDriver() {
@@ -70,7 +53,7 @@ class AddNextDriverController : Controller() {
             val sequence = it.sequence
             it.sequenceProperty.unbind()
             it.sequence = sequence
-            it.registration = model.registrationForNumbers
+            it.registration = null // TODO
             it
         }
         model.nextDriver.commit()
@@ -109,21 +92,8 @@ class AddNextDriverController : Controller() {
     fun buildNumbersHints(): List<String> {
         return registrationService.buildNumbersFieldHints(
                 numbersField = model.numbersField,
-                registrationHints = model.registrationHints,
-                autoCompleteOrderPreference = model.driverAutoCompleteOrderPreference
+                registrationHints = model.registrationHints
         )
-    }
-
-    fun reformatNumbersField(old: DriverAutoCompleteOrderPreference, new: DriverAutoCompleteOrderPreference) {
-        val numbers = model.numbersField
-        model.numbersField = try {
-            if (numbers?.isNotBlank() == true) {
-                val registrationHint = old.stringConverter.fromString(numbers)
-                new.stringConverter.toString(registrationHint)
-            } else ""
-        } catch (t: Throwable) {
-            ""
-        }
     }
 
 }

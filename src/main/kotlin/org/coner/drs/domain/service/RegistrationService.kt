@@ -1,7 +1,6 @@
 package org.coner.drs.domain.service
 
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
 import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.RegistrationHintMapper
 import tornadofx.*
@@ -11,14 +10,12 @@ class RegistrationService : Controller() {
 
     fun buildNumbersFieldHints(
             numbersField: String,
-            registrationHints: Set<RegistrationHint>,
-            autoCompleteOrderPreference: DriverAutoCompleteOrderPreference
+            registrationHints: Set<RegistrationHint>
     ): List<String> {
         if (numbersField.isBlank()) return emptyList()
         val registrationHints = synchronized(registrationHints) { registrationHints.toList() }
-        val converter = autoCompleteOrderPreference.stringConverter
         return registrationHints.parallelStream()
-                .map { converter.toString(it) }
+                .map { RegistrationHintMapper.toNumbersFieldSuggestion(it) }
                 .filter { it.startsWith(numbersField) }
                 .sorted()
                 .toList()

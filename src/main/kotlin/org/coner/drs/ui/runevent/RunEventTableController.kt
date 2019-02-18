@@ -50,7 +50,6 @@ class RunEventTableController : Controller() {
                 runEventScope = scope,
                 run = run,
                 registrations = runEventModel.registrations,
-                driverAutoCompleteOrderPreference = addNextDriverModel.driverAutoCompleteOrderPreference,
                 registrationHints = addNextDriverModel.registrationHints
         )
         find<ChangeRunDriverFragment>(scope).openModal()

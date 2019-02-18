@@ -4,7 +4,6 @@ import javafx.geometry.Orientation
 import javafx.scene.control.TextField
 import javafx.scene.layout.Priority
 import javafx.util.StringConverter
-import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
 import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.bindAutoCompletion
 import tornadofx.*
@@ -33,63 +32,36 @@ class AddNextDriverView : View("Add Next Driver") {
                         onNewRun(this)
                     }
                     textFormatter = UpperCaseTextFormatter()
-                    promptTextProperty().bind(model.driverAutoCompleteOrderPreferenceProperty.stringBinding { it?.text })
                 }
             }
             buttonbar {
                 button("Add") {
                     enableWhen { model.nextDriver.valid }
                     action { controller.addNextDriver() }
-                    tooltip("Shortcut: Ctrl+Enter")
+                    tooltip("Shortcut: Enter")
                     isDefaultButton = true
-                }
-            }
-            shortcut("Ctrl+Enter") {
-                if (model.nextDriver.isValid) {
-                    controller.addNextDriver()
                 }
             }
         }
         fieldset("Identity", labelPosition = Orientation.VERTICAL) {
             field("Name") {
-                textfield(model.registrationForNumbersProperty.select { it.nameProperty }) {
+                textfield(/* TODO */) {
                     isEditable = false
                 }
             }
         }
         fieldset("Car", labelPosition = Orientation.VERTICAL) {
             field("Model") {
-                textfield(model.registrationForNumbersProperty.select { it.carModelProperty }) {
+                textfield(/* TODO */) {
                     isEditable = false
                 }
             }
             field("Color") {
-                textfield(model.registrationForNumbersProperty.select { it.carColorProperty }) {
+                textfield(/* TODO */) {
                     isEditable = false
                 }
             }
         }
-        pane {
-            vgrow = Priority.ALWAYS
-        }
-        fieldset(text = "Preferences" ,labelPosition = Orientation.VERTICAL) {
-            field("Driver Auto-Complete Order") {
-                choicebox(
-                        property = model.driverAutoCompleteOrderPreferenceProperty,
-                        values = model.driverAutoCompleteOrderPreferences
-                ) {
-                    converter = DriverAutoCompleteOrderPreferenceStringConverter()
-                }
-            }
-        }
-    }
-
-    private inner class DriverAutoCompleteOrderPreferenceStringConverter(
-    ) : StringConverter<DriverAutoCompleteOrderPreference>() {
-        override fun toString(p0: DriverAutoCompleteOrderPreference) = p0.text
-
-        override fun fromString(p0: String) = model.driverAutoCompleteOrderPreferences.first { it.text == p0 }
-
     }
 
     fun onNewRun(toFocus: TextField) {
