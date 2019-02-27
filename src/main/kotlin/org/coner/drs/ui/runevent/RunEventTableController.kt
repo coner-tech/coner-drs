@@ -49,8 +49,7 @@ class RunEventTableController : Controller() {
         val scope = ChangeRunDriverScope(
                 runEventScope = scope,
                 run = run,
-                registrations = runEventModel.registrations,
-                registrationHints = addNextDriverModel.registrationHints
+                registrations = runEventModel.registrations
         )
         find<ChangeRunDriverFragment>(scope).openModal()
     }

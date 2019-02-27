@@ -101,9 +101,9 @@ class RunGateway : Controller() {
     }
 
     fun hydrateWithRegistrationMetadata(run: Run, registrations: List<Registration>, destructive: Boolean = false) {
-        val category = run.registrationCategory
-        val handicap = run.registrationHandicap
-        val number = run.registrationNumber
+        val category = run.registration.category
+        val handicap = run.registration.handicap
+        val number = run.registration.number
         if (category == null || handicap == null || number == null) return
         val hydratedRegistration = registrations.firstOrNull {
             it.category == category

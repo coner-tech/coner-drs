@@ -12,18 +12,29 @@ import tornadofx.setValue
 
 class ChangeRunDriverModel(
         val run: Run,
-        val registrations: ObservableList<Registration>,
-        val registrationHints: Set<RegistrationHint>
+        val registrations: ObservableList<Registration>
 ) : ViewModel() {
 
     val numbersProperty = SimpleStringProperty(this, "numbers", "")
     var numbers by numbersProperty
-    val registrationForNumbersProperty = SimpleObjectProperty<Registration>(
-            this,
-            "registrationForNumbers",
-            Registration(category = "", handicap = "", number = "")
-    )
-    var registrationForNumbers by registrationForNumbersProperty
+
+    val registrationForNumbersProperty = SimpleObjectProperty<Registration>(this, "registration")
+    val registrationForNumbers by registrationForNumbersProperty
+
+    val registrationNameProperty = SimpleStringProperty(this, "registrationName").apply {
+        bind(registrationForNumbersProperty.select { it.nameProperty })
+    }
+    val registrationName by registrationNameProperty
+
+    val registrationCarModelProperty = SimpleStringProperty(this, "registrationCarModel").apply {
+        bind(registrationForNumbersProperty.select { it.carModelProperty })
+    }
+    var registrationCarModel by registrationCarModelProperty
+
+    val registrationCarColorProperty = SimpleStringProperty(this, "registrationCarColor").apply {
+        bind(registrationForNumbersProperty.select { it.carColorProperty })
+    }
+    var registrationCarColor by registrationCarColorProperty
 
 
 }

@@ -2,8 +2,8 @@ package org.coner.drs.ui.changedriver
 
 import javafx.geometry.Orientation
 import javafx.scene.control.ButtonBar
-import org.coner.drs.domain.entity.Registration
-import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.service.RegistrationService
+import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.bindAutoCompletion
 import tornadofx.*
@@ -14,6 +14,7 @@ class ChangeRunDriverFragment : Fragment("Change Run Driver") {
 
     val model: ChangeRunDriverModel by inject()
     val controller: ChangeRunDriverController by inject()
+    val numbersFieldValidation: NumbersFieldValidationController by inject()
 
     override val root = form {
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
@@ -25,6 +26,10 @@ class ChangeRunDriverFragment : Fragment("Change Run Driver") {
             field("Numbers") {
                 textfield(model.numbersProperty) {
                     required()
+                    validator(
+                            trigger = ValidationTrigger.OnChange(),
+                            validator = numbersFieldValidation.validator
+                    )
                     bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
                         setDelay(0)
                     }
@@ -48,21 +53,19 @@ class ChangeRunDriverFragment : Fragment("Change Run Driver") {
                 }
             }
         }
-        fieldset(text = "Identity") {
+        fieldset("Registration", labelPosition = Orientation.VERTICAL) {
             field("Name") {
-                textfield(model.registrationForNumbersProperty.select(Registration::nameProperty)) {
+                textfield(model.registrationNameProperty) {
                     isEditable = false
                 }
             }
-        }
-        fieldset("Car") {
-            field("Model") {
-                textfield(model.registrationForNumbersProperty.select(Registration::carModelProperty)) {
+            field("Car Model") {
+                textfield(model.registrationCarModelProperty) {
                     isEditable = false
                 }
             }
-            field("Color") {
-                textfield(model.registrationForNumbersProperty.select(Registration::carColorProperty)) {
+            field("Car Color") {
+                textfield(model.registrationCarColorProperty) {
                     isEditable = false
                 }
             }

@@ -11,8 +11,7 @@ import tornadofx.*
 class ChangeRunDriverScope(
         runEventScope: Scope,
         run: Run,
-        registrations: ObservableList<Registration>,
-        registrationHints: Set<RegistrationHint>
+        registrations: ObservableList<Registration>
 ) : Scope(
         find<RunGateway>(runEventScope),
         find<RegistrationService>(runEventScope)
@@ -20,8 +19,7 @@ class ChangeRunDriverScope(
     init {
         set(ChangeRunDriverModel(
                 run = run,
-                registrations = registrations,
-                registrationHints = registrationHints
+                registrations = registrations
         ))
     }
 }

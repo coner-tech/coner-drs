@@ -29,6 +29,16 @@ class Registration(
     val carColorProperty = SimpleStringProperty(this, "carColor", carColor)
     var carColor by carColorProperty
 
+    private val numbersBinding = stringBinding(numberProperty, categoryProperty, handicapProperty) {
+        arrayOf(number, category, handicap)
+                .filterNot { it.isNullOrBlank() }
+                .joinToString(" ")
+    }
+    val numbersProperty = SimpleStringProperty(this, "numbers").apply {
+        bind(numbersBinding)
+    }
+    val numbers by numbersProperty
+
     fun clone(
             category: String? = null,
             handicap: String? = null,

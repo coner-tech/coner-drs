@@ -31,26 +31,8 @@ class Run(
     val registrationProperty = SimpleObjectProperty<Registration>(this, "registration", registration)
     var registration by registrationProperty
 
-    val registrationCategoryProperty = registrationProperty.select(Registration::categoryProperty)
-    val registrationCategory by registrationCategoryProperty
-
-    val registrationHandicapProperty = registrationProperty.select(Registration::handicapProperty)
-    val registrationHandicap by registrationHandicapProperty
-
-    val registrationNumberProperty = registrationProperty.select(Registration::numberProperty)
-    val registrationNumber by registrationNumberProperty
-
-    private val registrationNumbersBinding = registrationProperty.stringBinding(
-            registrationProperty.select(Registration::categoryProperty),
-            registrationProperty.select(Registration::handicapProperty),
-            registrationProperty.select(Registration::numberProperty)
-    ) { registration ->
-        arrayOf(registration?.category, registration?.handicap, registration?.number)
-                .filter { !it.isNullOrBlank() }
-                .joinToString(" ")
-    }
     val registrationNumbersProperty = SimpleStringProperty(this, "registrationNumbers", "").apply {
-        bind(registrationNumbersBinding)
+        bind(registrationProperty.select { it.numbersProperty })
     }
     val registrationNumbers by registrationNumbersProperty
 
