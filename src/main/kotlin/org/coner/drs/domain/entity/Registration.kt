@@ -55,3 +55,15 @@ class Registration(
             carColor = carColor ?: this.carColor
     )
 }
+
+class RegistrationModel : ItemViewModel<Registration>() {
+    val category = bind(Registration::categoryProperty)
+    val handicap = bind(Registration::handicapProperty)
+    val number = bind(Registration::numberProperty)
+    val name = bind(Registration::nameProperty)
+    val carModel = bind(Registration::carModelProperty)
+    val carColor = bind(Registration::carColorProperty)
+
+    val numbers = bind(Registration::numbersProperty)
+
+}

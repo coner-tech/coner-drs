@@ -1,7 +1,9 @@
 package org.coner.drs.ui.runevent
 
 import javafx.geometry.Orientation
+import javafx.scene.Group
 import javafx.scene.control.TextField
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.util.StringConverter
 import org.coner.drs.ui.validation.NumbersFieldValidationController
@@ -15,8 +17,9 @@ class AddNextDriverView : View("Add Next Driver") {
     private val numbersFieldValidation: NumbersFieldValidationController by inject()
 
     override val root = form {
+        minWidth = 280.0
+        prefWidth = minWidth
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
-            hgrow = Priority.NEVER
             field(text = "Sequence") {
                 textfield(model.nextRunSequenceProperty) {
                     isEditable = false
@@ -24,17 +27,24 @@ class AddNextDriverView : View("Add Next Driver") {
                 }
             }
             field(text = "Numbers") {
-                textfield(model.numbersFieldProperty) {
-                    required()
-                    validator(
-                            trigger = ValidationTrigger.OnChange(),
-                            validator = numbersFieldValidation.validator
-                    )
-                    bindAutoCompletion(suggestionsProvider = { controller.buildNumbersFieldSuggestions() }) {
-                        setDelay(0)
+                vbox(spacing = 10) {
+//                    prefHeightProperty().bind(this@field.heightProperty())
+                    textfield(model.numbersFieldProperty) {
+                        required()
+                        validator(
+                                trigger = ValidationTrigger.OnChange(),
+                                validator = numbersFieldValidation.validator
+                        )
+//                    bindAutoCompletion(suggestionsProvider = { controller.buildNumbersFieldSuggestions() }) {
+//                        setDelay(0)
+//                    }
+                        prefColumnCount = 8
+                        textFormatter = UpperCaseTextFormatter()
                     }
-                    prefColumnCount = 5
-                    textFormatter = UpperCaseTextFormatter()
+                    listview(controller.model.registrationsForNumbersField) {
+                        vgrow = Priority.ALWAYS
+                        cellFragment(RegistrationCellFragment::class)
+                    }
                 }
             }
             buttonbar {
@@ -43,23 +53,6 @@ class AddNextDriverView : View("Add Next Driver") {
                     action { controller.addNextDriver() }
                     tooltip("Shortcut: Enter")
                     isDefaultButton = true
-                }
-            }
-        }
-        fieldset("Registration", labelPosition = Orientation.VERTICAL) {
-            field("Name") {
-                textfield(model.registrationForNumbersFieldProperty.select { it.nameProperty }) {
-                    isEditable = false
-                }
-            }
-            field("Car Model") {
-                textfield(model.registrationForNumbersFieldProperty.select { it.carModelProperty }) {
-                    isEditable = false
-                }
-            }
-            field("Car Color") {
-                textfield(model.registrationForNumbersFieldProperty.select { it.carColorProperty }) {
-                    isEditable = false
                 }
             }
         }

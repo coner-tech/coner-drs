@@ -18,6 +18,7 @@ class DigitalRawSheetApp : App(
         stylesheet = org.coner.drs.Stylesheet::class
 ) {
 
+
     val drsProperties by lazy {
         PropertyResourceBundle(resources.url("/drs.properties").openStream())
     }
@@ -32,6 +33,7 @@ class DigitalRawSheetApp : App(
 
     override fun start(stage: Stage) {
         super.start(stage)
+        stage.scene.stylesheets.add("/style/coner-unsafe.css")
         stage.icons.addAll(
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
@@ -41,8 +43,8 @@ class DigitalRawSheetApp : App(
                 stringBinding(uiComponent.titleProperty) {
                     "Coner Digital Raw Sheet - ${uiComponent.title}"
                 })
-        stage.minWidth = 1024.0
-        stage.minHeight = 768.0
+        stage.minWidth = 1366.0
+        stage.minHeight = 720.0
     }
 
 }

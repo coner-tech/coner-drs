@@ -1,5 +1,6 @@
 package org.coner.drs.ui.runevent
 
+import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
 import org.coner.drs.domain.entity.Event
@@ -21,12 +22,13 @@ class RunEventFragment : Fragment("Run Event") {
         isCollapsible = false
         prefHeightProperty().bind(parentProperty().select { (it as Region).heightProperty() })
         borderpane {
-            left { add(find<RunEventLeftDrawerView>(eventScope)) }
-            right { add(find<RunEventRightDrawerView>(eventScope)) }
+            left {
+                add(find<AddNextDriverView>(eventScope))
+            }
             center {
-                vgrow = Priority.ALWAYS
                 add(find<RunEventTableView>(eventScope))
             }
+            right { add(find<RunEventRightDrawerView>(eventScope)) }
         }
     }
 

@@ -24,7 +24,7 @@ class AddNextDriverController : Controller() {
     fun findRegistrationForNumbersField() {
         val registrations = runEventModel.registrations
         val numbers = model.numbersField
-        model.registrationForNumbersField = registrationService.search(registrations, numbers).singleOrNull()
+        model.registrationsForNumbersField.setAll(registrationService.search(registrations, numbers))
     }
 
     fun buildNumbersFieldSuggestions(): List<String> {

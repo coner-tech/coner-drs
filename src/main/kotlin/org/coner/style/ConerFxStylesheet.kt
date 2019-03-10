@@ -1,5 +1,7 @@
 package org.coner.style
 
+import javafx.scene.paint.Color
+import javafx.scene.paint.Stop
 import javafx.scene.text.FontSmoothingType
 import javafx.scene.text.FontWeight
 import tornadofx.*
@@ -16,6 +18,16 @@ class ConerFxStylesheet : Stylesheet() {
             accentColor = ConerLogoPalette.ORANGE
             focusColor = ConerLogoPalette.ORANGE
         }
+//        select(listCell.and(selected)) {
+//            text {
+//                fill = Color.WHITE
+//            }
+//        }
+//        select(tableRowCell.and(selected)) {
+//            text {
+//                fill = Color.WHITE
+//            }
+//        }
         text {
             fontSmoothingType = FontSmoothingType.GRAY
         }

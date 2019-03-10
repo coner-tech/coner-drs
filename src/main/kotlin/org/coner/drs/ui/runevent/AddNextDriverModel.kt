@@ -13,8 +13,7 @@ class AddNextDriverModel : ViewModel() {
     val numbersFieldProperty = SimpleStringProperty(this, "numbers", "")
     var numbersField by numbersFieldProperty
 
-    val registrationForNumbersFieldProperty = SimpleObjectProperty<Registration>(this, "registrationForNumbersField")
-    var registrationForNumbersField by registrationForNumbersFieldProperty
+    val registrationsForNumbersField = observableList<Registration>()
 
     val nextRunSequenceProperty = SimpleIntegerProperty(this, "nextRunSequence")
     var nextRunSequence by nextRunSequenceProperty
