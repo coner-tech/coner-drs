@@ -13,18 +13,8 @@ class AddNextDriverController : Controller() {
     val runGateway: RunGateway by inject()
     val registrationService: RegistrationService by inject()
 
-    init {
-        model.numbersFieldProperty.onChange { findRegistrationForNumbersField() }
-    }
-
     fun addNextDriver() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    fun findRegistrationForNumbersField() {
-        val registrations = runEventModel.registrations
-        val numbers = model.numbersField
-        model.registrationsForNumbersField.setAll(registrationService.search(registrations, numbers))
     }
 
     fun buildNumbersFieldSuggestions(): List<String> {

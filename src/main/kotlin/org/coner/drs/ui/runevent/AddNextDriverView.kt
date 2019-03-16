@@ -1,58 +1,77 @@
 package org.coner.drs.ui.runevent
 
+import javafx.collections.transformation.SortedList
 import javafx.geometry.Orientation
-import javafx.scene.Group
+import javafx.geometry.Pos
+import javafx.scene.control.ButtonBar
+import javafx.scene.control.SplitMenuButton
 import javafx.scene.control.TextField
-import javafx.scene.layout.HBox
+import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
-import javafx.util.StringConverter
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.service.RegistrationByNumbersSearchPredicate
 import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
-import org.coner.drs.util.bindAutoCompletion
 import tornadofx.*
 
 class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
     private val controller: AddNextDriverController by inject()
     private val numbersFieldValidation: NumbersFieldValidationController by inject()
+    private val runEventModel: RunEventModel by inject()
 
     override val root = form {
-        minWidth = 280.0
-        prefWidth = minWidth
+        id = "add-next-driver"
+        prefWidth = 300.0
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
-            field(text = "Sequence") {
+            vgrow = Priority.ALWAYS
+            field(text = "Sequence", orientation = Orientation.VERTICAL) {
                 textfield(model.nextRunSequenceProperty) {
                     isEditable = false
-                    prefColumnCount = 4
                 }
             }
-            field(text = "Numbers") {
-                vbox(spacing = 10) {
-//                    prefHeightProperty().bind(this@field.heightProperty())
-                    textfield(model.numbersFieldProperty) {
-                        required()
-                        validator(
-                                trigger = ValidationTrigger.OnChange(),
-                                validator = numbersFieldValidation.validator
-                        )
-//                    bindAutoCompletion(suggestionsProvider = { controller.buildNumbersFieldSuggestions() }) {
-//                        setDelay(0)
-//                    }
-                        prefColumnCount = 8
-                        textFormatter = UpperCaseTextFormatter()
+            field(text = "Numbers", orientation = Orientation.VERTICAL) {
+                vgrow = Priority.ALWAYS
+                textfield(model.numbersFieldProperty) {
+                    textFormatter = UpperCaseTextFormatter()
+                }
+                listview<Registration> {
+                    id = "registrations-list-view"
+                    vgrow = Priority.ALWAYS
+                    model.registrationList.bindTo(this)
+                    cellFragment(RegistrationCellFragment::class)
+                    bindSelected(model.registrationListSelectionProperty)
+                    model.registrationListAutoSelectionCandidateProperty.onChange {
+                        runLater {
+                            selectionModel.select(it?.registration)
+                            scrollTo(it?.registration)
+                        }
                     }
-                    listview(controller.model.registrationsForNumbersField) {
-                        vgrow = Priority.ALWAYS
-                        cellFragment(RegistrationCellFragment::class)
+                    shortcut("Enter") {
+                        if (!this.isFocused) return@shortcut
+                        if (this.selectedItem == null) return@shortcut
+                        controller.addNextDriver()
                     }
+
                 }
             }
-            buttonbar {
-                button("Add") {
-                    enableWhen { model.valid }
+            hbox {
+                alignment = Pos.TOP_RIGHT
+                SplitMenuButton().attachTo(this) {
+                    text = "Add"
+                    item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
+                        enableWhen(model.numbersFieldContainsNumbersTokensBinding)
+                        action { TODO() }
+                        tooltip("Tooltip")
+                    }
+                    enableWhen(
+                            model.numbersFieldContainsNumbersTokensBinding
+                                    .or(model.registrationListSelectionProperty.isNotNull)
+                    )
                     action { controller.addNextDriver() }
-                    tooltip("Shortcut: Enter")
-                    isDefaultButton = true
+                    shortcut(KeyCombination.keyCombination("Enter")) {
+                        TODO()
+                    }
                 }
             }
         }

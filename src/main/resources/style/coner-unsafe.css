@@ -15,4 +15,9 @@
         -fx-dark-text-color  59%,
         -fx-mid-text-color   60%
     );
+
+}
+
+#add-next-driver #registrations-list-view .list-cell:filled:selected {
+    -fx-selection-bar-non-focused: -fx-accent;
 }

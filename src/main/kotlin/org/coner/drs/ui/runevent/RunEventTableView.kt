@@ -38,11 +38,11 @@ class RunEventTableView : View() {
             makeEditable()
             setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
         }
-        column("Disqualified", Run::disqualified) {
+        column("Re-Run", Run::rerun) {
             makeEditable()
             setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
         }
-        column("Re-Run", Run::rerun) {
+        column("Disqualified", Run::disqualified) {
             makeEditable()
             setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
         }

@@ -10,10 +10,10 @@ class NumbersFieldValidationController : Controller() {
     val model: RunEventModel by inject()
 
     val validator: ValidationContext.(String?) -> ValidationMessage? = { numbers ->
-        val tokens = numbers?.split(" ") ?: listOf(numbers ?: "")
+        val tokens = numbers?.split(" ") ?: emptyList()
         when (tokens.size) {
             2, 3 -> {
-                if (tokens[0].isInt())
+                if (tokens[0].isInt() && tokens.all { it.isNotBlank() })
                     null
                 else
                     error("")

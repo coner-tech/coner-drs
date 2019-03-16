@@ -14,7 +14,7 @@
         <coner-drs.version>${project.version}</coner-drs.version>
         <kotlin.version>1.3.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <tornadofx.version>1.7.18-SNAPSHOT</tornadofx.version>
+        <tornadofx.version>1.7.18</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
@@ -24,6 +24,7 @@
         <jackson.version>2.9.7</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.2</appdirs.version>
+        <apache-commons-text.version>1.6</apache-commons-text.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
     </properties>
 
@@ -84,6 +85,12 @@
             <groupId>net.harawata</groupId>
             <artifactId>appdirs</artifactId>
             <version>${appdirs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${apache-commons-text.version}</version>
         </dependency>
     </dependencies>
 

@@ -8,13 +8,31 @@ class RegistrationCellFragment : ListCellFragment<Registration>() {
     val registration = RegistrationModel().bindTo(this)
 
     override val root = vbox {
+        prefWidth = 0.0
         label(registration.numbers) {
+            tooltip {
+                textProperty().bind(registration.numbers)
+            }
             style {
                 fontSize = 24.pt
             }
         }
-        label(registration.name)
-        label(registration.carModel)
-        label(registration.carColor)
+        label(registration.name) {
+            tooltip {
+                textProperty().bind(registration.name)
+            }
+        }
+        label(registration.carModel) {
+            tooltip {
+                textProperty().bind(registration.carModel)
+            }
+        }
+        label(registration.carColor) {
+            tooltip {
+                textProperty().bind(registration.carColor)
+            }
+        }
     }
+
+
 }
