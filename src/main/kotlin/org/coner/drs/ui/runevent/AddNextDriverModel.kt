@@ -56,8 +56,7 @@ class AddNextDriverModel : ViewModel() {
 
     data class SelectionCandiate(
             val registration: Registration,
-            val levenshteinDistanceToNumbersField: Int,
-            val index: Int
+            val levenshteinDistanceToNumbersField: Int
     )
 
     private fun onRegistrationListChange(change: ListChangeListener.Change<out Registration>) {
@@ -71,8 +70,7 @@ class AddNextDriverModel : ViewModel() {
             val selections = change.list
                     .map { SelectionCandiate(
                             registration = it,
-                            levenshteinDistanceToNumbersField = levenshteinDistance.apply(it.numbers, numbersField),
-                            index = change.list.indexOf(it)
+                            levenshteinDistanceToNumbersField = levenshteinDistance.apply(it.numbers, numbersField)
                     ) }
                     .sortedBy(SelectionCandiate::levenshteinDistanceToNumbersField)
             registrationListAutoSelectionCandidate = when (selections.size) {
