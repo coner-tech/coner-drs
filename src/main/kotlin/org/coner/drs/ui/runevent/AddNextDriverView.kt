@@ -57,8 +57,7 @@ class AddNextDriverView : View("Add Next Driver") {
             }
             hbox {
                 alignment = Pos.TOP_RIGHT
-                SplitMenuButton().attachTo(this) {
-                    text = "Add"
+                splitmenubutton("Add") {
                     item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
                         enableWhen(model.numbersFieldContainsNumbersTokensBinding)
                         action { TODO() }
