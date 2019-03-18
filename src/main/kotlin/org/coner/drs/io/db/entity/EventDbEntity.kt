@@ -1,9 +1,7 @@
 package org.coner.drs.io.db.entity
 
-import org.coner.drs.domain.entity.Event
 import org.coner.snoozle.db.Entity
 import org.coner.snoozle.db.EntityPath
-import java.io.File
 import java.time.LocalDate
 import java.util.*
 
@@ -21,32 +19,3 @@ data class EventDbEntity(
     )
 }
 
-class EventDbEntityMapper(
-        val crispyFishDatabase: File
-) {
-
-    fun toUiEntity(dbEntity: EventDbEntity?) = if (dbEntity != null) Event(
-            id = dbEntity.id,
-            date = dbEntity.date,
-            name = dbEntity.name,
-            crispyFishMetadata = with(dbEntity.crispyFishMetadata) {
-                Event.CrispyFishMetadata(
-                        classDefinitionFile = crispyFishDatabase.resolve(classDefinitionFile),
-                        eventControlFile = crispyFishDatabase.resolve(eventControlFile)
-                )
-            }
-    )
-    else null
-
-    fun toDbEntity(uiEntity: Event) = EventDbEntity(
-            id = uiEntity.id,
-            date = uiEntity.date,
-            name = uiEntity.name,
-            crispyFishMetadata = with(uiEntity.crispyFishMetadata) {
-                EventDbEntity.CrispyFishMetadata(
-                        classDefinitionFile = classDefinitionFile.toRelativeString(crispyFishDatabase),
-                        eventControlFile = eventControlFile.toRelativeString(crispyFishDatabase)
-                )
-            }
-        )
-}

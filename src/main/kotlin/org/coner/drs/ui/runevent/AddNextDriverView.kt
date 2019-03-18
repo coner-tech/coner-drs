@@ -1,15 +1,11 @@
 package org.coner.drs.ui.runevent
 
-import javafx.collections.transformation.SortedList
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.SplitMenuButton
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.domain.service.RegistrationByNumbersSearchPredicate
 import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
 import tornadofx.*
@@ -20,19 +16,22 @@ class AddNextDriverView : View("Add Next Driver") {
     private val numbersFieldValidation: NumbersFieldValidationController by inject()
     private val runEventModel: RunEventModel by inject()
 
+    private lateinit var numbersField: TextField
+
     override val root = form {
         id = "add-next-driver"
         prefWidth = 300.0
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
             vgrow = Priority.ALWAYS
             field(text = "Sequence", orientation = Orientation.VERTICAL) {
-                textfield(model.nextRunSequenceProperty) {
+                textfield(runEventModel.event.runForNextDriverProperty.select { it.sequenceProperty }) {
                     isEditable = false
                 }
             }
             field(text = "Numbers", orientation = Orientation.VERTICAL) {
                 vgrow = Priority.ALWAYS
                 textfield(model.numbersFieldProperty) {
+                    numbersField = this
                     textFormatter = UpperCaseTextFormatter()
                 }
                 listview<Registration> {
@@ -50,7 +49,7 @@ class AddNextDriverView : View("Add Next Driver") {
                     shortcut("Enter") {
                         if (!this.isFocused) return@shortcut
                         if (this.selectedItem == null) return@shortcut
-                        controller.addNextDriver()
+                        addFromListSelectionAndReset()
                     }
 
                 }
@@ -60,23 +59,35 @@ class AddNextDriverView : View("Add Next Driver") {
                 splitmenubutton("Add") {
                     item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
                         enableWhen(model.numbersFieldContainsNumbersTokensBinding)
-                        action { TODO() }
+                        action { addFromExactNumbersAndReset() }
                         tooltip("Tooltip")
                     }
                     enableWhen(
                             model.numbersFieldContainsNumbersTokensBinding
                                     .or(model.registrationListSelectionProperty.isNotNull)
                     )
-                    action { controller.addNextDriver() }
+                    action { addFromListSelectionAndReset() }
                     shortcut(KeyCombination.keyCombination("Enter")) {
-                        TODO()
+                        if (model.registrationListSelectionProperty.isNull.get()) return@shortcut
+                        addFromListSelectionAndReset()
                     }
                 }
             }
         }
     }
 
-    fun onNewRun(toFocus: TextField) {
-        toFocus.requestFocus()
+    private fun addFromListSelectionAndReset() {
+        controller.addNextDriverFromRegistrationListSelection()
+        reset()
+    }
+
+    private fun addFromExactNumbersAndReset() {
+        controller.addNextDriverForceExactNumbers()
+        reset()
+    }
+
+    private fun reset() {
+        model.numbersField = ""
+        numbersField.requestFocus()
     }
 }

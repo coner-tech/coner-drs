@@ -21,7 +21,7 @@ class AddNextDriverModel : ViewModel() {
 
     private val registrationListPredicate = RegistrationByNumbersSearchPredicate(numbersFieldProperty)
     val registrationList = SortedFilteredList(
-            items = SortedList(runEventModel.registrations, compareBy(Registration::numbers))
+            items = SortedList(runEventModel.event.registrations, compareBy(Registration::numbers))
     ).apply {
         filterWhen(numbersFieldProperty) { query, item ->
             registrationListPredicate.test(item)
@@ -41,14 +41,23 @@ class AddNextDriverModel : ViewModel() {
     }
     val numbersFieldContainsNumbersTokens by numbersFieldContainsNumbersTokensBinding
 
+    val numbersFieldArbitraryRegistrationBinding = numbersFieldTokensBinding.objectBinding {
+        when (it?.size) {
+            2 -> Registration(number = it[0], category = "", handicap = it[1])
+            3 -> Registration(number = it[0], category = it[1], handicap = it[2])
+            else -> null
+        }
+    }
+    val numbersFieldArbitraryRegistrationProperty = SimpleObjectProperty<Registration>(this, "numbersFieldArbitraryRegistration").apply {
+        bind(numbersFieldArbitraryRegistrationBinding)
+    }
+    val numbersFieldArbitraryRegistration by numbersFieldArbitraryRegistrationProperty
+
     val registrationListSelectionProperty = SimpleObjectProperty<Registration>(this, "registrationListSelection")
     var registrationListSelection by registrationListSelectionProperty
 
     val registrationListAutoSelectionCandidateProperty = SimpleObjectProperty<SelectionCandiate>(this, "registrationListAutoSelectionCandidate")
     var registrationListAutoSelectionCandidate by registrationListAutoSelectionCandidateProperty
-
-    val nextRunSequenceProperty = SimpleIntegerProperty(this, "nextRunSequence")
-    var nextRunSequence by nextRunSequenceProperty
 
     init {
         registrationList.onChange { onRegistrationListChange(it) }

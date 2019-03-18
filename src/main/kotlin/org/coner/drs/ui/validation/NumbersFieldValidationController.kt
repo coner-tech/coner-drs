@@ -19,7 +19,7 @@ class NumbersFieldValidationController : Controller() {
                     error("")
             }
             else -> {
-                if (registrationService.search(model.registrations, numbers ?: "").size == 1)
+                if (registrationService.search(model.event.registrations, numbers ?: "").size == 1)
                     null
                 else
                     error("")

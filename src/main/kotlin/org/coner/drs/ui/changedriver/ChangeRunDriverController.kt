@@ -1,6 +1,6 @@
 package org.coner.drs.ui.changedriver
 
-import org.coner.drs.domain.entity.RegistrationHintMapper
+import org.coner.drs.domain.mapper.RegistrationHintMapper
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*

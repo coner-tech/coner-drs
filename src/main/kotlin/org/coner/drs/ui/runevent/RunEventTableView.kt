@@ -6,9 +6,12 @@ import org.coner.drs.domain.entity.Run
 import tornadofx.*
 
 class RunEventTableView : View() {
-    val model: RunEventModel by inject()
+    val model: RunEventTableModel by inject()
     val controller: RunEventTableController by inject()
-    val runEventController: RunEventController by inject()
+
+    init {
+        controller.init()
+    }
 
     override val root = tableview(model.runsSortedBySequence) {
         isEditable = true
@@ -36,15 +39,15 @@ class RunEventTableView : View() {
         }
         column("Did Not Finish", Run::didNotFinish) {
             makeEditable()
-            setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
+            setOnEditCommit { controller.changeDidNotFinish(it.rowValue, it.newValue) }
         }
         column("Re-Run", Run::rerun) {
             makeEditable()
-            setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
+            setOnEditCommit { controller.changeRerun(it.rowValue, it.newValue) }
         }
         column("Disqualified", Run::disqualified) {
             makeEditable()
-            setOnEditCommit { controller.onEditCommitBooleanPenalty(it) }
+            setOnEditCommit { controller.changeDisqualified(it.rowValue, it.newValue) }
         }
         smartResize()
         contextmenu {

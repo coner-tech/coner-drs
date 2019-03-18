@@ -1,28 +1,22 @@
 package org.coner.drs.ui.runevent
 
-import org.coner.drs.domain.entity.RegistrationHint
-import org.coner.drs.domain.entity.RegistrationHintMapper
-import org.coner.drs.domain.service.RegistrationService
-import org.coner.drs.io.gateway.RunGateway
+import org.coner.drs.domain.service.RunService
 import tornadofx.*
 
 class AddNextDriverController : Controller() {
-
     val model: AddNextDriverModel by inject()
+    val runService: RunService by inject()
     val runEventModel: RunEventModel by inject()
-    val runGateway: RunGateway by inject()
-    val registrationService: RegistrationService by inject()
 
-    fun addNextDriver() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    fun addNextDriverFromRegistrationListSelection() {
+        runService.addNextDriver(runEventModel.event, model.registrationListSelection)
     }
 
-    fun buildNumbersFieldSuggestions(): List<String> {
-        val registrations = runEventModel.registrations
-        val numbers = model.numbersField
-        return registrationService.search(registrations, numbers)
-                .map { RegistrationHintMapper.fromRegistration(it) }
-                .map { RegistrationHintMapper.toNumbersFieldSuggestion(it) }
+    fun addNextDriverForceExactNumbers() {
+        if (!model.numbersFieldContainsNumbersTokens) return // TODO: guidance
+        val registration = model.numbersFieldArbitraryRegistration
+        runService.addNextDriver(runEventModel.event, registration)
     }
+
 
 }

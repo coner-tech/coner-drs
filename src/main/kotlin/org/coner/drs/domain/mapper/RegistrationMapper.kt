@@ -1,4 +1,4 @@
-package org.coner.drs.io.crispyfish
+package org.coner.drs.domain.mapper
 
 import org.coner.crispyfish.model.Registration
 

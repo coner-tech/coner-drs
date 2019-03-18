@@ -4,10 +4,11 @@ import javafx.geometry.Orientation
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
 import org.coner.drs.domain.entity.Event
+import org.coner.drs.domain.entity.RunEvent
 import tornadofx.*
 
 class RunEventFragment : Fragment("Run Event") {
-    val event: Event by param()
+    val event: RunEvent by param()
     val eventScope = Scope()
 
     val model: RunEventModel by inject(eventScope)
