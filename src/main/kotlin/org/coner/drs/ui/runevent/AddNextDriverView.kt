@@ -28,11 +28,13 @@ class AddNextDriverView : View("Add Next Driver") {
                     isEditable = false
                 }
             }
-            field(text = "Numbers", orientation = Orientation.VERTICAL) {
+            field(text = "_Numbers", orientation = Orientation.VERTICAL) {
                 vgrow = Priority.ALWAYS
                 textfield(model.numbersFieldProperty) {
                     numbersField = this
                     textFormatter = UpperCaseTextFormatter()
+                    label.labelFor = this
+                    label.isMnemonicParsing = true
                 }
                 listview<Registration> {
                     id = "registrations-list-view"

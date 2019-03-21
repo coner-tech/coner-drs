@@ -8,6 +8,7 @@ import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.EventDbEntity
 import org.coner.drs.domain.mapper.EventMapper
+import org.coner.drs.io.db.WatchedEntity
 import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 
@@ -32,7 +33,7 @@ class EventGateway : Controller() {
 
     fun watchList(): Observable<EntityWatchEvent<Event>> = db.watchListing<EventDbEntity>()
             .subscribeOn(Schedulers.io())
-            .map { EntityWatchEvent(
+            .map { EntityWatchEvent<Event>(
                     watchEvent = it.watchEvent,
                     id = it.id,
                     entity = mapper.toUiEntity(it.entity)

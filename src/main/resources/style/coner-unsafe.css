@@ -1,13 +1,4 @@
 .root {
-/*
-    -fx-text-background-color: ladder(
-        -fx-background,
-        -fx-light-text-color 45%,
-        -fx-dark-text-color  46%,
-        -fx-dark-text-color  59%,
-        -fx-mid-text-color   60%
-    );
-*/
     -fx-text-background-color: ladder(
         -fx-background,
         -fx-light-text-color 55%,
@@ -21,3 +12,15 @@
 #add-next-driver #registrations-list-view .list-cell:filled:selected {
     -fx-selection-bar-non-focused: -fx-accent;
 }
+
+.table-row-cell:selected .penalties .text {
+    -fx-fill: -fx-text-background-color;
+}
+.table-row-cell .penalties .text {
+    -fx-fill: -fx-text-background-color;
+}
+
+.context-menu .label {
+  -fx-text-fill: -fx-text-background-color;
+}
+

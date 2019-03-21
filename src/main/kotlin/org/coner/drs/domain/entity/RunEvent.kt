@@ -2,6 +2,7 @@ package org.coner.drs.domain.entity
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.SortedList
+import org.coner.drs.io.db.WatchedEntity
 import java.time.LocalDate
 import java.util.*
 import tornadofx.*

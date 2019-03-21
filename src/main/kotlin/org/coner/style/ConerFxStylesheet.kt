@@ -18,16 +18,6 @@ class ConerFxStylesheet : Stylesheet() {
             accentColor = ConerLogoPalette.ORANGE
             focusColor = ConerLogoPalette.ORANGE
         }
-//        select(listCell.and(selected)) {
-//            text {
-//                fill = Color.WHITE
-//            }
-//        }
-//        select(tableRowCell.and(selected)) {
-//            text {
-//                fill = Color.WHITE
-//            }
-//        }
         text {
             fontSmoothingType = FontSmoothingType.GRAY
         }

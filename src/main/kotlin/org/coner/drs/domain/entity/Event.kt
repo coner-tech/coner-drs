@@ -2,6 +2,7 @@ package org.coner.drs.domain.entity
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
+import org.coner.drs.io.db.WatchedEntity
 import java.io.File
 import java.time.LocalDate
 import java.util.*
@@ -12,7 +13,7 @@ open class Event(
         date: LocalDate = LocalDate.now(),
         name: String = "",
         crispyFishMetadata: CrispyFishMetadata = CrispyFishMetadata()
-) {
+): WatchedEntity<Event> {
     val idProperty = SimpleObjectProperty<UUID>(this, "id", id)
     var id by idProperty
 
@@ -44,5 +45,10 @@ open class Event(
                 eventControlFile
         )
         var eventControlFile by eventControlFileProperty
+    }
+
+    override fun onWatchedEntityUpdate(updated: Event) {
+        date = updated.date
+        name = updated.name
     }
 }

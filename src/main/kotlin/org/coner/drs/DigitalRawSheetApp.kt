@@ -15,7 +15,7 @@ import java.util.*
 
 class DigitalRawSheetApp : App(
         primaryView = MainView::class,
-        stylesheet = org.coner.drs.Stylesheet::class
+        stylesheet = DrsStylesheet::class
 ) {
 
 
@@ -53,5 +53,9 @@ fun main(args: Array<String>) {
     Application.launch(DigitalRawSheetApp::class.java, *args)
 }
 
-class Stylesheet : Stylesheet(ConerFxStylesheet::class) {
+class DrsStylesheet : Stylesheet(ConerFxStylesheet::class) {
+
+    companion object {
+        val penalties by cssclass("penalties")
+    }
 }

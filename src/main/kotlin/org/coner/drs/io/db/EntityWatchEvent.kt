@@ -6,12 +6,12 @@ import java.nio.file.WatchEvent
 import java.util.*
 import kotlin.reflect.KProperty1
 
-data class EntityWatchEvent <T : Any>(val watchEvent: WatchEvent<*>, val id: UUID, val entity: T?)
+data class EntityWatchEvent<E : WatchedEntity<E>>(val watchEvent: WatchEvent<*>, val id: UUID, val entity: E?)
 
-fun <T : Any> entityWatchEventConsumer(
-        idProperty: KProperty1<T, UUID>,
-        list: MutableList<T>
-) = Consumer<EntityWatchEvent<T>> { event ->
+fun <E : WatchedEntity<E>> entityWatchEventConsumer(
+        idProperty: KProperty1<E, UUID>,
+        list: MutableList<E>
+) = Consumer<EntityWatchEvent<E>> { event ->
     val entity = event.entity
     val kind = event.watchEvent.kind()
     if (entity != null &&
@@ -21,7 +21,7 @@ fun <T : Any> entityWatchEventConsumer(
     ) {
         val index = list.indexOfFirst { idProperty.get(it) == event.id }
         if (index >= 0) {
-            list[index] = entity
+            list[index].onWatchedEntityUpdate(entity)
         } else {
             list.add(entity)
         }
@@ -32,4 +32,8 @@ fun <T : Any> entityWatchEventConsumer(
             list.removeAt(index)
         }
     }
+}
+
+interface WatchedEntity<E> {
+    fun onWatchedEntityUpdate(updated: E)
 }
