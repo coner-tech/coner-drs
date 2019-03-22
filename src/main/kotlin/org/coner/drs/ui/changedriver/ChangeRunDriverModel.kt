@@ -3,38 +3,58 @@ package org.coner.drs.ui.changedriver
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.payload.RegistrationSelectionCandidate
+import org.coner.drs.domain.service.RegistrationByNumbersSearchPredicate
+import org.coner.drs.domain.service.RegistrationService
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue
 
 class ChangeRunDriverModel(
         val run: Run,
-        val registrations: ObservableList<Registration>
+        private val registrations: ObservableList<Registration>
 ) : ViewModel() {
 
-    val numbersProperty = SimpleStringProperty(this, "numbers", "")
-    var numbers by numbersProperty
+    private val registrationService: RegistrationService by inject()
 
-    val registrationForNumbersProperty = SimpleObjectProperty<Registration>(this, "registration")
-    val registrationForNumbers by registrationForNumbersProperty
+    val numbersFieldProperty = SimpleStringProperty(this, "numbers", "")
+    var numbersField by numbersFieldProperty
 
-    val registrationNameProperty = SimpleStringProperty(this, "registrationName").apply {
-        bind(registrationForNumbersProperty.select { it.nameProperty })
+    private val numbersFieldTokensBinding = numbersFieldProperty.objectBinding {
+        registrationService.findNumbersFieldTokens(it)
     }
-    val registrationName by registrationNameProperty
+    val numbersFieldTokens by numbersFieldTokensBinding
 
-    val registrationCarModelProperty = SimpleStringProperty(this, "registrationCarModel").apply {
-        bind(registrationForNumbersProperty.select { it.carModelProperty })
+    val numbersFieldContainsNumbersTokensBinding = numbersFieldTokensBinding.booleanBinding { tokens ->
+        registrationService.findNumbersFieldContainsNumbersTokens(tokens)
     }
-    var registrationCarModel by registrationCarModelProperty
+    val numbersFieldContainsNumbersTokens by numbersFieldContainsNumbersTokensBinding
 
-    val registrationCarColorProperty = SimpleStringProperty(this, "registrationCarColor").apply {
-        bind(registrationForNumbersProperty.select { it.carColorProperty })
+    val numbersFieldArbitraryRegistrationBinding = numbersFieldTokensBinding.objectBinding {
+        registrationService.findNumbersFieldArbitraryRegistration(it)
     }
-    var registrationCarColor by registrationCarColorProperty
+    val numbersFieldArbitraryRegistrationProperty = SimpleObjectProperty<Registration>(this, "numbersFieldArbitraryRegistration").apply {
+        bind(numbersFieldArbitraryRegistrationBinding)
+    }
 
+    val numbersFieldArbitraryRegistration by numbersFieldArbitraryRegistrationProperty
+    private val registrationListPredicate = RegistrationByNumbersSearchPredicate(numbersFieldProperty)
+
+    val registrationList = SortedFilteredList(
+            items = SortedList(registrations, compareBy(Registration::numbers))
+    ).apply {
+        filterWhen(numbersFieldProperty) { query, item ->
+            registrationListPredicate.test(item)
+        }
+    }
+    val registrationListSelectionProperty = SimpleObjectProperty<Registration>(this, "registrationListSelection")
+
+    var registrationListSelection by registrationListSelectionProperty
+    val registrationListAutoSelectionCandidateProperty = SimpleObjectProperty<RegistrationSelectionCandidate>(this, "registrationListAutoSelectionCandidate")
+
+    var registrationListAutoSelectionCandidate by registrationListAutoSelectionCandidateProperty
 
 }

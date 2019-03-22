@@ -1,35 +1,40 @@
 package org.coner.drs.ui.changedriver
 
+import javafx.collections.ListChangeListener
+import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.mapper.RegistrationHintMapper
 import org.coner.drs.domain.service.RegistrationService
+import org.coner.drs.domain.service.RunService
 import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 
 class ChangeRunDriverController : Controller() {
 
     val model: ChangeRunDriverModel by inject()
-    val runGateway: RunGateway by inject()
     val registrationService: RegistrationService by inject()
+    val runService: RunService by inject()
 
-    init {
-        model.numbersProperty.onChange {  findRegistrationForNumbers() }
+    fun init() {
+        model.registrationList.onChange {  updateRegistrationListAutoSelection(it) }
     }
 
-    fun findRegistrationForNumbers() {
+    fun updateRegistrationListAutoSelection(registrationListChange: ListChangeListener.Change<out Registration>) {
+        model.registrationListAutoSelectionCandidate = registrationService.findAutoSelectionCandidate(
+                registrationListChange,
+                model.numbersField
+        )
     }
 
-    fun buildNumbersHints(): List<String> {
-        val registrations = model.registrations
-        val numbers = model.numbers
-        return registrationService.search(registrations, numbers)
-                .map { RegistrationHintMapper.fromRegistration(it) }
-                .map { RegistrationHintMapper.toNumbersFieldSuggestion(it) }
+    fun changeDriverFromRegistrationListSelection() {
+        runService.changeDriver(model.run, model.registrationListSelection)
     }
 
-    fun changeDriver() {
-        val run = model.run
-        run.registration = model.registrationForNumbers
-        runGateway.save(run)
+    fun changeDriverFromExactNumbers() {
+        runService.changeDriver(model.run, model.numbersFieldArbitraryRegistration)
+    }
+
+    fun clearDriver() {
+        runService.changeDriver(model.run, null)
     }
 
 }

@@ -1,4 +1,4 @@
-package org.coner.drs.ui.runevent
+package org.coner.drs.ui
 
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.RegistrationModel

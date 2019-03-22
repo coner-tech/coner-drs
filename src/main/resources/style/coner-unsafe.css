@@ -9,7 +9,7 @@
 
 }
 
-#add-next-driver #registrations-list-view .list-cell:filled:selected {
+#registrations-list-view .list-cell:filled:selected {
     -fx-selection-bar-non-focused: -fx-accent;
 }
 

@@ -54,6 +54,7 @@ class Registration(
             carModel = carModel ?: this.carModel,
             carColor = carColor ?: this.carColor
     )
+
 }
 
 class RegistrationModel : ItemViewModel<Registration>() {

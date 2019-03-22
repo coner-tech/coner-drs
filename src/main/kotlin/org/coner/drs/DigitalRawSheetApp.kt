@@ -18,6 +18,9 @@ class DigitalRawSheetApp : App(
         stylesheet = DrsStylesheet::class
 ) {
 
+    init {
+        importStylesheet("/style/coner-unsafe.css")
+    }
 
     val drsProperties by lazy {
         PropertyResourceBundle(resources.url("/drs.properties").openStream())
@@ -33,7 +36,6 @@ class DigitalRawSheetApp : App(
 
     override fun start(stage: Stage) {
         super.start(stage)
-        stage.scene.stylesheets.add("/style/coner-unsafe.css")
         stage.icons.addAll(
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
@@ -58,4 +60,5 @@ class DrsStylesheet : Stylesheet(ConerFxStylesheet::class) {
     companion object {
         val penalties by cssclass("penalties")
     }
+
 }

@@ -6,6 +6,7 @@ import javafx.scene.control.TextField
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.domain.entity.Registration
+import org.coner.drs.ui.RegistrationCellFragment
 import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
 import tornadofx.*
@@ -16,7 +17,7 @@ class AddNextDriverView : View("Add Next Driver") {
     private val numbersFieldValidation: NumbersFieldValidationController by inject()
     private val runEventModel: RunEventModel by inject()
 
-    private lateinit var numbersField: TextField
+    private var numbersField: TextField by singleAssign()
 
     override val root = form {
         id = "add-next-driver"
@@ -62,7 +63,6 @@ class AddNextDriverView : View("Add Next Driver") {
                     item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
                         enableWhen(model.numbersFieldContainsNumbersTokensBinding)
                         action { addFromExactNumbersAndReset() }
-                        tooltip("Tooltip")
                     }
                     enableWhen(
                             model.numbersFieldContainsNumbersTokensBinding
@@ -91,5 +91,9 @@ class AddNextDriverView : View("Add Next Driver") {
     private fun reset() {
         model.numbersField = ""
         numbersField.requestFocus()
+    }
+
+    init {
+        controller.init()
     }
 }

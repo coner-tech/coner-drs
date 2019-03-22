@@ -57,6 +57,11 @@ class RunService : Controller() {
         save(run)
     }
 
+    fun changeDriver(run: Run, registration: Registration?) {
+        run.registration = registration
+        save(run)
+    }
+
     private fun save(run: Run): Task<Run> {
         return runAsync {
             gateway.save(run)

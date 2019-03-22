@@ -5,6 +5,7 @@ import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.entity.RegistrationHint
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.service.RunService
 import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 
@@ -13,8 +14,8 @@ class ChangeRunDriverScope(
         run: Run,
         registrations: ObservableList<Registration>
 ) : Scope(
-        find<RunGateway>(runEventScope),
-        find<RegistrationService>(runEventScope)
+        find<RegistrationService>(runEventScope),
+        find<RunService>(runEventScope)
 ) {
     init {
         set(ChangeRunDriverModel(
