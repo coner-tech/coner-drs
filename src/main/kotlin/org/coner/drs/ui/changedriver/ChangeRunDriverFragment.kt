@@ -7,7 +7,6 @@ import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.ui.RegistrationCellFragment
-import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.tornadofx.takeVerticalArrowKeyPressesAsSelectionsFrom
 import tornadofx.*
@@ -18,7 +17,6 @@ class ChangeRunDriverFragment : Fragment("Change Run Driver") {
 
     val model: ChangeRunDriverModel by inject()
     val controller: ChangeRunDriverController by inject()
-    val numbersFieldValidation: NumbersFieldValidationController by inject()
     private var numbersTextField: TextField by singleAssign()
 
     override val root = form {

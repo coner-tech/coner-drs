@@ -1,7 +1,6 @@
 package org.coner.drs.ui.runevent
 
 import javafx.collections.transformation.SortedList
-import javafx.scene.control.TableColumn
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.changedriver.ChangeRunDriverFragment

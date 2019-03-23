@@ -1,9 +1,6 @@
 package org.coner.drs.ui.runevent
 
-import javafx.geometry.Orientation
-import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
-import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.RunEvent
 import tornadofx.*
 

@@ -4,7 +4,6 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
-import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.TimerConfiguration

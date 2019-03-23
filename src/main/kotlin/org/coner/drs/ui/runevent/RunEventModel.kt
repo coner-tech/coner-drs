@@ -1,14 +1,11 @@
 package org.coner.drs.ui.runevent
 
 import io.reactivex.disposables.CompositeDisposable
-import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.collections.transformation.SortedList
-import org.coner.drs.domain.entity.*
+import org.coner.drs.domain.entity.RunEvent
+import org.coner.drs.domain.entity.TimerConfiguration
 import tornadofx.*
-import tornadofx.getValue
-import tornadofx.setValue
 
 class RunEventModel : ViewModel() {
     val eventProperty = SimpleObjectProperty<RunEvent>()

@@ -8,8 +8,6 @@ import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.domain.service.RegistrationByNumbersSearchPredicate
 import org.coner.drs.domain.service.RegistrationService
 import tornadofx.*
-import tornadofx.getValue
-import tornadofx.setValue
 
 class AddNextDriverModel : ViewModel() {
 

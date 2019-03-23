@@ -3,14 +3,12 @@ package org.coner.drs.ui.runevent
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ListView
-import javafx.scene.control.SelectionMode
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.ui.RegistrationCellFragment
-import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.tornadofx.takeVerticalArrowKeyPressesAsSelectionsFrom
 import tornadofx.*
@@ -18,7 +16,6 @@ import tornadofx.*
 class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
     private val controller: AddNextDriverController by inject()
-    private val numbersFieldValidation: NumbersFieldValidationController by inject()
     private val runEventModel: RunEventModel by inject()
 
     private var numbersField: TextField by singleAssign()

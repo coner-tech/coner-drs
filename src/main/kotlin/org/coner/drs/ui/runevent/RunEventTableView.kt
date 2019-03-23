@@ -1,10 +1,7 @@
 package org.coner.drs.ui.runevent
 
-import javafx.beans.binding.IntegerBinding
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
-import javafx.scene.paint.Color
-import javafx.scene.text.Text
 import org.coner.drs.DrsStylesheet
 import org.coner.drs.domain.entity.Run
 import tornadofx.*

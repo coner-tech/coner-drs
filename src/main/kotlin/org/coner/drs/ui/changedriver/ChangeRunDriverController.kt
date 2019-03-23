@@ -2,10 +2,8 @@ package org.coner.drs.ui.changedriver
 
 import javafx.collections.ListChangeListener
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.domain.mapper.RegistrationHintMapper
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.service.RunService
-import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 
 class ChangeRunDriverController : Controller() {
