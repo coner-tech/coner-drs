@@ -2,7 +2,9 @@ package org.coner.drs.ui.runevent
 
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
+import javafx.scene.control.ListView
 import javafx.scene.control.TextField
+import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.domain.entity.Registration
@@ -18,6 +20,7 @@ class AddNextDriverView : View("Add Next Driver") {
     private val runEventModel: RunEventModel by inject()
 
     private var numbersField: TextField by singleAssign()
+    private var registrationListView: ListView<Registration> by singleAssign()
 
     override val root = form {
         id = "add-next-driver"
@@ -36,8 +39,22 @@ class AddNextDriverView : View("Add Next Driver") {
                     textFormatter = UpperCaseTextFormatter()
                     label.labelFor = this
                     label.isMnemonicParsing = true
+                    setOnKeyPressed {
+                        when (it.code) {
+                            KeyCode.DOWN -> {
+                                selectNextRegistration()
+                                it.consume()
+                            }
+                            KeyCode.UP -> {
+                                selectPreviousRegistration()
+                                it.consume()
+                            }
+                            else -> { /* no-op */ }
+                        }
+                    }
                 }
                 listview<Registration> {
+                    registrationListView = this
                     id = "registrations-list-view"
                     vgrow = Priority.ALWAYS
                     model.registrationList.bindTo(this)
@@ -76,6 +93,16 @@ class AddNextDriverView : View("Add Next Driver") {
                 }
             }
         }
+    }
+
+    private fun selectNextRegistration() {
+        registrationListView.selectionModel.selectNext()
+        runLater { registrationListView.scrollTo(registrationListView.selectedItem) }
+    }
+
+    private fun selectPreviousRegistration() {
+        registrationListView.selectionModel.selectPrevious()
+        runLater { registrationListView.scrollTo(registrationListView.selectedItem) }
     }
 
     private fun addFromListSelectionAndReset() {
