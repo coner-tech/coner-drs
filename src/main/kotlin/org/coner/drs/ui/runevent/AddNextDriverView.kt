@@ -3,14 +3,16 @@ package org.coner.drs.ui.runevent
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ListView
+import javafx.scene.control.SelectionMode
 import javafx.scene.control.TextField
-import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
+import javafx.scene.layout.VBox
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.ui.RegistrationCellFragment
 import org.coner.drs.ui.validation.NumbersFieldValidationController
 import org.coner.drs.util.UpperCaseTextFormatter
+import org.coner.drs.util.tornadofx.takeVerticalArrowKeyPressesAsSelectionsFrom
 import tornadofx.*
 
 class AddNextDriverView : View("Add Next Driver") {
@@ -34,24 +36,12 @@ class AddNextDriverView : View("Add Next Driver") {
             }
             field(text = "_Numbers", orientation = Orientation.VERTICAL) {
                 vgrow = Priority.ALWAYS
+                (inputContainer as VBox).spacing = 0.0
                 textfield(model.numbersFieldProperty) {
                     numbersField = this
                     textFormatter = UpperCaseTextFormatter()
                     label.labelFor = this
                     label.isMnemonicParsing = true
-                    setOnKeyPressed {
-                        when (it.code) {
-                            KeyCode.DOWN -> {
-                                selectNextRegistration()
-                                it.consume()
-                            }
-                            KeyCode.UP -> {
-                                selectPreviousRegistration()
-                                it.consume()
-                            }
-                            else -> { /* no-op */ }
-                        }
-                    }
                 }
                 listview<Registration> {
                     registrationListView = this
@@ -60,6 +50,7 @@ class AddNextDriverView : View("Add Next Driver") {
                     model.registrationList.bindTo(this)
                     cellFragment(RegistrationCellFragment::class)
                     bindSelected(model.registrationListSelectionProperty)
+                    takeVerticalArrowKeyPressesAsSelectionsFrom(numbersField)
                     model.registrationListAutoSelectionCandidateProperty.onChange {
                         runLater {
                             selectionModel.select(it?.registration)
@@ -71,7 +62,6 @@ class AddNextDriverView : View("Add Next Driver") {
                         if (this.selectedItem == null) return@shortcut
                         addFromListSelectionAndReset()
                     }
-
                 }
             }
             hbox {
