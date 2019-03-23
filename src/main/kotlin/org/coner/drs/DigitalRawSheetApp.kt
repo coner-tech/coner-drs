@@ -45,7 +45,7 @@ class DigitalRawSheetApp : App(
                 stringBinding(uiComponent.titleProperty) {
                     "Coner Digital Raw Sheet - ${uiComponent.title}"
                 })
-        stage.minWidth = 1366.0
+        stage.minWidth = 1024.0
         stage.minHeight = 720.0
     }
 
