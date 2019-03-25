@@ -1,104 +1,113 @@
 package org.coner.drs.ui.runevent
 
 import javafx.geometry.Orientation
+import javafx.geometry.Pos
+import javafx.scene.control.ListView
 import javafx.scene.control.TextField
+import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
-import javafx.util.StringConverter
-import org.coner.drs.domain.entity.DriverAutoCompleteOrderPreference
+import javafx.scene.layout.VBox
+import org.coner.drs.domain.entity.Registration
+import org.coner.drs.ui.RegistrationCellFragment
 import org.coner.drs.util.UpperCaseTextFormatter
-import org.coner.drs.util.bindAutoCompletion
+import org.coner.drs.util.tornadofx.takeVerticalArrowKeyPressesAsSelectionsFrom
 import tornadofx.*
 
 class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
     private val controller: AddNextDriverController by inject()
+    private val runEventModel: RunEventModel by inject()
+
+    private var numbersField: TextField by singleAssign()
+    private var registrationListView: ListView<Registration> by singleAssign()
 
     override val root = form {
+        id = "add-next-driver"
+        prefWidth = 300.0
         fieldset(text = title, labelPosition = Orientation.VERTICAL) {
-            hgrow = Priority.NEVER
-            field(text = "Sequence") {
-                textfield(model.nextDriver.sequence) {
-                    isEditable = false
-                    prefColumnCount = 4
-                }
-            }
-            field(text = "Numbers") {
-                textfield(model.numbersFieldProperty) {
-                    required()
-                    bindAutoCompletion(suggestionsProvider = { controller.buildNumbersHints() }) {
-                        setDelay(0)
-                    }
-                    prefColumnCount = 5
-                    model.nextDriver.itemProperty.onChange {
-                        onNewRun(this)
-                    }
-                    textFormatter = UpperCaseTextFormatter()
-                    promptTextProperty().bind(model.driverAutoCompleteOrderPreferenceProperty.stringBinding { it?.text })
-                }
-            }
-            buttonbar {
-                button("Add") {
-                    enableWhen { model.nextDriver.valid }
-                    action { controller.addNextDriver() }
-                    tooltip("Shortcut: Ctrl+Enter")
-                    isDefaultButton = true
-                }
-            }
-            shortcut("Ctrl+Enter") {
-                if (model.nextDriver.isValid) {
-                    controller.addNextDriver()
-                }
-            }
-        }
-        fieldset("Identity", labelPosition = Orientation.VERTICAL) {
-            field("Name") {
-                textfield(model.registrationForNumbersProperty.select { it.nameProperty }) {
-                    isEditable = false
-                }
-            }
-        }
-        fieldset("Car", labelPosition = Orientation.VERTICAL) {
-            field("Model") {
-                textfield(model.registrationForNumbersProperty.select { it.carModelProperty }) {
-                    isEditable = false
-                }
-            }
-            field("Color") {
-                textfield(model.registrationForNumbersProperty.select { it.carColorProperty }) {
-                    isEditable = false
-                }
-            }
-        }
-        pane {
             vgrow = Priority.ALWAYS
-        }
-        fieldset(text = "Preferences" ,labelPosition = Orientation.VERTICAL) {
-            field("Driver Auto-Complete Order") {
-                choicebox(
-                        property = model.driverAutoCompleteOrderPreferenceProperty,
-                        values = model.driverAutoCompleteOrderPreferences
-                ) {
-                    converter = DriverAutoCompleteOrderPreferenceStringConverter()
+            field(text = "Sequence", orientation = Orientation.VERTICAL) {
+                textfield(runEventModel.event.runForNextDriverProperty.select { it.sequenceProperty }) {
+                    isEditable = false
+                }
+            }
+            field(text = "_Numbers", orientation = Orientation.VERTICAL) {
+                vgrow = Priority.ALWAYS
+                (inputContainer as VBox).spacing = 0.0
+                textfield(model.numbersFieldProperty) {
+                    numbersField = this
+                    textFormatter = UpperCaseTextFormatter()
+                    label.labelFor = this
+                    label.isMnemonicParsing = true
+                }
+                listview<Registration> {
+                    registrationListView = this
+                    id = "registrations-list-view"
+                    vgrow = Priority.ALWAYS
+                    model.registrationList.bindTo(this)
+                    cellFragment(RegistrationCellFragment::class)
+                    bindSelected(model.registrationListSelectionProperty)
+                    takeVerticalArrowKeyPressesAsSelectionsFrom(numbersField)
+                    model.registrationListAutoSelectionCandidateProperty.onChange {
+                        runLater {
+                            selectionModel.select(it?.registration)
+                            scrollTo(it?.registration)
+                        }
+                    }
+                    shortcut("Enter") {
+                        if (!this.isFocused) return@shortcut
+                        if (this.selectedItem == null) return@shortcut
+                        addFromListSelectionAndReset()
+                    }
+                }
+            }
+            hbox {
+                alignment = Pos.TOP_RIGHT
+                splitmenubutton("Add") {
+                    item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
+                        enableWhen(model.numbersFieldContainsNumbersTokensBinding)
+                        action { addFromExactNumbersAndReset() }
+                    }
+                    enableWhen(
+                            model.numbersFieldContainsNumbersTokensBinding
+                                    .or(model.registrationListSelectionProperty.isNotNull)
+                    )
+                    action { addFromListSelectionAndReset() }
+                    shortcut(KeyCombination.keyCombination("Enter")) {
+                        if (model.registrationListSelectionProperty.isNull.get()) return@shortcut
+                        addFromListSelectionAndReset()
+                    }
                 }
             }
         }
     }
 
-    private inner class DriverAutoCompleteOrderPreferenceStringConverter(
-    ) : StringConverter<DriverAutoCompleteOrderPreference>() {
-        override fun toString(p0: DriverAutoCompleteOrderPreference) = p0.text
-
-        override fun fromString(p0: String) = model.driverAutoCompleteOrderPreferences.first { it.text == p0 }
-
+    private fun selectNextRegistration() {
+        registrationListView.selectionModel.selectNext()
+        runLater { registrationListView.scrollTo(registrationListView.selectedItem) }
     }
 
-    fun onNewRun(toFocus: TextField) {
-        model.nextDriver.validate(decorateErrors = false)
-        toFocus.requestFocus()
+    private fun selectPreviousRegistration() {
+        registrationListView.selectionModel.selectPrevious()
+        runLater { registrationListView.scrollTo(registrationListView.selectedItem) }
     }
 
-    override fun onDock() {
-        super.onDock()
-        controller.buildNextDriver()
+    private fun addFromListSelectionAndReset() {
+        controller.addNextDriverFromRegistrationListSelection()
+        reset()
+    }
+
+    private fun addFromExactNumbersAndReset() {
+        controller.addNextDriverForceExactNumbers()
+        reset()
+    }
+
+    private fun reset() {
+        model.numbersField = ""
+        numbersField.requestFocus()
+    }
+
+    init {
+        controller.init()
     }
 }

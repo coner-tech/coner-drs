@@ -5,7 +5,7 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.io.crispyfish.RegistrationMapper
+import org.coner.drs.domain.mapper.RegistrationMapper
 import org.coner.drs.io.crispyfish.buildEventControlFile
 import tornadofx.*
 import java.nio.file.Path

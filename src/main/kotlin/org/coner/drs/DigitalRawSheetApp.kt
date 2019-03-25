@@ -15,8 +15,12 @@ import java.util.*
 
 class DigitalRawSheetApp : App(
         primaryView = MainView::class,
-        stylesheet = org.coner.drs.Stylesheet::class
+        stylesheet = DrsStylesheet::class
 ) {
+
+    init {
+        importStylesheet("/style/coner-unsafe.css")
+    }
 
     val drsProperties by lazy {
         PropertyResourceBundle(resources.url("/drs.properties").openStream())
@@ -42,7 +46,7 @@ class DigitalRawSheetApp : App(
                     "Coner Digital Raw Sheet - ${uiComponent.title}"
                 })
         stage.minWidth = 1024.0
-        stage.minHeight = 768.0
+        stage.minHeight = 720.0
     }
 
 }
@@ -51,5 +55,10 @@ fun main(args: Array<String>) {
     Application.launch(DigitalRawSheetApp::class.java, *args)
 }
 
-class Stylesheet : Stylesheet(ConerFxStylesheet::class) {
+class DrsStylesheet : Stylesheet(ConerFxStylesheet::class) {
+
+    companion object {
+        val penalties by cssclass("penalties")
+    }
+
 }

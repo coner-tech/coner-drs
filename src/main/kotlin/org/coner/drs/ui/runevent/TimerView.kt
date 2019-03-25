@@ -27,6 +27,11 @@ class TimerView : View("Timer") {
                     text(model.timerConfigurationTextProperty)
                 }
             }
+            field(text = "Next Time Run Sequence") {
+                textfield(model.event.runForNextTimeProperty.select { it.sequenceProperty }) {
+                    isEditable = false
+                }
+            }
         }
     }
 

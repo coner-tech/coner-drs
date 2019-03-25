@@ -1,57 +1,47 @@
 package org.coner.drs.ui.runevent
 
-import javafx.scene.control.TableColumn
+import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.changedriver.ChangeRunDriverFragment
 import org.coner.drs.ui.changedriver.ChangeRunDriverScope
 import tornadofx.*
 
 class RunEventTableController : Controller() {
+    val model: RunEventTableModel by inject()
     val controller: RunEventController by inject()
+    val runService: RunService by inject()
 
-    fun onEditCommitRegistrationCategory(event: TableColumn.CellEditEvent<Run, String>) {
-        val run = event.rowValue
-        run.registration = run.registration.clone(category = event.newValue)
-        controller.save(run)
-    }
-
-    fun onEditCommitRegistrationHandicap(event: TableColumn.CellEditEvent<Run, String>) {
-        val run = event.rowValue
-        run.registration = run.registration.clone(handicap = event.newValue)
-        controller.save(run)
-    }
-
-    fun onEditCommitRegistrationNumber(event: TableColumn.CellEditEvent<Run, String>) {
-        val run = event.rowValue
-        run.registration = run.registration.clone(number = event.newValue)
-        controller.save(run)
-    }
-
-    fun onEditCommitBooleanPenalty(event: TableColumn.CellEditEvent<Run, Boolean>) {
-        val run = event.rowValue
-        event.tableColumn.setValue(run, event.newValue)
-        controller.save(run)
+    fun init() {
+        model.runsSortedBySequence = SortedList(controller.model.event.runs, compareBy(Run::sequence))
     }
 
     fun incrementCones(run: Run) {
-        run.cones++
-        controller.save(run)
+        runService.incrementCones(run)
     }
 
     fun decrementCones(run: Run) {
-        run.cones--
-        controller.save(run)
+        runService.decrementCones(run)
+    }
+
+    fun changeDidNotFinish(run: Run, newValue: Boolean) {
+        runService.changeDidNotFinish(run, newValue)
+    }
+
+    fun changeRerun(run: Run, newValue: Boolean) {
+        runService.changeRerun(run, newValue)
+    }
+
+    fun changeDisqualified(run: Run, newValue: Boolean) {
+        runService.changeDisqualified(run, newValue)
     }
 
     fun showChangeDriver(run: Run) {
         val runEventModel: RunEventModel = find()
-        val addNextDriverModel: AddNextDriverModel = find()
         val scope = ChangeRunDriverScope(
                 runEventScope = scope,
                 run = run,
-                registrations = runEventModel.registrations,
-                driverAutoCompleteOrderPreference = addNextDriverModel.driverAutoCompleteOrderPreference,
-                registrationHints = addNextDriverModel.registrationHints
+                registrations = runEventModel.event.registrations
         )
         find<ChangeRunDriverFragment>(scope).openModal()
     }

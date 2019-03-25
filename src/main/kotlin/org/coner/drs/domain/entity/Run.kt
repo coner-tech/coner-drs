@@ -1,11 +1,15 @@
 package org.coner.drs.domain.entity
 
-import javafx.beans.property.SimpleBooleanProperty
-import javafx.beans.property.SimpleIntegerProperty
-import javafx.beans.property.SimpleObjectProperty
+import com.github.thomasnield.rxkotlinfx.toObservable
+import javafx.beans.binding.Binding
+import javafx.beans.property.*
+import javafx.collections.ObservableList
+import org.coner.drs.io.db.WatchedEntity
 import tornadofx.*
 import java.math.BigDecimal
 import java.util.*
+import tornadofx.getValue
+import tornadofx.setValue
 
 class Run(
         id: UUID = UUID.randomUUID(),
@@ -17,7 +21,7 @@ class Run(
         didNotFinish: Boolean = false,
         disqualified: Boolean = false,
         rerun: Boolean = false
-) {
+): WatchedEntity<Run> {
     val idProperty = SimpleObjectProperty<UUID>(this, "id", id)
     var id by idProperty
 
@@ -30,14 +34,10 @@ class Run(
     val registrationProperty = SimpleObjectProperty<Registration>(this, "registration", registration)
     var registration by registrationProperty
 
-    val registrationCategoryProperty = registrationProperty.select(Registration::categoryProperty)
-    val registrationCategory by registrationCategoryProperty
-
-    val registrationHandicapProperty = registrationProperty.select(Registration::handicapProperty)
-    val registrationHandicap by registrationHandicapProperty
-
-    val registrationNumberProperty = registrationProperty.select(Registration::numberProperty)
-    val registrationNumber by registrationNumberProperty
+    val registrationNumbersProperty = SimpleStringProperty(this, "registrationNumbers", "").apply {
+        bind(registrationProperty.select { it.numbersProperty })
+    }
+    val registrationNumbers by registrationNumbersProperty
 
     val registrationDriverNameProperty = registrationProperty.select(Registration::nameProperty)
     val registrationCarModelProperty = registrationProperty.select(Registration::carModelProperty)
@@ -58,4 +58,32 @@ class Run(
     val rerunProperty = SimpleBooleanProperty(this, "rerun", rerun)
     var rerun by rerunProperty
 
+    val compositePenaltyProperty = SimpleObjectProperty<CompositePenalty>(this, "compositePenalty", CompositePenalty(
+            conesProperty = conesProperty,
+            rerunProperty = rerunProperty,
+            didNotFinishProperty = didNotFinishProperty,
+            disqualifiedProperty = disqualifiedProperty
+    ))
+    val compositePenalty by compositePenaltyProperty
+
+    override fun onWatchedEntityUpdate(updated: Run) {
+        sequence = updated.sequence
+        rawTime = updated.rawTime
+        cones = updated.cones
+        didNotFinish = updated.didNotFinish
+        disqualified = updated.disqualified
+        rerun = updated.rerun
+    }
+
+    class CompositePenalty(
+            val conesProperty: SimpleIntegerProperty,
+            val rerunProperty: SimpleBooleanProperty,
+            val didNotFinishProperty: SimpleBooleanProperty,
+            val disqualifiedProperty: SimpleBooleanProperty
+    ) {
+        val cones by conesProperty
+        val rerun by rerunProperty
+        val didNotFinish by didNotFinishProperty
+        val disqualified by disqualifiedProperty
+    }
 }

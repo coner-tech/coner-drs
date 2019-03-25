@@ -1,5 +1,7 @@
 package org.coner.style
 
+import javafx.scene.paint.Color
+import javafx.scene.paint.Stop
 import javafx.scene.text.FontSmoothingType
 import javafx.scene.text.FontWeight
 import tornadofx.*

@@ -1,0 +1,26 @@
+.root {
+    -fx-text-background-color: ladder(
+        -fx-background,
+        -fx-light-text-color 55%,
+        -fx-dark-text-color  56%,
+        -fx-dark-text-color  59%,
+        -fx-mid-text-color   60%
+    );
+
+}
+
+#registrations-list-view .list-cell:filled:selected {
+    -fx-selection-bar-non-focused: -fx-accent;
+}
+
+.table-row-cell:selected .penalties .text {
+    -fx-fill: -fx-text-background-color;
+}
+.table-row-cell .penalties .text {
+    -fx-fill: -fx-text-background-color;
+}
+
+.context-menu .label {
+  -fx-text-fill: -fx-text-background-color;
+}
+

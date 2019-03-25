@@ -7,6 +7,7 @@ import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.TimerConfiguration
+import org.coner.drs.domain.service.RunService
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.gateway.RegistrationGateway
 import org.coner.drs.io.gateway.RunGateway
@@ -19,6 +20,7 @@ class RunEventController : Controller() {
     val model: RunEventModel by inject()
     val registrationGateway: RegistrationGateway by inject()
     val runGateway: RunGateway by inject()
+    val runService: RunService by inject()
     val timerService: TimerService by inject()
 
     fun init() {
@@ -31,33 +33,27 @@ class RunEventController : Controller() {
         ).subscribeOn(Schedulers.io())
                 .observeOnFx()
                 .subscribe { (registrations, runs) ->
-                    model.registrations.setAll(registrations)
-                    model.runs.setAll(runs)
+                    model.event.registrations.setAll(registrations)
+                    model.event.runs.setAll(runs)
                     runGateway.hydrateWithRegistrationMetadata(runs, registrations)
                 }
     }
 
-    fun save(run: Run) {
-        runAsync {
-            runGateway.save(run)
-        }
-    }
-
     fun docked() {
         model.disposables.addAll(
-                runGateway.watchList(model.event, model.registrations)
+                runGateway.watchList(model.event, model.event.registrations)
                     .subscribeOn(Schedulers.io())
                     .observeOnFx()
                     .subscribe(entityWatchEventConsumer(
                             idProperty = Run::id,
-                            list = model.runs
+                            list = model.event.runs
                     )),
                 registrationGateway.watchList(model.event)
                         .subscribeOn(Schedulers.io())
                         .observeOnFx()
                         .subscribe {
-                            model.registrations.setAll(it)
-                            runGateway.hydrateWithRegistrationMetadata(model.runs, it, true)
+                            model.event.registrations.setAll(it)
+                            runGateway.hydrateWithRegistrationMetadata(model.event.runs, it, true)
                         }
         )
     }
@@ -85,7 +81,7 @@ class RunEventController : Controller() {
 
     private val timerOutputWriter = object : TimerOutputWriter<FinishTriggerElapsedTimeOnly> {
         override fun write(input: FinishTriggerElapsedTimeOnly) {
-            runGateway.addTimeToFirstRunInSequenceWithoutRawTime(model.event, input.et)
+            runService.addNextTime(model.event, input.et)
         }
     }
 }
