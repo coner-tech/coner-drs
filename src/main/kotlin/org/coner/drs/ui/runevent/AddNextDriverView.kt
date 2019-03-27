@@ -35,6 +35,7 @@ class AddNextDriverView : View("Add Next Driver") {
                 vgrow = Priority.ALWAYS
                 (inputContainer as VBox).spacing = 0.0
                 textfield(model.numbersFieldProperty) {
+                    id = "numbers"
                     numbersField = this
                     textFormatter = UpperCaseTextFormatter()
                     label.labelFor = this
@@ -64,6 +65,7 @@ class AddNextDriverView : View("Add Next Driver") {
             hbox {
                 alignment = Pos.TOP_RIGHT
                 splitmenubutton("Add") {
+                    id = "add"
                     item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
                         enableWhen(model.numbersFieldContainsNumbersTokensBinding)
                         action { addFromExactNumbersAndReset() }
@@ -80,16 +82,6 @@ class AddNextDriverView : View("Add Next Driver") {
                 }
             }
         }
-    }
-
-    private fun selectNextRegistration() {
-        registrationListView.selectionModel.selectNext()
-        runLater { registrationListView.scrollTo(registrationListView.selectedItem) }
-    }
-
-    private fun selectPreviousRegistration() {
-        registrationListView.selectionModel.selectPrevious()
-        runLater { registrationListView.scrollTo(registrationListView.selectedItem) }
     }
 
     private fun addFromListSelectionAndReset() {
