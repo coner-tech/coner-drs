@@ -4,7 +4,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
@@ -18,6 +17,8 @@ import org.coner.drs.domain.service.RunService
 import org.coner.drs.test.TornadoFxScopeExtension
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.AddNextDriverPage
+import org.coner.drs.test.page.fast.FastAddNextDriverPage
+import org.coner.drs.test.page.real.RealAddNextDriverPage
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -44,7 +45,12 @@ class AddNextDriverViewTest {
     }
 
     private lateinit var view: AddNextDriverView
-    private lateinit var page: AddNextDriverPage
+    private lateinit var realPage: AddNextDriverPage
+    private lateinit var fastPage: AddNextDriverPage
+
+    private lateinit var model: AddNextDriverModel
+    private lateinit var controller: AddNextDriverController
+    private lateinit var runEventModel: RunEventModel
 
     @RelaxedMockK
     private lateinit var registrationService: RegistrationService
@@ -66,6 +72,9 @@ class AddNextDriverViewTest {
     fun init() {
         prepareScope()
         view = find(scope)
+        model = find(scope)
+        controller = find(scope)
+        runEventModel = find(scope)
     }
 
     @Start
@@ -76,37 +85,38 @@ class AddNextDriverViewTest {
 
     @BeforeEach
     fun beforeEach(robot: FxRobot) {
-        this.page = AddNextDriverPage(robot)
+        realPage = RealAddNextDriverPage(robot)
+        fastPage = FastAddNextDriverPage(robot)
     }
 
     @Test
     fun `Numbers field is bound to model property`(robot: FxRobot) {
-        robot.clickOn(page.numbersField())
-        robot.write("8 STR")
+        Assumptions.assumeThat(model.numbersField).isNullOrEmpty()
+        val numbers = "8 STR"
 
-        assertThat(find<AddNextDriverModel>(scope).numbersField).isEqualTo("8 STR")
+        realPage.writeInNumbersField(numbers)
+
+        assertThat(model.numbersField).isEqualTo(numbers)
     }
 
     @Test
     fun `Alt+N focuses Numbers field`() {
-        Assumptions.assumeThat(page.numbersField().isFocused).isFalse()
+        Assumptions.assumeThat(fastPage.numbersField().isFocused).isFalse()
 
-        page.doNumbersFieldFocusKeyboardShortcut()
+        realPage.focusNumbersField()
 
-        Assertions.assertThat(page.numbersField()).isFocused
+        Assertions.assertThat(realPage.numbersField()).isFocused
     }
 
     @Test
     fun `When numbers field focused, vertical arrow keys should affect registration list selection`(robot: FxRobot) {
-        robot.interact {
-            page.numbersField().requestFocus()
-        }
-        Assumptions.assumeThat(page.numbersField().isFocused).isTrue()
-        Assumptions.assumeThat(page.registrationsListView().selectionModel.selectedIndex).isEqualTo(-1)
+        fastPage.focusNumbersField()
+        Assumptions.assumeThat(fastPage.numbersField().isFocused).isTrue()
+        Assumptions.assumeThat(fastPage.registrationsListView().selectionModel.selectedIndex).isEqualTo(-1)
 
         fun typeAndAssert(keyCode: KeyCode, index: Int) {
             robot.type(keyCode)
-            Assertions.assertThat(page.registrationsListView().selectionModel.selectedIndex).isEqualTo(index)
+            Assertions.assertThat(realPage.registrationsListView().selectionModel.selectedIndex).isEqualTo(index)
         }
 
         typeAndAssert(KeyCode.DOWN, 0)
@@ -117,12 +127,10 @@ class AddNextDriverViewTest {
 
     @Test
     fun `When registration selected, it should be able to add next driver`(robot: FxRobot) {
-        val registration = page.registrationsListView().items[0]
-        robot.interact {
-            page.registrationsListView().selectionModel.select(registration)
-        }
+        val registration = fastPage.registrationsListView().items[0]
+        fastPage.selectRegistration(registration)
 
-        robot.clickOn(page.addButton())
+        realPage.doAddSelectedRegistration()
 
         verify { runService.addNextDriver(find<RunEventModel>(scope).event, registration) }
     }
@@ -138,13 +146,11 @@ class AddNextDriverViewTest {
         every { registrationService.findNumbersFieldTokens("123 ABC") }.returns(numbersFieldTokens)
         every { registrationService.findNumbersFieldArbitraryRegistration(numbersFieldTokens) }.returns(registration)
         every { registrationService.findNumbersFieldContainsNumbersTokens(numbersFieldTokens) }.returns(true)
-        robot.interact {
-            find<AddNextDriverModel>(scope).numbersField = "123 ABC"
-        }
+        fastPage.writeInNumbersField("123 ABC")
 
-        page.doAddExactNumbersKeyboardShortcut()
+        realPage.doAddForceExactNumbers()
 
-        verify { runService.addNextDriver(find<RunEventModel>(scope).event, registration) }
+        verify { runService.addNextDriver(runEventModel.event, registration) }
     }
 
 }

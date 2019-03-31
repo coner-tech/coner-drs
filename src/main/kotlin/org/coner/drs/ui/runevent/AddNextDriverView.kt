@@ -67,6 +67,7 @@ class AddNextDriverView : View("Add Next Driver") {
                 splitmenubutton("Add") {
                     id = "add"
                     item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
+                        id = "force-exact-numbers"
                         enableWhen(model.numbersFieldContainsNumbersTokensBinding)
                         action { addFromExactNumbersAndReset() }
                     }

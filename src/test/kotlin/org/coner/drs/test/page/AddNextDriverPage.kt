@@ -1,32 +1,31 @@
 package org.coner.drs.test.page
 
+import javafx.scene.control.ListView
+import javafx.scene.control.MenuItem
 import javafx.scene.control.SplitMenuButton
-import javafx.scene.input.KeyCode
+import javafx.scene.control.TextInputControl
 import org.coner.drs.domain.entity.Registration
-import org.testfx.api.FxRobot
 import tornadofx.*
 
-class AddNextDriverPage(private val robot: FxRobot) {
+interface AddNextDriverPage {
 
-    fun root() = robot.lookup("#add-next-driver").queryAs(Form::class.java)
+    fun root(): Form
 
-    fun numbersField() = robot.from(root()).lookup("#numbers").queryTextInputControl()
+    fun numbersField(): TextInputControl
 
-    fun registrationsListView() = robot.from(root().lookup("#registrations-list-view")).queryListView<Registration>()
+    fun writeInNumbersField(s: String)
 
-    fun doNumbersFieldFocusKeyboardShortcut() {
-        robot.press(KeyCode.ALT)
-        robot.type(KeyCode.N)
-        robot.release(KeyCode.ALT)
-    }
+    fun registrationsListView(): ListView<Registration>
 
-    fun addButton() = robot.from(root().lookup("#add")).queryAs(SplitMenuButton::class.java)
+    fun selectRegistration(registration: Registration)
 
-    fun doAddExactNumbersKeyboardShortcut() {
-        robot.press(KeyCode.CONTROL)
-        robot.type(KeyCode.ENTER)
-        robot.release(KeyCode.CONTROL)
-    }
+    fun focusNumbersField()
 
+    fun addButton(): SplitMenuButton
 
+    fun doAddSelectedRegistration()
+
+    fun addForceExactNumbersItem(): MenuItem
+
+    fun doAddForceExactNumbers()
 }
