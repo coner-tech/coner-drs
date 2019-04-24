@@ -3,6 +3,7 @@ package org.coner.drs.ui.runevent
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
@@ -44,17 +45,23 @@ class RunEventController : Controller() {
                 runGateway.watchList(model.event, model.event.registrations)
                     .subscribeOn(Schedulers.io())
                     .observeOnFx()
-                    .subscribe(entityWatchEventConsumer(
-                            idProperty = Run::id,
-                            list = model.event.runs
-                    )),
+                    .subscribe(
+                            entityWatchEventConsumer(
+                                    idProperty = Run::id,
+                                    list = model.event.runs
+                            ),
+                            Consumer { /* no-op */ }
+                    ),
                 registrationGateway.watchList(model.event)
                         .subscribeOn(Schedulers.io())
                         .observeOnFx()
-                        .subscribe {
-                            model.event.registrations.setAll(it)
-                            runGateway.hydrateWithRegistrationMetadata(model.event.runs, it, true)
-                        }
+                        .subscribe(
+                                { registrations ->
+                                    model.event.registrations.setAll(registrations)
+                                    runGateway.hydrateWithRegistrationMetadata(model.event.runs, registrations, true)
+                                },
+                                { /* no-op */ }
+                        )
         )
     }
 

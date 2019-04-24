@@ -3,6 +3,7 @@ package org.coner.drs
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import javafx.stage.StageStyle
 import net.harawata.appdirs.AppDirsFactory
 import org.coner.drs.ui.main.MainView
 import org.coner.style.ConerFxStylesheet
@@ -13,7 +14,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.*
 
-class DigitalRawSheetApp : App(
+open class DigitalRawSheetApp : App(
         primaryView = MainView::class,
         stylesheet = DrsStylesheet::class
 ) {
@@ -22,14 +23,14 @@ class DigitalRawSheetApp : App(
         importStylesheet("/style/coner-unsafe.css")
     }
 
-    val drsProperties by lazy {
+    open val drsProperties: PropertyResourceBundle? by lazy {
         PropertyResourceBundle(resources.url("/drs.properties").openStream())
     }
 
     override val configBasePath: Path = Paths.get(URI.create("file://" + AppDirsFactory.getInstance()
             .getUserConfigDir(
                     "digital-raw-sheet",
-                    drsProperties.getString("coner-drs.version"),
+                    drsProperties?.getString("coner-drs.version"),
                     "coner"
             )
     ))

@@ -7,10 +7,12 @@ class StartView : View("Start") {
     val model: StartModel by inject()
 
     override val root = stackpane {
+        id = "start"
         form {
             fieldset("Databases") {
                 field("Coner Digital Raw Sheet") {
                     textfield(model.rawSheetDatabaseProperty.stringBinding { it?.absolutePath ?: "" }) {
+                        id = "raw-sheet-database-field"
                         isEditable = false
                     }
                     button("Choose") {
@@ -21,6 +23,7 @@ class StartView : View("Start") {
                 }
                 field("Crispy Fish") {
                     textfield(model.crispyFishDatabaseProperty.stringBinding { it?.absolutePath ?: ""}) {
+                        id = "crispy-fish-database-field"
                         isEditable = false
                     }
                     button("Choose") {
@@ -32,8 +35,10 @@ class StartView : View("Start") {
             }
             buttonbar {
                 button("Start") {
+                    id = "start-button"
                     enableWhen { model.valid }
                     action {
+                        println("start-button clicked")
                         controller.onClickStart()
                     }
                     isDefaultButton = true

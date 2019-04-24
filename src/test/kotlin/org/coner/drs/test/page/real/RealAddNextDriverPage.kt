@@ -7,7 +7,9 @@ import org.coner.drs.test.page.AddNextDriverPage
 import org.testfx.api.FxRobot
 import tornadofx.*
 
-open class RealAddNextDriverPage(protected val robot: FxRobot) : AddNextDriverPage {
+open class RealAddNextDriverPage(
+        protected val robot: FxRobot
+) : AddNextDriverPage {
 
     override fun root() = robot.lookup("#add-next-driver")
             .queryAs(Form::class.java)!!

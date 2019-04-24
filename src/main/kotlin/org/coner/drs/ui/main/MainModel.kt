@@ -7,4 +7,6 @@ import tornadofx.*
 class MainModel : ViewModel() {
     val screenProperty = SimpleObjectProperty<Screen>(this, "screen")
     var screen by screenProperty
+
+    var busRegistrations = mutableListOf<FXEventRegistration>()
 }

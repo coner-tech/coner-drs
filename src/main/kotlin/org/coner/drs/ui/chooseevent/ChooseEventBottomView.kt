@@ -14,6 +14,7 @@ class ChooseEventBottomView : View() {
             hgrow = Priority.ALWAYS
         }
         button("Start") {
+            id = "start"
             enableWhen(model.choiceProperty.isNotNull)
             action {
                 controller.onClickStart()
