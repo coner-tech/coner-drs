@@ -14,10 +14,12 @@ import org.coner.drs.test.fixture.integration.crispyfish.classdefinition.Thscc20
 import org.coner.drs.test.fixture.integration.crispyfish.event.Thscc2019Points1
 import org.coner.drs.test.page.fast.FastChooseEventPage
 import org.coner.drs.test.page.real.RealRunEventPage
+import org.coner.drs.ui.chooseevent.ChooseEventModel
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import tornadofx.*
 import java.time.LocalDate
+import java.util.concurrent.CountDownLatch
 
 class RunEventIntegrationTest : BaseIntegrationTest() {
 
@@ -38,10 +40,17 @@ class RunEventIntegrationTest : BaseIntegrationTest() {
         )
         val app = this.app!!
         val robot = this.robot!!
-        robot.interact { find<EventGateway>(app.scope).save(event) }
+        val latch = CountDownLatch(1)
         val fastChooseEventPage = FastChooseEventPage(robot)
-        robot.interact { fastChooseEventPage.selectEvent { it.id == event.id } }
-        robot.interact { fastChooseEventPage.clickStartButton() }
+        find<ChooseEventModel>().events.onChange { latch.countDown() }
+        robot.interactNoWait {
+            Thread.sleep(160)
+            val gateway: EventGateway = find()
+            gateway.save(event)
+        }
+        latch.await()
+        fastChooseEventPage.selectEvent { it.id == event.id }
+        fastChooseEventPage.clickStartButton()
 
         this.event = find<EventGateway>(app.scope).list().first()
         this.page = RealRunEventPage(robot)

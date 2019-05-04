@@ -7,11 +7,13 @@ import org.testfx.api.FxRobot
 class FastChooseEventPage(robot: FxRobot) : RealChooseEventPage(robot) {
 
     override fun selectEvent(matcher: (Event) -> Boolean) {
-        val event = eventsTable().items.first(matcher)
-        eventsTable().selectionModel.select(event)
+        robot.interact {
+            val event = eventsTable().items.first(matcher)
+            eventsTable().selectionModel.select(event)
+        }
     }
 
     override fun clickStartButton() {
-        startButton().fire()
+        robot.interact { startButton().fire() }
     }
 }

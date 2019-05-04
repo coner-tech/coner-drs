@@ -6,7 +6,7 @@ import org.coner.drs.domain.entity.Event
 import tornadofx.*
 
 class ChooseEventModel : ViewModel() {
-    val events = observableList<Event>()
+    val events = observableListOf<Event>()
     val choiceProperty = SimpleObjectProperty<Event>(this, "event")
     var choice by choiceProperty
 
