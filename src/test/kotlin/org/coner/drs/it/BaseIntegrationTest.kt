@@ -69,5 +69,13 @@ abstract class BaseIntegrationTest {
     private class IntegrationTestApp(appConfigBasePath: File) : DigitalRawSheetApp() {
         override val configBasePath = appConfigBasePath.toPath()
         override val drsProperties = null
+
+        override fun start(stage: Stage) {
+            super.start(stage)
+            // for mysterious reasons, if the stage has a minHeight (great than 0), subsequent tests fail seemingly due
+            // to the scene not appearing on the stage, and therefore nodes aren't visible or in bounds for the robot
+            // to click on.
+            stage.minHeight = 0.0
+        }
     }
 }

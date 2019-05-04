@@ -37,6 +37,7 @@ open class DigitalRawSheetApp : App(
 
     override fun start(stage: Stage) {
         super.start(stage)
+        println("DigitalRawSheetApp.start()")
         stage.icons.addAll(
                 listOf(16, 32, 48, 64, 128, 256, 512, 1024)
                         .map { Image("/coner-icon/coner-icon_$it.png") }
@@ -48,6 +49,8 @@ open class DigitalRawSheetApp : App(
                 })
         stage.width = 1024.0
         stage.height = 720.0
+        stage.minWidth = 1024.0
+        stage.minHeight = 720.0
     }
 
 }
