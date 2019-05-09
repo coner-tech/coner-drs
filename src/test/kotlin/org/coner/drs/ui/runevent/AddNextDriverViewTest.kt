@@ -19,11 +19,13 @@ import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.AddNextDriverPage
 import org.coner.drs.test.page.fast.FastAddNextDriverPage
 import org.coner.drs.test.page.real.RealAddNextDriverPage
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
+import org.testfx.api.FxToolkit
 import org.testfx.assertions.api.Assertions
 import org.testfx.framework.junit5.ApplicationExtension
 import org.testfx.framework.junit5.Init
@@ -42,6 +44,11 @@ class AddNextDriverViewTest {
             this.scope = scope
         }
 
+        @JvmStatic
+        @AfterAll
+        fun afterAll() {
+            FxToolkit.cleanupStages()
+        }
     }
 
     private lateinit var view: AddNextDriverView
