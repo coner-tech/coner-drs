@@ -17,6 +17,7 @@ class RunEventFragment : Fragment("Run Event") {
     }
 
     override val root = titledpane(event.name) {
+        id = "run-event"
         isCollapsible = false
         prefHeightProperty().bind(parentProperty().select { (it as Region).heightProperty() })
         borderpane {
@@ -39,4 +40,6 @@ class RunEventFragment : Fragment("Run Event") {
         super.onUndock()
         controller.undocked()
     }
+
+
 }

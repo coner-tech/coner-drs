@@ -7,6 +7,7 @@ class ChooseEventTableView : View() {
     val model: ChooseEventModel by inject()
     val controller: ChooseEventController by inject()
     override val root = tableview(model.events) {
+        id = "events"
         column("Date", Event::dateProperty) {
             makeEditable()
         }
@@ -33,4 +34,6 @@ class ChooseEventTableView : View() {
         super.onUndock()
         controller.undocked()
     }
+
+
 }

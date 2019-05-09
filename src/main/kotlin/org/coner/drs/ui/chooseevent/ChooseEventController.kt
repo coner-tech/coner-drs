@@ -1,6 +1,7 @@
 package org.coner.drs.ui.chooseevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.functions.Consumer
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.gateway.EventGateway
@@ -43,12 +44,16 @@ class ChooseEventController : Controller() {
     }
 
     fun docked() {
-        model.disposables.add(eventGateway.watchList()
-                .observeOnFx()
-                .subscribe(entityWatchEventConsumer(
-                        idProperty = Event::id,
-                        list = model.events
-                ))
+        model.disposables.add(
+                eventGateway.watchList()
+                        .observeOnFx()
+                        .subscribe(
+                                entityWatchEventConsumer(
+                                        idProperty = Event::id,
+                                        list = model.events
+                                ),
+                                Consumer { /* no-op */ }
+                        )
         )
     }
 

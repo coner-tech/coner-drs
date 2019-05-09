@@ -18,6 +18,7 @@ class RunEventTableView : View() {
         fieldset("_Runs") {
             vgrow = Priority.ALWAYS
             tableview(model.runsSortedBySequence) {
+                id = "runs-table"
                 legend.isMnemonicParsing = true
                 legend.labelFor = this
                 isEditable = true
@@ -29,6 +30,7 @@ class RunEventTableView : View() {
                 column("Car Model", Run::registrationCarModelProperty)
                 column("Car Color", Run::registrationCarColorProperty)
                 column("Time", Run::rawTimeProperty) {
+
                 }
                 column("Penalties", Run::compositePenaltyProperty) {
                     cellFormat { penalties ->
