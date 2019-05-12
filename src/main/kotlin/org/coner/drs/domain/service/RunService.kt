@@ -1,5 +1,6 @@
 package org.coner.drs.domain.service
 
+import javafx.collections.transformation.SortedList
 import javafx.concurrent.Task
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
@@ -11,6 +12,31 @@ import java.math.BigDecimal
 class RunService : Controller() {
 
     val gateway: RunGateway by inject()
+
+    fun findRunForNextTime(runEvent: RunEvent): Run {
+        val indexOfLastRunWithTime = runEvent.runsBySequence.indexOfLast { it.rawTime != null }
+        return if (indexOfLastRunWithTime >= 0) {
+            if (indexOfLastRunWithTime in 0 until runEvent.runsBySequence.lastIndex) {
+                runEvent.runsBySequence[indexOfLastRunWithTime + 1]
+            } else {
+                // Consider error reporting for this scenario.
+                // There has possibly been a finish trip without a run ready with a driver awaiting a time.
+                // Perhaps a car managed to stage and launch without being noticed by Timing workers.
+                // Recommend to hold start while resolving situation.
+                Run(
+                        event = runEvent,
+                        sequence = runEvent.runsBySequence[indexOfLastRunWithTime].sequence + 1
+                )
+            }
+        } else if (runEvent.runsBySequence.isNotEmpty()) {
+            runEvent.runsBySequence[0]
+        } else {
+            Run(
+                    event = runEvent,
+                    sequence = 1
+            )
+        }
+    }
 
     fun addNextDriver(event: RunEvent, registration: Registration) {
         val run = event.runForNextDriver
