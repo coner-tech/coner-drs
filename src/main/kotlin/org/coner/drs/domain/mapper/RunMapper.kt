@@ -38,4 +38,16 @@ object RunMapper {
             disqualified = uiRun.disqualified,
             rerun = uiRun.rerun
     )
+
+    fun copy(uiRun: Run) = Run(
+            id = uiRun.id,
+            event = uiRun.event,
+            sequence = uiRun.sequence,
+            registration = uiRun.registration,
+            rawTime = uiRun.rawTime,
+            cones = uiRun.cones,
+            didNotFinish = uiRun.didNotFinish,
+            disqualified = uiRun.disqualified,
+            rerun = uiRun.rerun
+    )
 }

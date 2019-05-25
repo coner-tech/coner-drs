@@ -1,10 +1,13 @@
 package org.coner.drs.domain.service
 
-import javafx.collections.transformation.SortedList
-import javafx.concurrent.Task
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.RunEvent
+import org.coner.drs.domain.mapper.RunMapper
+import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
+import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.io.gateway.RunGateway
 import tornadofx.*
 import java.math.BigDecimal
@@ -45,7 +48,7 @@ class RunService : Controller() {
             event.runs.add(run)
         }
         event.runForNextDriverBinding.invalidate()
-        save(run)
+        syncSave(run)
     }
 
     fun addNextTime(event: RunEvent, time: BigDecimal) {
@@ -55,43 +58,93 @@ class RunService : Controller() {
             event.runs.add(run)
         }
         event.runForNextTimeBinding.invalidate()
-        save(run)
+        syncSave(run)
     }
 
     fun incrementCones(run: Run) {
         run.cones++
-        save(run)
+        syncSave(run)
     }
 
     fun decrementCones(run: Run) {
         run.cones--
-        save(run)
+        syncSave(run)
     }
 
     fun changeDidNotFinish(run: Run, newValue: Boolean) {
         run.didNotFinish = newValue
-        save(run)
+        syncSave(run)
     }
 
     fun changeRerun(run: Run, newValue: Boolean) {
         run.rerun = newValue
-        save(run)
+        syncSave(run)
     }
 
     fun changeDisqualified(run: Run, newValue: Boolean) {
         run.disqualified = newValue
-        save(run)
+        syncSave(run)
     }
 
     fun changeDriver(run: Run, registration: Registration?) {
         run.registration = registration
-        save(run)
+        syncSave(run)
     }
 
-    private fun save(run: Run): Task<Run> {
-        return runAsync {
-            gateway.save(run)
-            run
+    fun insertDriverIntoSequence(request: InsertDriverIntoSequenceRequest): Single<InsertDriverIntoSequenceResult> {
+        return Single.just(request)
+                .flatMap {
+                    Single.just(request)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(Schedulers.computation())
+                            .map { performInsertDriverIntoSequence(request) }
+                }
+                .flatMap { result ->
+                    Single.just(result)
+                            .subscribeOn(Schedulers.computation())
+                            .observeOn(Schedulers.io())
+                            .map { writeInsertDriverIntoSequenceResult(request, result) }
+                }
+    }
+
+    private fun performInsertDriverIntoSequence(request: InsertDriverIntoSequenceRequest): InsertDriverIntoSequenceResult {
+        val runs = request.runs
+                .map { RunMapper.copy(it) }
+                .toMutableList()
+                .apply { sortWith(compareBy(Run::sequence)) }
+        val insertSequence = when(request.relative) {
+            InsertDriverIntoSequenceRequest.Relative.BEFORE -> maxOf(request.sequence - 1, 1)
+            InsertDriverIntoSequenceRequest.Relative.AFTER -> request.sequence + 1
         }
+        val insertIndex = insertSequence - 1 // sequence is 1-indexed, lists are 0-indexed
+        val insertRun = Run(
+                event = request.event,
+                registration = request.registration,
+                sequence = insertSequence
+        )
+        runs.add(insertIndex, insertRun)
+        val shiftRuns = runs.filterIndexed { index, run ->
+            index >= insertIndex && run.id != insertRun.id
+        }
+        shiftRuns.forEach { run -> run.sequence++ }
+        return InsertDriverIntoSequenceResult(
+                runs = runs,
+                insertRun = insertRun,
+                shiftRuns = shiftRuns.toTypedArray()
+        )
+    }
+
+    private fun writeInsertDriverIntoSequenceResult(
+            request: InsertDriverIntoSequenceRequest,
+            result: InsertDriverIntoSequenceResult
+    ): InsertDriverIntoSequenceResult {
+        if (!request.dryRun) {
+            syncSave(result.insertRun, *result.shiftRuns)
+        }
+        return result
+    }
+
+    private fun syncSave(vararg runs: Run) {
+        runs.forEach { gateway.save(it) }
     }
 }
