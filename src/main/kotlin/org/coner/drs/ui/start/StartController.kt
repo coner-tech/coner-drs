@@ -10,7 +10,7 @@ class StartController : Controller() {
 
     fun onClickChooseRawSheetDatabase() {
         val dir = chooseDirectory("Coner Digital Raw Sheet Database") ?: return
-        model.rawSheetDatabase = dir
+        model.rawSheetDatabase = dir.toPath()
     }
 
     fun onClickChooseCrispyFishDatabase() {
