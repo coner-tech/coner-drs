@@ -11,7 +11,7 @@ class StartView : View("Start") {
         form {
             fieldset("Databases") {
                 field("Coner Digital Raw Sheet") {
-                    textfield(model.rawSheetDatabaseProperty.stringBinding { it?.absolutePath ?: "" }) {
+                    textfield(model.rawSheetDatabaseProperty.stringBinding { it?.toString() ?: "" }) {
                         id = "raw-sheet-database-field"
                         isEditable = false
                     }

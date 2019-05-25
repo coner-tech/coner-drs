@@ -5,12 +5,14 @@ import tornadofx.*
 import java.io.File
 import tornadofx.getValue
 import tornadofx.setValue
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class StartModel : ViewModel() {
-    val rawSheetDatabaseProperty = SimpleObjectProperty<File>(
+    val rawSheetDatabaseProperty = SimpleObjectProperty<Path>(
             this,
             "rawSheetDatabase",
-            with(config) { if (containsKey("rawSheetDatabase")) File(string("rawSheetDatabase")) else null }
+            with(config) { if (containsKey("rawSheetDatabase")) Paths.get(string("rawSheetDatabase")) else null }
     )
     var rawSheetDatabase by rawSheetDatabaseProperty
     val crispyFishDatabaseProperty = SimpleObjectProperty<File>(
@@ -22,7 +24,7 @@ class StartModel : ViewModel() {
 
     override fun onCommit() {
         with(config) {
-            set("rawSheetDatabase" to rawSheetDatabase.absolutePath)
+            set("rawSheetDatabase" to rawSheetDatabase)
             set("crispyFishDatabase" to crispyFishDatabase.absolutePath)
             save()
         }

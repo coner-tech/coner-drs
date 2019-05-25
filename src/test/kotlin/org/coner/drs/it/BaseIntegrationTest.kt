@@ -14,6 +14,7 @@ import org.testfx.api.FxToolkit
 import tornadofx.*
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 import java.util.*
 
 abstract class BaseIntegrationTest {
@@ -21,17 +22,18 @@ abstract class BaseIntegrationTest {
     protected var app: DigitalRawSheetApp? = null
     protected var robot: FxRobot? = null
 
-    private var rootFolder: File? = null
+    private var rootFolder: Path? = null
     protected var appConfigBasePath: File? = null
-    protected var rawSheetDatabase: File? = null
+    protected var rawSheetDatabase: Path? = null
     protected var crispyFishDatabase: File? = null
 
     @BeforeEach
     private fun baseBeforeEach() {
-        rootFolder = createTempFolder()
-        appConfigBasePath = File(rootFolder, "appConfigBasePath").apply { mkdir() }
-        rawSheetDatabase = File(rootFolder,"rawSheetDatabase").apply { mkdir() }
-        crispyFishDatabase = File(rootFolder, "crispyFishDatabase").apply { mkdir() }
+        rootFolder = createTempFolder().also { root ->
+            appConfigBasePath = File(root.toFile(), "appConfigBasePath").apply { mkdir() }
+            rawSheetDatabase = root.resolve("rawSheetDatabase").apply { Files.createDirectory(this) }
+            crispyFishDatabase = File(root.toFile(), "crispyFishDatabase").apply { mkdir() }
+        }
         FxToolkit.registerPrimaryStage()
         val app = IntegrationTestApp(
                 appConfigBasePath = appConfigBasePath!!
@@ -45,9 +47,9 @@ abstract class BaseIntegrationTest {
         startPage.clickStartButton()
     }
 
-    private fun createTempFolder(): File {
+    private fun createTempFolder(): Path {
         val prefix = "${javaClass.canonicalName}-${UUID.randomUUID()}"
-        return Files.createTempDirectory(prefix).toFile()
+        return Files.createTempDirectory(prefix)
     }
 
     @AfterEach
@@ -55,7 +57,7 @@ abstract class BaseIntegrationTest {
         println("BaseIntegrationTest.baseAfterEach()")
         FxToolkit.cleanupStages()
         FxToolkit.cleanupApplication(app)
-        check(rootFolder?.deleteRecursively() ?: false) {
+        check(rootFolder?.toFile()?.deleteRecursively() ?: false) {
             "Failed to delete test root folder"
         }
         app = null

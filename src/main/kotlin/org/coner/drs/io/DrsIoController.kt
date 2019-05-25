@@ -3,39 +3,31 @@ package org.coner.drs.io
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import org.coner.drs.io.db.DigitalRawSheetDatabase
 import org.coner.drs.io.db.entity.EventDbEntity
 import org.coner.drs.io.db.entity.RunDbEntity
 import org.coner.snoozle.db.Database
 import tornadofx.*
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 
 class DrsIoController : Controller() {
     val model: DrsIoModel by inject()
 
-    fun open(pathToDrsDatabase: File, pathToCrispyFishDatabase: File) {
+    fun open(pathToDrsDatabase: Path, pathToCrispyFishDatabase: File) {
         if (model.db != null) throw IllegalStateException("Database is already open")
         model.pathToDrsDatabase = pathToDrsDatabase
         model.pathToCrispyFishDatabase = pathToCrispyFishDatabase
         createDrsDbPath()
-        model.db = Database(
-                root = pathToDrsDatabase,
-                objectMapper = jacksonObjectMapper()
-                        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                        .enable(SerializationFeature.INDENT_OUTPUT)
-                        .registerModule(JavaTimeModule())
-                ,
-                entities = *arrayOf(
-                        EventDbEntity::class,
-                        RunDbEntity::class
-                )
+        model.db = DigitalRawSheetDatabase(
+                root = pathToDrsDatabase
         )
     }
 
     fun createDrsDbPath() {
-        val pathToDrsDbPath = model.pathToDrsDatabase?.toPath()
-        if (Files.notExists(pathToDrsDbPath)) {
-            Files.createDirectories(pathToDrsDbPath)
+        if (Files.notExists(model.pathToDrsDatabase)) {
+            Files.createDirectories(model.pathToDrsDatabase)
         }
     }
 

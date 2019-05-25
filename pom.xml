@@ -20,7 +20,7 @@
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
         <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.1.2</snoozle.version>
+        <snoozle.version>0.2.0</snoozle.version>
         <jackson.version>2.9.7</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.2</appdirs.version>

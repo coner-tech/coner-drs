@@ -6,6 +6,7 @@ import javafx.scene.layout.StackPane
 import org.coner.drs.test.page.StartPage
 import org.testfx.api.FxRobot
 import java.io.File
+import java.nio.file.Path
 
 open class RealStartPage(protected val robot: FxRobot) : StartPage {
 
@@ -15,7 +16,7 @@ open class RealStartPage(protected val robot: FxRobot) : StartPage {
             .lookup("#raw-sheet-database-field")
             .query() as TextInputControl
 
-    override fun setRawSheetDatabase(file: File) {
+    override fun setRawSheetDatabase(file: Path) {
         throw UnsupportedOperationException()
     }
 

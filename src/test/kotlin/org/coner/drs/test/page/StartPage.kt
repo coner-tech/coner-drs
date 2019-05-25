@@ -4,6 +4,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.TextInputControl
 import javafx.scene.layout.StackPane
 import java.io.File
+import java.nio.file.Path
 
 interface StartPage {
 
@@ -11,7 +12,7 @@ interface StartPage {
 
     fun rawSheetDatabaseField(): TextInputControl
 
-    fun setRawSheetDatabase(file: File)
+    fun setRawSheetDatabase(file: Path)
 
     fun crispyFishDatabaseField(): TextInputControl
 

@@ -4,12 +4,10 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.RunEvent
+import org.coner.drs.domain.mapper.EventMapper
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.EventDbEntity
-import org.coner.drs.domain.mapper.EventMapper
-import org.coner.drs.io.db.WatchedEntity
-import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 
 class EventGateway : Controller() {

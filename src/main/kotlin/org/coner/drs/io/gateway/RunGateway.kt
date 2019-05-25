@@ -1,16 +1,15 @@
 package org.coner.drs.io.gateway
 
-import io. reactivex.Observable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.mapper.RunMapper
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.RunDbEntity
-import org.coner.drs.domain.mapper.RunMapper
-import org.coner.snoozle.db.jvm.watchListing
 import tornadofx.*
 
 class RunGateway : Controller() {
