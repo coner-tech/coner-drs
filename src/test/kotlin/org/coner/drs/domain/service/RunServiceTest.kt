@@ -39,7 +39,7 @@ class RunServiceTest {
         val runEvent = RunEvents.basic()
         Assumptions.assumeThat(runEvent.runsBySequence).isEmpty()
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(1)
@@ -58,7 +58,7 @@ class RunServiceTest {
                 rawTime = null
         )
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(1)
@@ -83,7 +83,7 @@ class RunServiceTest {
                 rawTime = null
         )
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(2)
@@ -102,7 +102,7 @@ class RunServiceTest {
                 rawTime = BigDecimal.valueOf(123456, 3)
         )
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(2)

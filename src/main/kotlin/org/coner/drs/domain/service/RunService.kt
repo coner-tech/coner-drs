@@ -1,6 +1,8 @@
 package org.coner.drs.domain.service
 
+import io.reactivex.Completable
 import io.reactivex.Single
+import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
@@ -14,9 +16,16 @@ import java.math.BigDecimal
 
 class RunService : Controller() {
 
-    val gateway: RunGateway by inject()
+    private val gateway: RunGateway by inject()
+    private val controller: DomainServiceController by inject()
 
-    fun findRunForNextTime(runEvent: RunEvent): Run {
+    fun findRunForNextTime(runEvent: RunEvent): Single<Run> {
+        return controller.scheduleSingle {
+            findRunForNextTimeSync(runEvent)
+        }
+    }
+
+    private fun findRunForNextTimeSync(runEvent: RunEvent): Run {
         val indexOfLastRunWithTime = runEvent.runsBySequence.indexOfLast { it.rawTime != null }
         return if (indexOfLastRunWithTime >= 0) {
             if (indexOfLastRunWithTime in 0 until runEvent.runsBySequence.lastIndex) {
@@ -41,73 +50,111 @@ class RunService : Controller() {
         }
     }
 
-    fun addNextDriver(event: RunEvent, registration: Registration) {
+    fun addNextDriver(event: RunEvent, registration: Registration): Completable {
+        return controller.scheduleCompletable {
+            addNextDriverSync(event, registration)
+        }
+    }
+
+    private fun addNextDriverSync(event: RunEvent, registration: Registration) {
         val run = event.runForNextDriver
         run.registration = registration
         if (!event.runs.contains(run)) {
             event.runs.add(run)
         }
         event.runForNextDriverBinding.invalidate()
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun addNextTime(event: RunEvent, time: BigDecimal) {
+    fun addNextTime(event: RunEvent, time: BigDecimal): Completable {
+        return controller.scheduleCompletable {
+            addNextTimeSync(event, time)
+        }
+    }
+
+    private fun addNextTimeSync(event: RunEvent, time: BigDecimal) {
         val run = event.runForNextTime
         run.rawTime = time
         if (!event.runs.contains(run)) {
             event.runs.add(run)
         }
         event.runForNextTimeBinding.invalidate()
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun incrementCones(run: Run) {
+    fun incrementCones(run: Run): Completable {
+        return controller.scheduleCompletable {
+            incrementConesSync(run)
+        }
+    }
+
+    private fun incrementConesSync(run: Run) {
         run.cones++
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun decrementCones(run: Run) {
+    fun decrementCones(run: Run): Completable {
+        return controller.scheduleCompletable {
+            decrementConesSync(run)
+        }
+    }
+
+    private fun decrementConesSync(run: Run) {
         run.cones--
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun changeDidNotFinish(run: Run, newValue: Boolean) {
+    fun changeDidNotFinish(run: Run, newValue: Boolean): Completable {
+        return controller.scheduleCompletable {
+            changeDidNotFinishSync(run, newValue)
+        }
+    }
+
+    private fun changeDidNotFinishSync(run: Run, newValue: Boolean) {
         run.didNotFinish = newValue
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun changeRerun(run: Run, newValue: Boolean) {
+    fun changeRerun(run: Run, newValue: Boolean): Completable {
+        return controller.scheduleCompletable {
+            changeRerunSync(run, newValue)
+        }
+    }
+
+    private fun changeRerunSync(run: Run, newValue: Boolean) {
         run.rerun = newValue
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun changeDisqualified(run: Run, newValue: Boolean) {
+    fun changeDisqualified(run: Run, newValue: Boolean): Completable {
+        return controller.scheduleCompletable {
+            changeDisqualifiedSync(run, newValue)
+        }
+    }
+
+    private fun changeDisqualifiedSync(run: Run, newValue: Boolean) {
         run.disqualified = newValue
-        syncSave(run)
+        saveSync(run)
     }
 
-    fun changeDriver(run: Run, registration: Registration?) {
+    fun changeDriver(run: Run, registration: Registration?): Completable {
+        return controller.scheduleCompletable {
+            changeDriverSync(run, registration)
+        }
+    }
+
+    private fun changeDriverSync(run: Run, registration: Registration?) {
         run.registration = registration
-        syncSave(run)
+        saveSync(run)
     }
 
     fun insertDriverIntoSequence(request: InsertDriverIntoSequenceRequest): Single<InsertDriverIntoSequenceResult> {
-        return Single.just(request)
-                .flatMap {
-                    Single.just(request)
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(Schedulers.computation())
-                            .map { performInsertDriverIntoSequence(request) }
-                }
-                .flatMap { result ->
-                    Single.just(result)
-                            .subscribeOn(Schedulers.computation())
-                            .observeOn(Schedulers.io())
-                            .map { writeInsertDriverIntoSequenceResult(request, result) }
-                }
+        return controller.scheduleSingle {
+            insertDriverIntoSequenceSync(request)
+        }
     }
 
-    private fun performInsertDriverIntoSequence(request: InsertDriverIntoSequenceRequest): InsertDriverIntoSequenceResult {
+    private fun insertDriverIntoSequenceSync(request: InsertDriverIntoSequenceRequest): InsertDriverIntoSequenceResult {
         val runs = request.runs
                 .map { RunMapper.copy(it) }
                 .toMutableList()
@@ -127,24 +174,19 @@ class RunService : Controller() {
             index >= insertIndex && run.id != insertRun.id
         }
         shiftRuns.forEach { run -> run.sequence++ }
-        return InsertDriverIntoSequenceResult(
+        val result = InsertDriverIntoSequenceResult(
                 runs = runs,
                 insertRun = insertRun,
                 shiftRuns = shiftRuns.toTypedArray()
         )
-    }
-
-    private fun writeInsertDriverIntoSequenceResult(
-            request: InsertDriverIntoSequenceRequest,
-            result: InsertDriverIntoSequenceResult
-    ): InsertDriverIntoSequenceResult {
         if (!request.dryRun) {
-            syncSave(result.insertRun, *result.shiftRuns)
+            saveSync(result.insertRun, *result.shiftRuns)
         }
         return result
     }
 
-    private fun syncSave(vararg runs: Run) {
+    private fun saveSync(vararg runs: Run) {
         runs.forEach { gateway.save(it) }
     }
+
 }

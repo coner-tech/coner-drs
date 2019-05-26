@@ -1,5 +1,7 @@
 package org.coner.drs.ui.runevent
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.schedulers.Schedulers
 import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
@@ -18,10 +20,16 @@ class RunEventTableController : Controller() {
 
     fun incrementCones(run: Run) {
         runService.incrementCones(run)
+                .subscribeOn(Schedulers.computation())
+                .observeOnFx()
+                .subscribe()
     }
 
     fun decrementCones(run: Run) {
         runService.decrementCones(run)
+                .subscribeOn(Schedulers.computation())
+                .observeOnFx()
+                .subscribe()
     }
 
     fun changeDidNotFinish(run: Run, newValue: Boolean) {
@@ -30,10 +38,16 @@ class RunEventTableController : Controller() {
 
     fun changeRerun(run: Run, newValue: Boolean) {
         runService.changeRerun(run, newValue)
+                .subscribeOn(Schedulers.computation())
+                .observeOnFx()
+                .subscribe()
     }
 
     fun changeDisqualified(run: Run, newValue: Boolean) {
         runService.changeDisqualified(run, newValue)
+                .subscribeOn(Schedulers.computation())
+                .observeOnFx()
+                .subscribe()
     }
 
     fun showChangeDriver(run: Run) {

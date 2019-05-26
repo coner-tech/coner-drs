@@ -1,5 +1,6 @@
 package org.coner.drs.ui.runevent
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.collections.ListChangeListener
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.service.RegistrationService
@@ -17,13 +18,13 @@ class AddNextDriverController : Controller() {
     }
 
     fun addNextDriverFromRegistrationListSelection() {
-        runService.addNextDriver(runEventModel.event, model.registrationListSelection)
+        runService.addNextDriver(runEventModel.event, model.registrationListSelection).subscribe()
     }
 
     fun addNextDriverForceExactNumbers() {
         if (!model.numbersFieldContainsNumbersTokens) return // TODO: guidance
         val registration = model.numbersFieldArbitraryRegistration
-        runService.addNextDriver(runEventModel.event, registration)
+        runService.addNextDriver(runEventModel.event, registration).subscribe()
     }
 
     fun updateRegistrationListAutoSelection(registrationListChange: ListChangeListener.Change<out Registration>) {
