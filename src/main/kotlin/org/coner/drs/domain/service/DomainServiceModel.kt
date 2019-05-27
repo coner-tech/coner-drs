@@ -5,5 +5,6 @@ import tornadofx.*
 import java.util.concurrent.Executors
 
 class DomainServiceModel : Component(), ScopedInstance {
-    val scheduler = Schedulers.from(Executors.newSingleThreadExecutor())
+    val executor = Executors.newSingleThreadScheduledExecutor()
+    val scheduler = Schedulers.from(executor)
 }

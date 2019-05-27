@@ -25,4 +25,14 @@ class DomainServiceController : Controller() {
                 .subscribeOn(model.scheduler)
                 .blockingAwait()
     }
+
+    private val onShutdown = Thread {
+        println("DomainServiceController.onShutdown")
+        model.scheduler.shutdown()
+        model.executor.shutdown()
+    }
+
+    init {
+        Runtime.getRuntime().addShutdownHook(onShutdown)
+    }
 }

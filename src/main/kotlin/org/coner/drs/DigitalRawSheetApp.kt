@@ -35,6 +35,8 @@ open class DigitalRawSheetApp : App(
             )
     ))
 
+    open val forceExitOnStop = true
+
     override fun start(stage: Stage) {
         super.start(stage)
         println("DigitalRawSheetApp.start()")
@@ -53,6 +55,12 @@ open class DigitalRawSheetApp : App(
         stage.minHeight = 720.0
     }
 
+    override fun stop() {
+        super.stop()
+        if (forceExitOnStop) {
+            Runtime.getRuntime().exit(0)
+        }
+    }
 }
 
 fun main(args: Array<String>) {
