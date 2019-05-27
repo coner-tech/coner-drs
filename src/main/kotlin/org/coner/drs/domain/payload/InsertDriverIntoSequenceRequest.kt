@@ -9,7 +9,7 @@ class InsertDriverIntoSequenceRequest(
         val runs: List<Run>,
         val sequence: Int,
         val relative: Relative,
-        val registration: Registration,
+        val registration: Registration?,
         val dryRun: Boolean = false
 ) {
 

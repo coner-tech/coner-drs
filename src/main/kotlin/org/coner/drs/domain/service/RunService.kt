@@ -160,20 +160,25 @@ class RunService : Controller() {
                 .toMutableList()
                 .apply { sortWith(compareBy(Run::sequence)) }
         val insertSequence = when(request.relative) {
-            InsertDriverIntoSequenceRequest.Relative.BEFORE -> maxOf(request.sequence - 1, 1)
+            InsertDriverIntoSequenceRequest.Relative.BEFORE -> maxOf(request.sequence, 1)
             InsertDriverIntoSequenceRequest.Relative.AFTER -> request.sequence + 1
         }
         val insertIndex = insertSequence - 1 // sequence is 1-indexed, lists are 0-indexed
         val insertRun = Run(
                 event = request.event,
                 registration = request.registration,
-                sequence = insertSequence
+                sequence = insertSequence,
+                rawTime = runs.getOrNull(insertIndex)?.rawTime
         )
         runs.add(insertIndex, insertRun)
         val shiftRuns = runs.filterIndexed { index, run ->
             index >= insertIndex && run.id != insertRun.id
         }
-        shiftRuns.forEach { run -> run.sequence++ }
+        shiftRuns.forEachIndexed { index, run ->
+            run.sequence++
+            val next = index + 1
+            run.rawTime = shiftRuns.getOrNull(next)?.rawTime
+        }
         val result = InsertDriverIntoSequenceResult(
                 runs = runs,
                 insertRun = insertRun,

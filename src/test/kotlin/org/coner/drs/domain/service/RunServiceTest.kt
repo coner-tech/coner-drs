@@ -117,28 +117,42 @@ class RunServiceTest {
                 Run(
                         event = event,
                         sequence = 1,
-                        registration = event.registrations[1]
+                        registration = event.registrations[0],
+                        rawTime = BigDecimal.valueOf(1000, 3)
+                ),
+                Run(
+                        event = event,
+                        sequence = 2,
+                        registration = event.registrations[2],
+                        rawTime = BigDecimal.valueOf(2000, 3)
                 )
         )
         val request = InsertDriverIntoSequenceRequest(
                 event = event,
                 runs = runs,
-                sequence = 1,
+                sequence = 2,
                 relative = InsertDriverIntoSequenceRequest.Relative.BEFORE,
-                registration = event.registrations[0],
+                registration = event.registrations[1],
                 dryRun = true
         )
 
         val actual = service.insertDriverIntoSequence(request).blockingGet()
 
-        Assertions.assertThat(actual.runs).hasSize(2)
+        Assertions.assertThat(actual.runs).hasSize(3)
         Assertions.assertThat(actual.runs[0])
+                .hasFieldOrPropertyWithValue("id", runs[0].id)
                 .hasFieldOrPropertyWithValue("sequence", 1)
                 .hasFieldOrPropertyWithValue("registration", event.registrations[0])
+                .hasFieldOrPropertyWithValue("rawTime", runs[0].rawTime)
         Assertions.assertThat(actual.runs[1])
-                .hasFieldOrPropertyWithValue("id", runs[0].id)
                 .hasFieldOrPropertyWithValue("sequence", 2)
                 .hasFieldOrPropertyWithValue("registration", event.registrations[1])
+                .hasFieldOrPropertyWithValue("rawTime", runs[1].rawTime)
+        Assertions.assertThat(actual.runs[2])
+                .hasFieldOrPropertyWithValue("id", runs[1].id)
+                .hasFieldOrPropertyWithValue("sequence", 3)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[2])
+                .hasFieldOrPropertyWithValue("rawTime", null)
     }
 
     @Test
@@ -148,7 +162,14 @@ class RunServiceTest {
                 Run(
                         event = event,
                         sequence = 1,
-                        registration = event.registrations[1]
+                        registration = event.registrations[0],
+                        rawTime = BigDecimal.valueOf(1000, 3)
+                ),
+                Run(
+                        event = event,
+                        sequence = 2,
+                        registration = event.registrations[2],
+                        rawTime = BigDecimal.valueOf(2000, 3)
                 )
         )
         val request = InsertDriverIntoSequenceRequest(
@@ -156,20 +177,27 @@ class RunServiceTest {
                 runs = runs,
                 sequence = 1,
                 relative = InsertDriverIntoSequenceRequest.Relative.AFTER,
-                registration = event.registrations[0],
+                registration = event.registrations[1],
                 dryRun = true
         )
 
         val actual = service.insertDriverIntoSequence(request).blockingGet()
 
-        Assertions.assertThat(actual.runs).hasSize(2)
+        Assertions.assertThat(actual.runs).hasSize(3)
         Assertions.assertThat(actual.runs[0])
                 .hasFieldOrPropertyWithValue("id", runs[0].id)
                 .hasFieldOrPropertyWithValue("sequence", 1)
-                .hasFieldOrPropertyWithValue("registration", event.registrations[1])
+                .hasFieldOrPropertyWithValue("registration", event.registrations[0])
+                .hasFieldOrPropertyWithValue("rawTime", runs[0].rawTime)
         Assertions.assertThat(actual.runs[1])
                 .hasFieldOrPropertyWithValue("sequence", 2)
-                .hasFieldOrPropertyWithValue("registration", event.registrations[0])
+                .hasFieldOrPropertyWithValue("registration", event.registrations[1])
+                .hasFieldOrPropertyWithValue("rawTime", runs[1].rawTime)
+        Assertions.assertThat(actual.runs[2])
+                .hasFieldOrPropertyWithValue("id", runs[1].id)
+                .hasFieldOrPropertyWithValue("sequence", 3)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[2])
+                .hasFieldOrPropertyWithValue("rawTime", null)
     }
 
     @Test

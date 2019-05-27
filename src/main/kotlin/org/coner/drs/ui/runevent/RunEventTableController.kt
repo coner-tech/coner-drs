@@ -5,6 +5,8 @@ import io.reactivex.schedulers.Schedulers
 import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
+import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
+import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceView
 import org.coner.drs.ui.changedriver.ChangeRunDriverFragment
 import org.coner.drs.ui.changedriver.ChangeRunDriverScope
 import tornadofx.*
@@ -58,6 +60,10 @@ class RunEventTableController : Controller() {
                 registrations = runEventModel.event.registrations
         )
         find<ChangeRunDriverFragment>(scope).openModal()
+    }
+
+    fun showInsertDriver(run: Run) {
+        find<AlterDriverSequenceController>().showAlterDriverSequenceView(run.sequence)
     }
 
 }
