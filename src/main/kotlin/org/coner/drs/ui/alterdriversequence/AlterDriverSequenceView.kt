@@ -28,7 +28,11 @@ class AlterDriverSequenceView : View() {
                         }
                     }
                 }
-                button(text = "Cancel", type = ButtonBar.ButtonData.CANCEL_CLOSE)
+                button(text = "Cancel", type = ButtonBar.ButtonData.CANCEL_CLOSE) {
+                    action {
+                        close()
+                    }
+                }
             }
         }
 

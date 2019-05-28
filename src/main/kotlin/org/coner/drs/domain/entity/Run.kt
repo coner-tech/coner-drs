@@ -40,8 +40,13 @@ class Run(
     val registrationNumbers by registrationNumbersProperty
 
     val registrationDriverNameProperty = registrationProperty.select(Registration::nameProperty)
+    val registrationDriverName by registrationDriverNameProperty
+
     val registrationCarModelProperty = registrationProperty.select(Registration::carModelProperty)
+    val registrationCarModel by registrationCarModelProperty
+
     val registrationCarColorProperty = registrationProperty.select(Registration::carColorProperty)
+    val registrationCarColor by registrationCarColorProperty
 
     val rawTimeProperty = SimpleObjectProperty<BigDecimal>(this, "rawTime", rawTime)
     var rawTime by rawTimeProperty

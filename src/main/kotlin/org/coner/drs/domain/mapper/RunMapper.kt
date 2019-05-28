@@ -3,7 +3,11 @@ package org.coner.drs.domain.mapper
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.io.db.entity.RunDbEntity
+import org.coner.drs.ui.alterdriversequence.PreviewAlteredDriverSequenceResult
+import tornadofx.*
+import kotlin.streams.toList
 
 object RunMapper {
     fun toUiEntity(event: Event, dbEntity: RunDbEntity?) = if (dbEntity != null) Run(
@@ -50,4 +54,22 @@ object RunMapper {
             disqualified = uiRun.disqualified,
             rerun = uiRun.rerun
     )
+
+    fun toPreviewAlteredDriverSequenceResult(result: InsertDriverIntoSequenceResult): PreviewAlteredDriverSequenceResult {
+        return PreviewAlteredDriverSequenceResult(result.runs.parallelStream()
+                .map { run ->
+                    val status = when {
+                        result.insertRunId == run.id -> PreviewAlteredDriverSequenceResult.Status.INSERTED
+                        result.shiftRunIds.contains(run.id) -> PreviewAlteredDriverSequenceResult.Status.SHIFTED
+                        else -> PreviewAlteredDriverSequenceResult.Status.SAME
+                    }
+                    PreviewAlteredDriverSequenceResult.Run(
+                            run = run,
+                            status = status
+                    )
+                }
+                .toList()
+                .toObservable()
+        )
+    }
 }

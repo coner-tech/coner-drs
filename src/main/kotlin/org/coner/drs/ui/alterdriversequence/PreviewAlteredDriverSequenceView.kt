@@ -1,32 +1,48 @@
 package org.coner.drs.ui.alterdriversequence
 
 import javafx.scene.layout.Priority
+import javafx.util.StringConverter
 import org.coner.drs.DrsStylesheet
-import org.coner.drs.domain.entity.Run
 import tornadofx.*
 
 class PreviewAlteredDriverSequenceView : View() {
 
-    private val alterDriverSequenceModel: AlterDriverSequenceModel by inject()
     private val model: PreviewAlteredDriverSequenceModel by inject()
+
+    init {
+        find<PreviewAlteredDriverSequenceController>()
+    }
 
     override val root = form {
         fieldset("Preview") {
             vgrow = Priority.ALWAYS
-            tableview(model.runsProperty) {
+            tableview(model.previewResultProperty.select { it.runsProperty }) {
                 id = "runs-table"
                 isEditable = false
                 setSortPolicy { false }
                 vgrow = Priority.ALWAYS
-                column("Sequence", Run::sequenceProperty)
-                column("Numbers", Run::registrationNumbersProperty)
-                column("Name", Run::registrationDriverNameProperty)
-                column("Car Model", Run::registrationCarModelProperty)
-                column("Car Color", Run::registrationCarColorProperty)
-                column("Time", Run::rawTimeProperty) {
+                column("Sequence", PreviewAlteredDriverSequenceResult.Run::sequence)
+                column("Status", PreviewAlteredDriverSequenceResult.Run::status) {
+                    converter(object : StringConverter<PreviewAlteredDriverSequenceResult.Status>() {
+                        override fun toString(p0: PreviewAlteredDriverSequenceResult.Status?): String {
+                            return when(p0) {
+                                PreviewAlteredDriverSequenceResult.Status.SAME, null -> ""
+                                PreviewAlteredDriverSequenceResult.Status.INSERTED -> "Inserted"
+                                PreviewAlteredDriverSequenceResult.Status.SHIFTED -> "Shifted"
+                            }
+                        }
 
+                        override fun fromString(p0: String?): PreviewAlteredDriverSequenceResult.Status {
+                            throw UnsupportedOperationException()
+                        }
+                    })
                 }
-                column("Penalties", Run::compositePenaltyProperty) {
+                column("Numbers", PreviewAlteredDriverSequenceResult.Run::numbers)
+                column("Name", PreviewAlteredDriverSequenceResult.Run::name)
+                column("Car Model", PreviewAlteredDriverSequenceResult.Run::carModel)
+                column("Car Color", PreviewAlteredDriverSequenceResult.Run::carColor)
+                column("Time", PreviewAlteredDriverSequenceResult.Run::rawTime)
+                column("Penalties", PreviewAlteredDriverSequenceResult.Run::compositePenalty) {
                     cellFormat { penalties ->
                         graphic = flowpane {
                             addClass(DrsStylesheet.penalties)

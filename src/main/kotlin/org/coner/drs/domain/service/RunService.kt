@@ -2,8 +2,6 @@ package org.coner.drs.domain.service
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import io.reactivex.functions.Action
-import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.RunEvent
@@ -165,27 +163,27 @@ class RunService : Controller() {
         }
         val insertIndex = insertSequence - 1 // sequence is 1-indexed, lists are 0-indexed
         val insertRun = Run(
-                event = request.event,
-                registration = request.registration,
-                sequence = insertSequence,
-                rawTime = runs.getOrNull(insertIndex)?.rawTime
+            event = request.event,
+            registration = request.registration,
+            sequence = insertSequence,
+            rawTime = runs.getOrNull(insertIndex)?.rawTime
         )
         runs.add(insertIndex, insertRun)
         val shiftRuns = runs.filterIndexed { index, run ->
             index >= insertIndex && run.id != insertRun.id
         }
-        shiftRuns.forEachIndexed { index, run ->
-            run.sequence++
+        shiftRuns.forEachIndexed { index, shiftRun ->
+            shiftRun.sequence++
             val next = index + 1
-            run.rawTime = shiftRuns.getOrNull(next)?.rawTime
+            shiftRun.rawTime = shiftRuns.getOrNull(next)?.rawTime
         }
         val result = InsertDriverIntoSequenceResult(
                 runs = runs,
-                insertRun = insertRun,
-                shiftRuns = shiftRuns.toTypedArray()
+                insertRunId = insertRun.id,
+                shiftRunIds = shiftRuns.map { it.id }.toHashSet()
         )
         if (!request.dryRun) {
-            saveSync(result.insertRun, *result.shiftRuns)
+            saveSync(insertRun, *shiftRuns.toTypedArray())
         }
         return result
     }
