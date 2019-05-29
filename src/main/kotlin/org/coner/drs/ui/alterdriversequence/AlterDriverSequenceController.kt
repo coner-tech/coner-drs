@@ -2,7 +2,9 @@ package org.coner.drs.ui.alterdriversequence
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
+import javafx.concurrent.Task
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
+import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.runevent.RunEventModel
 import tornadofx.*
@@ -23,12 +25,13 @@ class AlterDriverSequenceController : Controller() {
         model.relativeProperty.onChange { performDryRunForPreview() }
     }
 
-    fun showAlterDriverSequenceView(sequence: Int) {
+    fun showAlterDriverSequenceViewAndWaitForResult(sequence: Int): InsertDriverIntoSequenceResult? {
         model.event = find<RunEventModel>().event
         model.sequence = sequence
         model.registration = null
         fire(ResetEvent())
-        find<AlterDriverSequenceView>().openModal()
+        find<AlterDriverSequenceView>().openModal(block = true)
+        return model.result
     }
 
     fun performDryRunForPreview() {
@@ -48,7 +51,7 @@ class AlterDriverSequenceController : Controller() {
                 }
     }
 
-    fun executeAlterDriverSequence() {
+    fun executeAlterDriverSequence(): InsertDriverIntoSequenceResult {
         val request = InsertDriverIntoSequenceRequest(
                 event = model.event,
                 runs = model.event.runs,
@@ -56,6 +59,6 @@ class AlterDriverSequenceController : Controller() {
                 sequence = model.sequence,
                 relative = model.relative
         )
-        service.insertDriverIntoSequence(request).blockingGet()
+        return service.insertDriverIntoSequence(request).blockingGet()
     }
 }

@@ -6,13 +6,13 @@ import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
-import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceView
 import org.coner.drs.ui.changedriver.ChangeRunDriverFragment
 import org.coner.drs.ui.changedriver.ChangeRunDriverScope
 import tornadofx.*
 
 class RunEventTableController : Controller() {
     val model: RunEventTableModel by inject()
+    val view: RunEventTableView by inject()
     val controller: RunEventController by inject()
     val runService: RunService by inject()
 
@@ -63,7 +63,10 @@ class RunEventTableController : Controller() {
     }
 
     fun showInsertDriver(run: Run) {
-        find<AlterDriverSequenceController>().showAlterDriverSequenceView(run.sequence)
+        val result = find<AlterDriverSequenceController>().showAlterDriverSequenceViewAndWaitForResult(run.sequence)
+        result?.run {
+            view.selectRunById(this.insertRunId)
+        }
     }
 
 }

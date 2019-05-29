@@ -24,6 +24,7 @@ class AlterDriverSequenceView : View() {
                         runAsyncWithProgress {
                             controller.executeAlterDriverSequence()
                         } success {
+                            model.result = it
                             close()
                         }
                     }

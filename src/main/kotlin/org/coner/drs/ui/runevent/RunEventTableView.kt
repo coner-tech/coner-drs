@@ -1,10 +1,12 @@
 package org.coner.drs.ui.runevent
 
+import javafx.scene.control.TableView
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
 import org.coner.drs.domain.entity.Run
 import tornadofx.*
+import java.util.*
 
 class RunEventTableView : View() {
     val model: RunEventTableModel by inject()
@@ -151,5 +153,14 @@ class RunEventTableView : View() {
             }
         }
     }
+
+    private val table: TableView<Run>
+        get() = root.lookup("#runs-table") as TableView<Run>
+
+    fun selectRunById(selectRunId: UUID) {
+        val run = table.items.firstOrNull { it.id == selectRunId } ?: return
+        table.selectionModel.select(run)
+    }
+
 
 }
