@@ -25,7 +25,7 @@ class AlterDriverSequenceModel : ViewModel() {
     val registrationProperty = SimpleObjectProperty<Registration>(this, "registration")
     var registration by registrationProperty
 
-    val relativeProperty = SimpleObjectProperty<InsertDriverIntoSequenceRequest.Relative>(this, "relative", InsertDriverIntoSequenceRequest.Relative.BEFORE)
+    val relativeProperty = SimpleObjectProperty<InsertDriverIntoSequenceRequest.Relative>(this, "relative")
     var relative by relativeProperty
 
     val previewResultProperty = SimpleObjectProperty<InsertDriverIntoSequenceResult>(this, "previewResult")

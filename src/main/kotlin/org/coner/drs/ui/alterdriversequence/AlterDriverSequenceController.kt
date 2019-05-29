@@ -13,6 +13,11 @@ class AlterDriverSequenceController : Controller() {
     private val service: RunService by inject()
 
     init {
+        with(find<SpecifyDriverSequenceAlterationModel>()) {
+            model.registrationProperty.bindBidirectional(registrationProperty)
+            model.relativeProperty.bindBidirectional(relativeProperty)
+            model.sequenceProperty.bindBidirectional(sequenceProperty)
+        }
         model.sequenceProperty.onChange { performDryRunForPreview() }
         model.registrationProperty.onChange { performDryRunForPreview() }
         model.relativeProperty.onChange { performDryRunForPreview() }
@@ -22,7 +27,7 @@ class AlterDriverSequenceController : Controller() {
         model.event = find<RunEventModel>().event
         model.sequence = sequence
         model.registration = null
-        find<SpecifyDriverSequenceAlterationController>().reset()
+        fire(ResetEvent())
         find<AlterDriverSequenceView>().openModal()
     }
 

@@ -13,16 +13,16 @@ import tornadofx.*
 
 class SpecifyDriverSequenceAlterationView : View() {
 
-    private val alterDriverSequenceModel: AlterDriverSequenceModel by inject()
     private val model: SpecifyDriverSequenceAlterationModel by inject()
+    private val controller: SpecifyDriverSequenceAlterationController = find()
 
     private lateinit var numbersTextField: TextField
 
     override val root = form {
         prefWidth = 300.0
-        fieldset(text = title, labelPosition = Orientation.VERTICAL) {
+        fieldset(text = "Specify Sequence Alteration", labelPosition = Orientation.VERTICAL) {
             field("Sequence", orientation = Orientation.VERTICAL) {
-                textfield(alterDriverSequenceModel.sequenceProperty) {
+                textfield(model.sequenceProperty) {
                     isEditable = false
                 }
             }
@@ -40,7 +40,7 @@ class SpecifyDriverSequenceAlterationView : View() {
                                 group = this@togglegroup
                         )
                     }
-                    bind(alterDriverSequenceModel.relativeProperty)
+                    bind(model.relativeProperty)
                 }
             }
             field("_Numbers", orientation = Orientation.VERTICAL) {
@@ -57,13 +57,17 @@ class SpecifyDriverSequenceAlterationView : View() {
                     vgrow = Priority.ALWAYS
                     model.registrationList.bindTo(this)
                     cellFragment(RegistrationCellFragment::class)
-                    bindSelected(alterDriverSequenceModel.registrationProperty)
+                    bindSelected(model.registrationProperty)
                     takeVerticalArrowKeyPressesAsSelectionsFrom(numbersTextField)
                     model.registrationListAutoSelectionCandidateProperty.onChange {
                         runLater {
                             selectionModel.select(it?.registration)
                             scrollTo(it?.registration)
                         }
+                    }
+                    subscribe<ResetEvent> {
+                        selectionModel.clearSelection()
+                        scrollTo(0)
                     }
                 }
             }

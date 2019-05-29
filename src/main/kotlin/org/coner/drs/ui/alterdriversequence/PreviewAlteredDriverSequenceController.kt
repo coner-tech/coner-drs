@@ -5,8 +5,8 @@ import tornadofx.*
 
 class PreviewAlteredDriverSequenceController : Controller() {
 
-    private val alterDriverSequenceModel: AlterDriverSequenceModel by inject()
     private val model: PreviewAlteredDriverSequenceModel by inject()
+    private val alterDriverSequenceModel: AlterDriverSequenceModel by inject()
 
     init {
         alterDriverSequenceModel.previewResultProperty.onChange { result ->
@@ -16,4 +16,5 @@ class PreviewAlteredDriverSequenceController : Controller() {
             }
         }
     }
+
 }
