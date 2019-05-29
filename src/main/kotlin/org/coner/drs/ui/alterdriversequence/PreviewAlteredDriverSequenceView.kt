@@ -21,8 +21,8 @@ class PreviewAlteredDriverSequenceView : View() {
                 isEditable = false
                 setSortPolicy { false }
                 vgrow = Priority.ALWAYS
-                column("Sequence", PreviewAlteredDriverSequenceResult.Run::sequence)
-                column("Status", PreviewAlteredDriverSequenceResult.Run::status) {
+                column("Sequence", PreviewAlteredDriverSequenceResult.Run::sequenceProperty)
+                column("Status", PreviewAlteredDriverSequenceResult.Run::statusProperty) {
                     converter(object : StringConverter<PreviewAlteredDriverSequenceResult.Status>() {
                         override fun toString(p0: PreviewAlteredDriverSequenceResult.Status?): String {
                             return when(p0) {
@@ -37,12 +37,12 @@ class PreviewAlteredDriverSequenceView : View() {
                         }
                     })
                 }
-                column("Numbers", PreviewAlteredDriverSequenceResult.Run::numbers)
-                column("Name", PreviewAlteredDriverSequenceResult.Run::name)
-                column("Car Model", PreviewAlteredDriverSequenceResult.Run::carModel)
-                column("Car Color", PreviewAlteredDriverSequenceResult.Run::carColor)
-                column("Time", PreviewAlteredDriverSequenceResult.Run::rawTime)
-                column("Penalties", PreviewAlteredDriverSequenceResult.Run::compositePenalty) {
+                column("Numbers", PreviewAlteredDriverSequenceResult.Run::numbersProperty)
+                column("Name", PreviewAlteredDriverSequenceResult.Run::nameProperty)
+                column("Car Model", PreviewAlteredDriverSequenceResult.Run::carModelProperty)
+                column("Car Color", PreviewAlteredDriverSequenceResult.Run::carColorProperty)
+                column("Time", PreviewAlteredDriverSequenceResult.Run::rawTimeProperty)
+                column("Penalties", PreviewAlteredDriverSequenceResult.Run::compositePenaltyProperty) {
                     cellFormat { penalties ->
                         graphic = flowpane {
                             addClass(DrsStylesheet.penalties)
@@ -78,6 +78,7 @@ class PreviewAlteredDriverSequenceView : View() {
                     }
                 }
                 smartResize()
+                model.previewResultProperty.onChange { selectionModel.select(it?.inserted) }
             }
         }
     }

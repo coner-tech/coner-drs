@@ -56,7 +56,7 @@ object RunMapper {
     )
 
     fun toPreviewAlteredDriverSequenceResult(result: InsertDriverIntoSequenceResult): PreviewAlteredDriverSequenceResult {
-        return PreviewAlteredDriverSequenceResult(result.runs.parallelStream()
+        val runs = result.runs.parallelStream()
                 .map { run ->
                     val status = when {
                         result.insertRunId == run.id -> PreviewAlteredDriverSequenceResult.Status.INSERTED
@@ -70,6 +70,10 @@ object RunMapper {
                 }
                 .toList()
                 .toObservable()
-        )
+        val insertedRun = runs.parallelStream()
+                .filter { it.id == result.insertRunId }
+                .findFirst()
+                .get()
+        return PreviewAlteredDriverSequenceResult(runs, insertedRun)
     }
 }

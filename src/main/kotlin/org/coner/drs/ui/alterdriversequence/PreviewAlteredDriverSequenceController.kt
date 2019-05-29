@@ -12,7 +12,7 @@ class PreviewAlteredDriverSequenceController : Controller() {
         alterDriverSequenceModel.previewResultProperty.onChange { result ->
             model.previewResult = when {
                 result != null -> RunMapper.toPreviewAlteredDriverSequenceResult(result)
-                else -> PreviewAlteredDriverSequenceResult(observableListOf())
+                else -> PreviewAlteredDriverSequenceResult(observableListOf(), null)
             }
         }
     }

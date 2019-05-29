@@ -9,7 +9,7 @@
 
 }
 
-#registrations-list-view .list-cell:filled:selected {
+.list-cell:filled:selected, .table-row-cell:filled:selected {
     -fx-selection-bar-non-focused: -fx-accent;
 }
 
