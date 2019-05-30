@@ -13,6 +13,7 @@ import javafx.stage.Stage
 import org.assertj.core.api.Assumptions
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
+import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.test.TornadoFxScopeExtension
@@ -150,6 +151,20 @@ internal class SpecifyDriverSequenceAlterationViewTest {
 
         realPage.selectRelativeBefore()
         Assertions.assertThat(model.relative).isEqualTo(before)
+    }
+
+    @Test
+    fun `Model registration should take auto selection candidate`() {
+        val registration = find<RunEventModel>().event.registrations[2]
+        every {
+            registrationService.findAutoSelectionCandidate(model.registrationList, registration.numbers)
+        }.returns(RegistrationSelectionCandidate(registration, 0))
+
+        realPage.writeInNumbersField(registration.numbers)
+
+        Assertions.assertThat(model.registrationListAutoSelectionCandidate).isNotNull
+        Assertions.assertThat(model.registrationListAutoSelectionCandidate.registration).isSameAs(registration)
+        Assertions.assertThat(model.registration).isSameAs(registration)
     }
 
 }

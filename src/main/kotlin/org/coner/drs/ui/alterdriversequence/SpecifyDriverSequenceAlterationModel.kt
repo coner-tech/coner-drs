@@ -57,7 +57,12 @@ class SpecifyDriverSequenceAlterationModel : ViewModel() {
         }
     }
 
-    val registrationListAutoSelectionCandidateProperty = SimpleObjectProperty<RegistrationSelectionCandidate>(this, "registrationListAutoSelectionCandidate")
+    val registrationListAutoSelectionBinding = objectBinding(registrationList) {
+        registrationService.findAutoSelectionCandidate(this, numbersField)
+    }
+    val registrationListAutoSelectionCandidateProperty = SimpleObjectProperty<RegistrationSelectionCandidate>(this, "registrationListAutoSelectionCandidate").apply {
+        bind(registrationListAutoSelectionBinding)
+    }
     var registrationListAutoSelectionCandidate by registrationListAutoSelectionCandidateProperty
 
 }

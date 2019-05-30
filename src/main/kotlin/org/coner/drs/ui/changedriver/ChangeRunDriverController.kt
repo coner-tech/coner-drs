@@ -19,10 +19,12 @@ class ChangeRunDriverController : Controller() {
     }
 
     fun updateRegistrationListAutoSelection(registrationListChange: ListChangeListener.Change<out Registration>) {
-        model.registrationListAutoSelectionCandidate = registrationService.findAutoSelectionCandidate(
-                registrationListChange,
-                model.numbersField
-        )
+        while (registrationListChange.next()) {
+            model.registrationListAutoSelectionCandidate = registrationService.findAutoSelectionCandidate(
+                    registrationListChange.list,
+                    model.numbersField
+            )
+        }
     }
 
     fun changeDriverFromRegistrationListSelection() {

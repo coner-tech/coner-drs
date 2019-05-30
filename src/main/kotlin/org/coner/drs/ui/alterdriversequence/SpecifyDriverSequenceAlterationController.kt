@@ -1,5 +1,7 @@
 package org.coner.drs.ui.alterdriversequence
 
+import org.coner.drs.domain.service.RegistrationService
+import org.coner.drs.domain.service.RunService
 import tornadofx.*
 
 class SpecifyDriverSequenceAlterationController : Controller() {
