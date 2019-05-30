@@ -19,6 +19,7 @@ class SpecifyDriverSequenceAlterationView : View() {
     private lateinit var numbersTextField: TextField
 
     override val root = form {
+        id = "specify-driver-sequence-alteration"
         prefWidth = 300.0
         fieldset(text = "Specify Sequence Alteration", labelPosition = Orientation.VERTICAL) {
             field("Sequence", orientation = Orientation.VERTICAL) {
@@ -33,12 +34,16 @@ class SpecifyDriverSequenceAlterationView : View() {
                                 text = "Before",
                                 value = InsertDriverIntoSequenceRequest.Relative.BEFORE,
                                 group = this@togglegroup
-                        )
+                        ) {
+                            id = "relative-before"
+                        }
                         togglebutton(
                                 text = "After",
                                 value = InsertDriverIntoSequenceRequest.Relative.AFTER,
                                 group = this@togglegroup
-                        )
+                        ) {
+                            id = "relative-after"
+                        }
                     }
                     bind(model.relativeProperty)
                 }
@@ -46,6 +51,7 @@ class SpecifyDriverSequenceAlterationView : View() {
             field("_Numbers", orientation = Orientation.VERTICAL) {
                 (inputContainer as VBox).spacing = 0.0
                 textfield(model.numbersFieldProperty) {
+                    id = "numbers"
                     numbersTextField = this
                     label.labelFor = this
                     label.isMnemonicParsing = true

@@ -1,27 +1,41 @@
 package org.coner.drs.test.page.real
 
-import javafx.scene.control.SplitMenuButton
+import javafx.scene.control.ToggleButton
 import javafx.scene.input.KeyCode
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.test.page.AddNextDriverPage
+import org.coner.drs.test.page.SpecifyDriverSequenceAlterationPage
 import org.testfx.api.FxRobot
 import tornadofx.*
 
-open class RealAddNextDriverPage(
+open class RealSpecifyDriverSequenceAlterationPage(
         protected val robot: FxRobot
-) : AddNextDriverPage {
+) : SpecifyDriverSequenceAlterationPage {
 
-    override fun root() = robot.lookup("#add-next-driver")
+    override fun root() = robot.lookup("#specify-driver-sequence-alteration")
             .queryAs(Form::class.java)!!
+
+    override fun relativeBefore() = robot.from(root())
+            .lookup("#relative-before")
+            .query() as ToggleButton
+
+    override fun relativeAfter() = robot.from(root())
+            .lookup("#relative-after")
+            .query() as ToggleButton
+
+    override fun selectRelativeBefore() {
+        robot.clickOn(relativeBefore())
+    }
+
+    override fun selectRelativeAfter() {
+        robot.clickOn(relativeAfter())
+    }
 
     override fun numbersField() = robot.from(root())
             .lookup("#numbers")
             .queryTextInputControl()!!
 
     override fun focusNumbersField() {
-        robot.press(KeyCode.ALT)
-        robot.type(KeyCode.N)
-        robot.release(KeyCode.ALT)
+        robot.clickOn(numbersField())
     }
 
     override fun writeInNumbersField(s: String) {
@@ -43,19 +57,4 @@ open class RealAddNextDriverPage(
         }
     }
 
-    override fun addButton() = robot.from(root())
-            .lookup("#add")
-            .queryAs(SplitMenuButton::class.java)!!
-
-    override fun doAddSelectedRegistration() {
-        robot.clickOn(addButton())
-    }
-
-    override fun addForceExactNumbersItem() = addButton().items.first { it.id == "force-exact-numbers" }
-
-    override fun doAddForceExactNumbers() {
-        robot.press(KeyCode.CONTROL)
-        robot.type(KeyCode.ENTER)
-        robot.release(KeyCode.CONTROL)
-    }
 }
