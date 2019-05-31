@@ -32,7 +32,7 @@ import org.testfx.framework.junit5.Init
 import org.testfx.framework.junit5.Start
 import tornadofx.*
 
-@ExtendWith(TornadoFxScopeExtension::class, ApplicationExtension::class, MockKExtension::class)
+@ExtendWith(TornadoFxScopeExtension::class, MockKExtension::class)
 class AddNextDriverViewTest {
 
     companion object {

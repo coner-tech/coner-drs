@@ -25,7 +25,7 @@ class AlterDriverSequenceController : Controller() {
         model.relativeProperty.onChange { performDryRunForPreview() }
     }
 
-    fun showAlterDriverSequenceViewAndWaitForResult(sequence: Int): InsertDriverIntoSequenceResult? {
+    fun showAlterDriverSequenceAndWait(sequence: Int): InsertDriverIntoSequenceResult? {
         model.event = find<RunEventModel>().event
         model.sequence = sequence
         model.registration = null

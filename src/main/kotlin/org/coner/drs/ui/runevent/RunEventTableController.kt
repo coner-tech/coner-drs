@@ -16,7 +16,7 @@ class RunEventTableController : Controller() {
     val controller: RunEventController by inject()
     val runService: RunService by inject()
 
-    fun init() {
+    init {
         model.runsSortedBySequence = SortedList(controller.model.event.runs, compareBy(Run::sequence))
     }
 
@@ -63,7 +63,7 @@ class RunEventTableController : Controller() {
     }
 
     fun showInsertDriver(run: Run) {
-        val result = find<AlterDriverSequenceController>().showAlterDriverSequenceViewAndWaitForResult(run.sequence)
+        val result = find<AlterDriverSequenceController>().showAlterDriverSequenceAndWait(run.sequence)
         result?.run {
             view.selectRunById(this.insertRunId)
         }

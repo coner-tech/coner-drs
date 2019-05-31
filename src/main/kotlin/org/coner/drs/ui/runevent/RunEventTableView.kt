@@ -10,11 +10,7 @@ import java.util.*
 
 class RunEventTableView : View() {
     val model: RunEventTableModel by inject()
-    val controller: RunEventTableController by inject()
-
-    init {
-        controller.init()
-    }
+    val controller: RunEventTableController = find()
 
     override val root = form {
         fieldset("_Runs") {
