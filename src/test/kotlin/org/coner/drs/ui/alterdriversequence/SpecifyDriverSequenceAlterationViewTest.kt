@@ -6,102 +6,62 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
-import io.mockk.verify
-import javafx.scene.Scene
 import javafx.scene.input.KeyCode
-import javafx.stage.Stage
 import org.assertj.core.api.Assumptions
-import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.service.RunService
-import org.coner.drs.test.TornadoFxScopeExtension
+import org.coner.drs.test.extension.Init
+import org.coner.drs.test.extension.TornadoFxViewExtension
+import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
-import org.coner.drs.test.page.AddNextDriverPage
-import org.coner.drs.test.page.fast.FastAddNextDriverPage
 import org.coner.drs.test.page.fast.FastSpecifyDriverSequenceAlterationPage
-import org.coner.drs.test.page.real.RealAddNextDriverPage
 import org.coner.drs.test.page.real.RealSpecifyDriverSequenceAlterationPage
-import org.coner.drs.ui.runevent.AddNextDriverController
-import org.coner.drs.ui.runevent.AddNextDriverModel
-import org.coner.drs.ui.runevent.AddNextDriverView
 import org.coner.drs.ui.runevent.RunEventModel
-import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
-import org.testfx.api.FxToolkit
 import org.testfx.assertions.api.Assertions
-import org.testfx.framework.junit5.ApplicationExtension
-import org.testfx.framework.junit5.Init
-import org.testfx.framework.junit5.Start
 import tornadofx.*
 
-@ExtendWith(TornadoFxScopeExtension::class, ApplicationExtension::class, MockKExtension::class)
+@ExtendWith(TornadoFxViewExtension::class, MockKExtension::class)
 internal class SpecifyDriverSequenceAlterationViewTest {
 
-    companion object {
-        private lateinit var scope: Scope
-
-        @JvmStatic
-        @BeforeAll
-        fun beforeAll(scope: Scope) {
-            this.scope = scope
-        }
-
-        @JvmStatic
-        @AfterAll
-        fun afterAll() {
-            FxToolkit.cleanupStages()
-        }
-    }
-
+    @View
     private lateinit var view: SpecifyDriverSequenceAlterationView
-    private lateinit var realPage: RealSpecifyDriverSequenceAlterationPage
-    private lateinit var fastPage: FastSpecifyDriverSequenceAlterationPage
 
     private lateinit var model: SpecifyDriverSequenceAlterationModel
     private lateinit var controller: SpecifyDriverSequenceAlterationController
+
+    private lateinit var realPage: RealSpecifyDriverSequenceAlterationPage
+    private lateinit var fastPage: FastSpecifyDriverSequenceAlterationPage
 
     @RelaxedMockK
     private lateinit var registrationService: RegistrationService
     @RelaxedMockK
     private lateinit var runService: RunService
 
-    fun prepareScope() {
+    @Init
+    fun init(scope: Scope) {
         MockKAnnotations.init(this)
-        scope = scope.apply {
+        scope.apply {
             set(registrationService)
             set(runService)
             set(find<RunEventModel>().apply {
                 event = RunEvents.basic()
             })
         }
-    }
-
-    @Init
-    fun init() {
-        prepareScope()
         view = find(scope)
         model = find(scope)
         controller = find(scope)
-    }
-
-    @Start
-    fun start(stage: Stage) {
-        stage.scene = Scene(view.root)
-        stage.show()
     }
 
     @BeforeEach
     fun beforeEach(robot: FxRobot) {
         realPage = RealSpecifyDriverSequenceAlterationPage(robot)
         fastPage = FastSpecifyDriverSequenceAlterationPage(robot)
-
     }
 
     @Test

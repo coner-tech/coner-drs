@@ -42,10 +42,10 @@ class RunEventIntegrationTest : BaseIntegrationTest() {
         val robot = this.robot!!
         val latch = CountDownLatch(1)
         val fastChooseEventPage = FastChooseEventPage(robot)
-        find<ChooseEventModel>().events.onChange { latch.countDown() }
+        find<ChooseEventModel>(app.scope).events.onChange { latch.countDown() }
         robot.interactNoWait {
             Thread.sleep(160)
-            val gateway: EventGateway = find()
+            val gateway: EventGateway = find(app.scope)
             gateway.save(event)
         }
         latch.await()
