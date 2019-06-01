@@ -45,7 +45,6 @@ internal class SpecifyDriverSequenceAlterationViewTest {
 
     @Init
     fun init(scope: Scope) {
-        MockKAnnotations.init(this)
         scope.apply {
             set(registrationService)
             set(runService)
