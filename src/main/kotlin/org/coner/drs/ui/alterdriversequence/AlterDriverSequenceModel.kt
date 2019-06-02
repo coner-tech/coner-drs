@@ -14,9 +14,6 @@ import tornadofx.setValue
 
 class AlterDriverSequenceModel : ViewModel() {
 
-
-    private val service: RunService by inject()
-
     val eventProperty = SimpleObjectProperty<RunEvent>(this, "event")
     var event by eventProperty
 

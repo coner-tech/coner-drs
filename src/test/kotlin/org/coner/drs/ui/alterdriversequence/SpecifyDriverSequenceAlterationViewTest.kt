@@ -2,7 +2,6 @@ package org.coner.drs.ui.alterdriversequence
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension

@@ -8,10 +8,7 @@ import tornadofx.*
 class PreviewAlteredDriverSequenceView : View() {
 
     private val model: PreviewAlteredDriverSequenceModel by inject()
-
-    init {
-        find<PreviewAlteredDriverSequenceController>()
-    }
+    private val controller: PreviewAlteredDriverSequenceController = find()
 
     override val root = form {
         fieldset("Preview") {
