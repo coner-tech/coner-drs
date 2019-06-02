@@ -9,7 +9,10 @@ import org.coner.drs.test.extension.Init
 import org.coner.drs.test.extension.TornadoFxViewExtension
 import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
+import org.coner.drs.test.page.fast.FastRunEventTablePage
+import org.coner.drs.test.page.real.RealRunEventTablePage
 import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
@@ -24,6 +27,9 @@ class RunEventTableViewTest {
     private lateinit var model: RunEventTableModel
     private lateinit var controller: RunEventTableController
 
+    private lateinit var realPage: RealRunEventTablePage
+    private lateinit var fastPage: FastRunEventTablePage
+
     @Init
     fun init(scope: Scope) {
         find<RunEventModel>(scope).apply {
@@ -34,10 +40,16 @@ class RunEventTableViewTest {
         view = find(scope)
     }
 
+    @BeforeEach
+    fun beforeEach(robot: FxRobot) {
+        realPage = RealRunEventTablePage(robot)
+        fastPage = FastRunEventTablePage(robot)
+    }
+
     @Test
-    fun `When user inserts driver into sequence it should select it`(robot: FxRobot) {
+    fun `When user inserts driver into sequence it should select it`() {
         val event = find<RunEventModel>().event
-        robot.interact {
+        FX.runAndWait {
             event.runs += Run(
                     event = event,
                     sequence = 1,
@@ -63,11 +75,11 @@ class RunEventTableViewTest {
             )
         }
         setInScope(alterDriverSequenceController)
-        val runsTable = robot.lookup("#runs-table").queryTableView<Run>()
+        val runsTable = fastPage.runsTable()
+        val sequence = event.runs[0].sequence
+        fastPage.selectSequence(sequence)
 
-        robot.rightClickOn(event.registrations[0].numbers)
-        robot.clickOn("Driver")
-        robot.clickOn("Insert Driver Into Sequence")
+        realPage.keyboardShortcutInsertDriverIntoSequence(sequence)
 
         Assertions.assertThat(runsTable.selectionModel.selectedItem).isSameAs(insertRun)
     }

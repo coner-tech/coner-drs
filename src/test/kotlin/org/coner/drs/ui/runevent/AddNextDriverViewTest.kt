@@ -64,7 +64,7 @@ class AddNextDriverViewTest {
     }
 
     @Test
-    fun `Numbers field is bound to model property`(robot: FxRobot) {
+    fun `Numbers field is bound to model property`() {
         Assumptions.assumeThat(model.numbersField).isNullOrEmpty()
         val numbers = "8 STR"
 
@@ -100,7 +100,7 @@ class AddNextDriverViewTest {
     }
 
     @Test
-    fun `When registration selected, it should be able to add next driver`(robot: FxRobot) {
+    fun `When registration selected, it should be able to add next driver`() {
         val registration = fastPage.registrationsListView().items[0]
         fastPage.selectRegistration(registration)
 
@@ -110,7 +110,7 @@ class AddNextDriverViewTest {
     }
 
     @Test
-    fun `When numbers field filled arbitrarily, it should be able to add exact numbers`(robot: FxRobot) {
+    fun `When numbers field filled arbitrarily, it should be able to add exact numbers`() {
         val registration = Registration(
                 number = "123",
                 handicap = "ABC",

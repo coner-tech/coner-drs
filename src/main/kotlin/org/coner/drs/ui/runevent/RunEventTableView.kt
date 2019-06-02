@@ -13,6 +13,7 @@ class RunEventTableView : View() {
     val controller: RunEventTableController = find()
 
     override val root = form {
+        id = "run-event-table"
         fieldset("_Runs") {
             vgrow = Priority.ALWAYS
             tableview(model.runsSortedBySequence) {

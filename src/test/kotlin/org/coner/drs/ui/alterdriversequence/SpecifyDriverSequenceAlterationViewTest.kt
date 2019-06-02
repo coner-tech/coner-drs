@@ -128,7 +128,7 @@ internal class SpecifyDriverSequenceAlterationViewTest {
     }
 
     @Test
-    fun `It should reset`(app: App, robot: FxRobot) {
+    fun `It should reset`(app: App) {
         val numbers = runEventModel.event.registrations[0].numbers
         every {
             registrationService.findAutoSelectionCandidate(model.registrationList, numbers)
@@ -142,7 +142,7 @@ internal class SpecifyDriverSequenceAlterationViewTest {
         fastPage.writeInNumbersField(numbers)
         Assumptions.assumeThat(model.registration).isNotNull
 
-        robot.interact { app.fire(ResetEvent()) }
+        FX.runAndWait { app.fire(ResetEvent()) }
 
         Assertions.assertThat(model.numbersField).isBlank()
         Assertions.assertThat(model.registration).isNull()
