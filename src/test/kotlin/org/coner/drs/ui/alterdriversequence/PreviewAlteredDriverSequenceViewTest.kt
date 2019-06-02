@@ -3,15 +3,15 @@ package org.coner.drs.ui.alterdriversequence
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Condition
-import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.test.extension.Init
 import org.coner.drs.test.extension.TornadoFxViewExtension
 import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
-import org.junit.jupiter.api.Assertions.*
+import org.coner.drs.test.page.fast.FastPreviewAlteredDriverSequencePage
+import org.coner.drs.test.page.real.RealPreviewAlteredDriverSequencePage
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
@@ -24,6 +24,9 @@ class PreviewAlteredDriverSequenceViewTest {
     private lateinit var view: PreviewAlteredDriverSequenceView
     private lateinit var model: PreviewAlteredDriverSequenceModel
     private lateinit var controller: PreviewAlteredDriverSequenceController
+
+    private lateinit var realPage: RealPreviewAlteredDriverSequencePage
+    private lateinit var fastPage: FastPreviewAlteredDriverSequencePage
 
     @RelaxedMockK
     private lateinit var alterDriverSequenceModel: AlterDriverSequenceModel
@@ -38,23 +41,29 @@ class PreviewAlteredDriverSequenceViewTest {
         controller = find(scope)
     }
 
+    @BeforeEach
+    fun beforeEach(robot: FxRobot) {
+        realPage = RealPreviewAlteredDriverSequencePage(robot)
+        fastPage = FastPreviewAlteredDriverSequencePage(robot)
+    }
+
     @Test
-    fun `It should display preview result runs`(robot: FxRobot) {
+    fun `It should display preview result runs`() {
         val event = RunEvents.basic()
 
         model.previewResult = basicPreviewResult(event)
 
-        val runsTable = robot.lookup("#runs-table").queryTableView<PreviewAlteredDriverSequenceResult.Run>()
+        val runsTable = fastPage.runsTable()
         assertThat(runsTable.items).hasSize(2)
     }
 
     @Test
-    fun `It should select inserted run`(robot: FxRobot) {
+    fun `It should select inserted run`() {
         val event = RunEvents.basic()
 
         model.previewResult = basicPreviewResult(event)
 
-        val runsTable = robot.lookup("#runs-table").queryTableView<PreviewAlteredDriverSequenceResult.Run>()
+        val runsTable = fastPage.runsTable()
         assertThat(runsTable.selectionModel.selectedIndex).isEqualTo(0)
     }
 }

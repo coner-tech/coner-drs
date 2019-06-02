@@ -11,6 +11,7 @@ class PreviewAlteredDriverSequenceView : View() {
     private val controller: PreviewAlteredDriverSequenceController = find()
 
     override val root = form {
+        id = "preview-altered-driver-sequence-view"
         fieldset("Preview") {
             vgrow = Priority.ALWAYS
             tableview(model.previewResultProperty.select { it.runsProperty }) {

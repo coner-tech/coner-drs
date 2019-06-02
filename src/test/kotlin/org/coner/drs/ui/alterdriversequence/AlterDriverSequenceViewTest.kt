@@ -64,7 +64,7 @@ internal class AlterDriverSequenceViewTest {
     }
 
     @Test
-    fun `It should execute alter driver sequence when user clicks OK`(robot: FxRobot, stage: Stage) {
+    fun `It should execute alter driver sequence when user clicks OK`(stage: Stage) {
         Assumptions.assumeThat(model.result).isNull()
         val result: InsertDriverIntoSequenceResult = mockk()
         every {
