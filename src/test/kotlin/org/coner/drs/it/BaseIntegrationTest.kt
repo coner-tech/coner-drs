@@ -71,6 +71,8 @@ abstract class BaseIntegrationTest {
     private class IntegrationTestApp(appConfigBasePath: File) : DigitalRawSheetApp() {
         override val configBasePath = appConfigBasePath.toPath()
         override val drsProperties = null
+        override val forceExitOnStop = false
+        override var scope = Scope()
 
         override fun start(stage: Stage) {
             super.start(stage)

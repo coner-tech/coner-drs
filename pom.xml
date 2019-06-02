@@ -8,13 +8,13 @@
     <artifactId>drs</artifactId>
     <version>0.0-SNAPSHOT</version>
 
-    <description>Digital Raw Sheets - reduce the drag of working raw sheets</description>
+    <description>Digital Raw Sheets - reduce the drag of working autocross raw sheets</description>
 
     <properties>
         <coner-drs.version>${project.version}</coner-drs.version>
         <kotlin.version>1.3.10</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <tornadofx.version>1.7.19</tornadofx.version>
+        <tornadofx.version>1.7.20-SNAPSHOT</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>

@@ -1,30 +1,29 @@
 package org.coner.drs.ui.runevent
 
+import javafx.scene.control.TableView
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
 import org.coner.drs.domain.entity.Run
 import tornadofx.*
+import java.util.*
 
 class RunEventTableView : View() {
     val model: RunEventTableModel by inject()
-    val controller: RunEventTableController by inject()
-
-    init {
-        controller.init()
-    }
+    val controller: RunEventTableController = find()
 
     override val root = form {
+        id = "run-event-table"
         fieldset("_Runs") {
             vgrow = Priority.ALWAYS
             tableview(model.runsSortedBySequence) {
                 id = "runs-table"
                 legend.isMnemonicParsing = true
                 legend.labelFor = this
-                isEditable = true
+                isEditable = false
                 setSortPolicy { false }
                 vgrow = Priority.ALWAYS
-                readonlyColumn("Sequence", Run::sequence)
+                column("Sequence", Run::sequenceProperty)
                 column("Numbers", Run::registrationNumbersProperty)
                 column("Name", Run::registrationDriverNameProperty)
                 column("Car Model", Run::registrationCarModelProperty)
@@ -69,14 +68,23 @@ class RunEventTableView : View() {
                 }
                 smartResize()
                 contextmenu {
-                    item(
-                            name = "Change Driver",
-                            keyCombination = KeyCombination.keyCombination("Ctrl+D")
-                    ) {
-                        enableWhen(selectionModel.selectedItemProperty().isNotNull)
-                        action {
-                            val run = selectedItem ?: return@action
-                            controller.showChangeDriver(run)
+                    menu("Driver") {
+                        item(
+                                name = "Change Driver",
+                                keyCombination = KeyCombination.keyCombination("Ctrl+D")
+                        ) {
+                            enableWhen(selectionModel.selectedItemProperty().isNotNull)
+                            action {
+                                val run = selectedItem ?: return@action
+                                controller.showChangeDriver(run)
+                            }
+                        }
+                        item(
+                                name = "Insert Driver Into Sequence",
+                                keyCombination = KeyCombination.keyCombination("Ctrl+Insert")
+                        ) {
+                            enableWhen(selectionModel.selectedItemProperty().isNotNull)
+                            action { controller.showInsertDriver(selectedItem ?: return@action) }
                         }
                     }
                     menu("Penalty") {
@@ -142,5 +150,14 @@ class RunEventTableView : View() {
             }
         }
     }
+
+    private val table: TableView<Run>
+        get() = root.lookup("#runs-table") as TableView<Run>
+
+    fun selectRunById(selectRunId: UUID) {
+        val run = table.items.firstOrNull { it.id == selectRunId } ?: return
+        table.selectionModel.select(run)
+    }
+
 
 }

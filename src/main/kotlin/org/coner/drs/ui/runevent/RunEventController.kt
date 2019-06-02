@@ -89,6 +89,9 @@ class RunEventController : Controller() {
     private val timerOutputWriter = object : TimerOutputWriter<FinishTriggerElapsedTimeOnly> {
         override fun write(input: FinishTriggerElapsedTimeOnly) {
             runService.addNextTime(model.event, input.et)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOnFx()
+                    .subscribe()
         }
     }
 }

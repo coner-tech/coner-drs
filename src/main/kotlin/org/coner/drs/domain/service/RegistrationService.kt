@@ -13,35 +13,28 @@ class RegistrationService : Controller() {
     private val levenshteinDistance by lazy { LevenshteinDistance.getDefaultInstance() }
 
     fun findAutoSelectionCandidate(
-            change: ListChangeListener.Change<out Registration>,
+            registrations: List<Registration>,
             numbersField: String
     ): RegistrationSelectionCandidate?  {
         if (numbersField.length <= 2) {
             return null
         }
 
-        while (change.next()) {
-            val candidates = change.list
-                    .map {
-                        RegistrationSelectionCandidate(
-                                registration = it,
-                                levenshteinDistanceToNumbersField = levenshteinDistance.apply(it.numbers, numbersField)
-                        )
-                    }
-                    .sortedBy(RegistrationSelectionCandidate::levenshteinDistanceToNumbersField)
-            return when (candidates.size) {
-                1 -> candidates[0]
-                in 2..Int.MAX_VALUE -> {
-                    val candidate0LevenshteinDistance = candidates[0].levenshteinDistanceToNumbersField
-                    val candidate1LevenshteinDistance = candidates[1].levenshteinDistanceToNumbersField
-                    if (candidate0LevenshteinDistance < candidate1LevenshteinDistance) {
-                        candidates[0]
-                    } else { null }
-                }
-                else -> null
+        val candidates = registrations.map { RegistrationSelectionCandidate(
+                registration = it,
+                levenshteinDistanceToNumbersField = levenshteinDistance.apply(it.numbers, numbersField)
+        ) }.sortedBy(RegistrationSelectionCandidate::levenshteinDistanceToNumbersField)
+        return when (candidates.size) {
+            1 -> candidates[0]
+            in 2..Int.MAX_VALUE -> {
+                val candidate0LevenshteinDistance = candidates[0].levenshteinDistanceToNumbersField
+                val candidate1LevenshteinDistance = candidates[1].levenshteinDistanceToNumbersField
+                if (candidate0LevenshteinDistance < candidate1LevenshteinDistance) {
+                    candidates[0]
+                } else { null }
             }
+            else -> null
         }
-        return null
     }
 
     fun findNumbersFieldTokens(numbersField: String?): List<String> {

@@ -1,5 +1,6 @@
 package org.coner.drs.domain.entity
 
+import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.service.RunService
@@ -49,7 +50,7 @@ class RunEvent(
     val runForNextDriver by runForNextDriverProperty
 
     val runForNextTimeBinding = objectBinding(runsBySequence) {
-        service.findRunForNextTime(this@RunEvent)
+        service.findRunForNextTime(this@RunEvent).blockingGet()
     }
     val runForNextTimeProperty = SimpleObjectProperty<Run>(this, "runForNextTime").apply {
         bind(runForNextTimeBinding)

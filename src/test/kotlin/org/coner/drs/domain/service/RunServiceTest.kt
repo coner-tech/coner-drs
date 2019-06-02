@@ -1,32 +1,37 @@
 package org.coner.drs.domain.service
 
 import assertk.all
-import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
-import assertk.assertions.isSameAs
-import assertk.assertions.prop
+import assertk.assertions.*
+import io.mockk.mockk
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
 import org.coner.drs.domain.entity.Run
-import org.coner.drs.domain.entity.RunEvent
+import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
+import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
+import org.coner.drs.io.gateway.RunGateway
 import org.coner.drs.test.TornadoFxScopeExtension
 import org.coner.drs.test.fixture.domain.entity.RunEvents
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.testfx.api.FxToolkit
 import tornadofx.*
 import java.math.BigDecimal
+import java.util.concurrent.CountDownLatch
 
 @ExtendWith(TornadoFxScopeExtension::class)
 class RunServiceTest {
 
     private lateinit var service: RunService
 
+    private lateinit var gateway: RunGateway
+
     @BeforeEach
     fun before(scope: Scope) {
+        scope.set(mockk<RunGateway>(relaxed = true))
         service = find(scope)
+        gateway = find(scope)
     }
 
     @Test
@@ -34,7 +39,7 @@ class RunServiceTest {
         val runEvent = RunEvents.basic()
         Assumptions.assumeThat(runEvent.runsBySequence).isEmpty()
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(1)
@@ -53,7 +58,7 @@ class RunServiceTest {
                 rawTime = null
         )
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(1)
@@ -78,7 +83,7 @@ class RunServiceTest {
                 rawTime = null
         )
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(2)
@@ -97,11 +102,149 @@ class RunServiceTest {
                 rawTime = BigDecimal.valueOf(123456, 3)
         )
 
-        val actual = service.findRunForNextTime(runEvent)
+        val actual = service.findRunForNextTime(runEvent).blockingGet()
 
         assertk.assertThat(actual).all {
             prop(Run::sequence).isEqualTo(2)
             prop(Run::registration).isNull()
         }
+    }
+
+    @Test
+    fun `it should insert driver into sequence before given sequence`() {
+        val event = RunEvents.basic()
+        val runs = listOf(
+                Run(
+                        event = event,
+                        sequence = 1,
+                        registration = event.registrations[0],
+                        rawTime = BigDecimal.valueOf(1000, 3)
+                ),
+                Run(
+                        event = event,
+                        sequence = 2,
+                        registration = event.registrations[2],
+                        rawTime = BigDecimal.valueOf(2000, 3)
+                )
+        )
+        val request = InsertDriverIntoSequenceRequest(
+                event = event,
+                runs = runs,
+                sequence = 2,
+                relative = InsertDriverIntoSequenceRequest.Relative.BEFORE,
+                registration = event.registrations[1],
+                dryRun = true
+        )
+
+        val actual = service.insertDriverIntoSequence(request).blockingGet()
+
+        Assertions.assertThat(actual.runs).hasSize(3)
+        Assertions.assertThat(actual.runs[0])
+                .hasFieldOrPropertyWithValue("id", runs[0].id)
+                .hasFieldOrPropertyWithValue("sequence", 1)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[0])
+                .hasFieldOrPropertyWithValue("rawTime", runs[0].rawTime)
+        Assertions.assertThat(actual.runs[1])
+                .hasFieldOrPropertyWithValue("sequence", 2)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[1])
+                .hasFieldOrPropertyWithValue("rawTime", runs[1].rawTime)
+        Assertions.assertThat(actual.runs[2])
+                .hasFieldOrPropertyWithValue("id", runs[1].id)
+                .hasFieldOrPropertyWithValue("sequence", 3)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[2])
+                .hasFieldOrPropertyWithValue("rawTime", null)
+    }
+
+    @Test
+    fun `it should insert driver into sequence after given sequence`() {
+        val event = RunEvents.basic()
+        val runs = listOf(
+                Run(
+                        event = event,
+                        sequence = 1,
+                        registration = event.registrations[0],
+                        rawTime = BigDecimal.valueOf(1000, 3)
+                ),
+                Run(
+                        event = event,
+                        sequence = 2,
+                        registration = event.registrations[2],
+                        rawTime = BigDecimal.valueOf(2000, 3)
+                )
+        )
+        val request = InsertDriverIntoSequenceRequest(
+                event = event,
+                runs = runs,
+                sequence = 1,
+                relative = InsertDriverIntoSequenceRequest.Relative.AFTER,
+                registration = event.registrations[1],
+                dryRun = true
+        )
+
+        val actual = service.insertDriverIntoSequence(request).blockingGet()
+
+        Assertions.assertThat(actual.runs).hasSize(3)
+        Assertions.assertThat(actual.runs[0])
+                .hasFieldOrPropertyWithValue("id", runs[0].id)
+                .hasFieldOrPropertyWithValue("sequence", 1)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[0])
+                .hasFieldOrPropertyWithValue("rawTime", runs[0].rawTime)
+        Assertions.assertThat(actual.runs[1])
+                .hasFieldOrPropertyWithValue("sequence", 2)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[1])
+                .hasFieldOrPropertyWithValue("rawTime", runs[1].rawTime)
+        Assertions.assertThat(actual.runs[2])
+                .hasFieldOrPropertyWithValue("id", runs[1].id)
+                .hasFieldOrPropertyWithValue("sequence", 3)
+                .hasFieldOrPropertyWithValue("registration", event.registrations[2])
+                .hasFieldOrPropertyWithValue("rawTime", null)
+    }
+
+    @Test
+    fun `it should not save with gateway on insert driver into sequence dry run`() {
+        val event = RunEvents.basic()
+        val runs = listOf(
+                Run(
+                        event = event,
+                        sequence = 1,
+                        registration = event.registrations[1]
+                )
+        )
+        val request = InsertDriverIntoSequenceRequest(
+                event = event,
+                runs = runs,
+                sequence = 1,
+                relative = InsertDriverIntoSequenceRequest.Relative.BEFORE,
+                registration = event.registrations[0],
+                dryRun = true
+        )
+
+        service.insertDriverIntoSequence(request).blockingGet()
+
+        verify(exactly = 0) { gateway.save(any()) }
+    }
+
+    @Test
+    fun `it should save with gateway on insert driver into sequence`() {
+        val event = RunEvents.basic()
+        val runs = listOf(
+                Run(
+                        event = event,
+                        sequence = 1,
+                        registration = event.registrations[1]
+                )
+        )
+        val request = InsertDriverIntoSequenceRequest(
+                event = event,
+                runs = runs,
+                sequence = 1,
+                relative = InsertDriverIntoSequenceRequest.Relative.BEFORE,
+                registration = event.registrations[0],
+                dryRun = false
+        )
+
+        service.insertDriverIntoSequence(request).blockingGet()
+
+        verify(exactly = 2) { gateway.save(any()) }
     }
 }
