@@ -67,6 +67,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
             FxRobot::class.java -> true
             Scope::class.java -> true
             App::class.java -> true
+            Stage::class.java -> true
             else -> false
         }
     }
@@ -76,6 +77,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
             FxRobot::class.java -> extensionContext.robot!!
             Scope::class.java -> extensionContext.scope!!
             App::class.java -> extensionContext.app!!
+            Stage::class.java -> extensionContext.stage!!
             else -> false
         }
     }
