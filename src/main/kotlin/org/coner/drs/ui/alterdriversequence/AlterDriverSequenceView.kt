@@ -10,6 +10,7 @@ class AlterDriverSequenceView : View() {
     private val controller: AlterDriverSequenceController by inject()
 
     override val root = borderpane {
+        id = "alter-driver-sequence-view"
         left {
             add<SpecifyDriverSequenceAlterationView>()
         }
@@ -18,7 +19,9 @@ class AlterDriverSequenceView : View() {
         }
         bottom {
             buttonbar {
+                id = "bottom-buttonbar"
                 button(text = "OK", type = ButtonBar.ButtonData.OK_DONE) {
+                    id = "ok"
                     isDefaultButton = true
                     action {
                         runAsyncWithProgress {
@@ -30,6 +33,7 @@ class AlterDriverSequenceView : View() {
                     }
                 }
                 button(text = "Cancel", type = ButtonBar.ButtonData.CANCEL_CLOSE) {
+                    id = "cancel"
                     action {
                         close()
                     }
