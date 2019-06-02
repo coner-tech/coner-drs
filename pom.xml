@@ -8,7 +8,7 @@
     <artifactId>drs</artifactId>
     <version>0.0-SNAPSHOT</version>
 
-    <description>Digital Raw Sheets - reduce the drag of working raw sheets</description>
+    <description>Digital Raw Sheets - reduce the drag of working autocross raw sheets</description>
 
     <properties>
         <coner-drs.version>${project.version}</coner-drs.version>
