@@ -46,6 +46,7 @@ class AlterDriverSequenceView : View() {
     override fun onDock() {
         super.onDock()
         title = "Insert Driver Into Sequence"
+        fire(ResetEvent())
     }
 
 }

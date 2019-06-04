@@ -33,7 +33,7 @@ internal class SpecifyDriverSequenceAlterationViewTest {
 
     private lateinit var model: SpecifyDriverSequenceAlterationModel
     private lateinit var controller: SpecifyDriverSequenceAlterationController
-    private lateinit var runEventModel: RunEventModel
+    private lateinit var alterDriverSequenceModel: AlterDriverSequenceModel
 
     private lateinit var realPage: RealSpecifyDriverSequenceAlterationPage
     private lateinit var fastPage: FastSpecifyDriverSequenceAlterationPage
@@ -48,14 +48,13 @@ internal class SpecifyDriverSequenceAlterationViewTest {
         scope.apply {
             set(registrationService)
             set(runService)
-            set(find<RunEventModel>(scope).apply {
-                event = RunEvents.basic()
-            })
+        }
+        alterDriverSequenceModel = find<AlterDriverSequenceModel>(scope).apply {
+            event = RunEvents.basic()
         }
         view = find(scope)
         model = find(scope)
         controller = find(scope)
-        runEventModel = find(scope)
     }
 
     @BeforeEach
@@ -115,7 +114,7 @@ internal class SpecifyDriverSequenceAlterationViewTest {
 
     @Test
     fun `Model registration should take auto selection candidate`() {
-        val registration = runEventModel.event.registrations[2]
+        val registration = alterDriverSequenceModel.event.registrations[2]
         every {
             registrationService.findAutoSelectionCandidate(model.registrationList, registration.numbers)
         }.returns(RegistrationSelectionCandidate(registration, 0))
@@ -129,11 +128,11 @@ internal class SpecifyDriverSequenceAlterationViewTest {
 
     @Test
     fun `It should reset`(app: App) {
-        val numbers = runEventModel.event.registrations[0].numbers
+        val numbers = alterDriverSequenceModel.event.registrations[0].numbers
         every {
             registrationService.findAutoSelectionCandidate(model.registrationList, numbers)
         }.returns(RegistrationSelectionCandidate(
-                runEventModel.event.registrations[0],
+                alterDriverSequenceModel.event.registrations[0],
                 0
         ))
         every {

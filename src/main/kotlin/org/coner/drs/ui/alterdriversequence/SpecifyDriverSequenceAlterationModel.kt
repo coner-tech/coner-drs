@@ -9,12 +9,11 @@ import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.domain.service.RegistrationByNumbersSearchPredicate
 import org.coner.drs.domain.service.RegistrationService
-import org.coner.drs.ui.runevent.RunEventModel
 import tornadofx.*
 
 class SpecifyDriverSequenceAlterationModel : ViewModel() {
 
-    private val runEventModel: RunEventModel by inject()
+    private val alterDriverSequenceModel: AlterDriverSequenceModel by inject()
     private val registrationService: RegistrationService by inject()
 
     val sequenceProperty = SimpleIntegerProperty(this, "sequence")
@@ -50,7 +49,7 @@ class SpecifyDriverSequenceAlterationModel : ViewModel() {
     private val registrationListPredicate = RegistrationByNumbersSearchPredicate(numbersFieldProperty)
 
     val registrationList = SortedFilteredList(
-            items = SortedList(runEventModel.event.registrations, compareBy(Registration::numbers))
+            items = SortedList(alterDriverSequenceModel.event.registrations, compareBy(Registration::numbers))
     ).apply {
         filterWhen(numbersFieldProperty) { query, item ->
             registrationListPredicate.test(item)

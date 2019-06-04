@@ -12,4 +12,5 @@ interface AlterDriverSequencePage {
     fun cancelButton(): Button
     fun clickOkButton()
     fun clickCancelButton()
+    fun toSpecifyDriverSequenceAlterationPage(): SpecifyDriverSequenceAlterationPage
 }

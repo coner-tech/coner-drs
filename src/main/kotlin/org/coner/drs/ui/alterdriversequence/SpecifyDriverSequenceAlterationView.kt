@@ -80,4 +80,14 @@ class SpecifyDriverSequenceAlterationView : View() {
         }
     }
 
+    private val numbersField: TextField
+        get() = root.lookup("#numbers") as TextField
+
+    init {
+        subscribe<ResetEvent> { reset() }
+    }
+
+    private fun reset() {
+        runLater { numbersField.requestFocus() }
+    }
 }

@@ -29,7 +29,6 @@ class AlterDriverSequenceController : Controller() {
         model.event = find<RunEventModel>().event
         model.sequence = sequence
         model.registration = null
-        fire(ResetEvent())
         find<AlterDriverSequenceView>().openModal(block = true)
         return model.result
     }

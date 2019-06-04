@@ -4,9 +4,10 @@ import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import javafx.scene.layout.BorderPane
 import org.coner.drs.test.page.AlterDriverSequencePage
+import org.coner.drs.test.page.SpecifyDriverSequenceAlterationPage
 import org.testfx.api.FxRobot
 
-open class RealAlterDriverSequencePage(private val robot: FxRobot) : AlterDriverSequencePage {
+open class RealAlterDriverSequencePage(protected val robot: FxRobot) : AlterDriverSequencePage {
 
     override fun root() = robot.lookup("#alter-driver-sequence-view").query<BorderPane>()
 
@@ -22,5 +23,9 @@ open class RealAlterDriverSequencePage(private val robot: FxRobot) : AlterDriver
 
     override fun clickCancelButton() {
         robot.clickOn(cancelButton())
+    }
+
+    override fun toSpecifyDriverSequenceAlterationPage(): SpecifyDriverSequenceAlterationPage {
+        return RealSpecifyDriverSequenceAlterationPage(robot)
     }
 }
