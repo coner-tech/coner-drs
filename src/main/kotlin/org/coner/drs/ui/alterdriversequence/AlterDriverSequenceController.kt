@@ -15,12 +15,10 @@ class AlterDriverSequenceController : Controller() {
     private val service: RunService by inject()
 
     init {
-        runLater {
-            with(find<SpecifyDriverSequenceAlterationModel>()) {
-                model.registrationProperty.bindBidirectional(registrationProperty)
-                model.relativeProperty.bindBidirectional(relativeProperty)
-                model.sequenceProperty.bindBidirectional(sequenceProperty)
-            }
+        with(find<SpecifyDriverSequenceAlterationModel>()) {
+            model.registrationProperty.bindBidirectional(registrationProperty)
+            model.relativeProperty.bindBidirectional(relativeProperty)
+            model.sequenceProperty.bindBidirectional(sequenceProperty)
         }
         model.sequenceProperty.onChange { performDryRunForPreview() }
         model.registrationProperty.onChange { performDryRunForPreview() }
