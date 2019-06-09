@@ -29,7 +29,6 @@ class AlterDriverSequenceController : Controller() {
         model.event = find<RunEventModel>().event
         model.sequence = sequence
         model.registration = null
-        fire(ResetEvent())
         find<AlterDriverSequenceView>().openModal(block = true)
         return model.result
     }
@@ -40,7 +39,7 @@ class AlterDriverSequenceController : Controller() {
                 runs = model.event.runs,
                 registration = model.registration,
                 sequence = model.sequence,
-                relative = model.relative,
+                relative = model.relative ?: InsertDriverIntoSequenceRequest.Relative.BEFORE,
                 dryRun = true
         )
         service.insertDriverIntoSequence(request)
