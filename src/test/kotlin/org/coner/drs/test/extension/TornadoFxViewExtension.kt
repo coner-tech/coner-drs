@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.*
 import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
 import tornadofx.*
+import tornadofx.App
 import kotlin.reflect.KFunction
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.*
@@ -66,7 +67,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         return when (parameterContext.parameter.type) {
             FxRobot::class.java -> true
             Scope::class.java -> true
-            SetupApp::class.java -> true
+            App::class.java -> true
             Stage::class.java -> true
             else -> false
         }
@@ -76,7 +77,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         return when(parameterContext.parameter.type) {
             FxRobot::class.java -> extensionContext.robot!!
             Scope::class.java -> extensionContext.scope!!
-            SetupApp::class.java -> extensionContext.app!!
+            App::class.java -> extensionContext.app!!
             Stage::class.java -> extensionContext.stage!!
             else -> false
         }
@@ -94,7 +95,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         context.view = fixture?.view?.get(context.testInstance.get())
         context.app = FxToolkit.setupApplication { object : tornadofx.App() {
             override var scope = context.scope!!
-        } } as tornadofx.App
+        } } as App
         if (fixture?.starts?.isNotEmpty() == true) {
             fixture.starts.forEach {
                 context.robot!!.interact { it.call(context.testInstance.get(), context.stage!!) }
