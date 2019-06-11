@@ -24,13 +24,13 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
     private var ExtensionContext.scope: Scope?
         get() = getGlobal("scope")
         set(value) = putGlobal("scope", value)
-    private var ExtensionContext.app: App?
+    private var ExtensionContext.app: tornadofx.App?
         get() = getGlobal("app")
         set(value) = putGlobal("app", value)
     private var ExtensionContext.view: tornadofx.View?
         get() = getGlobal("view")
         set(value) = putGlobal("view", value)
-    private var ExtensionContext.fixture: Fixture?
+    private var ExtensionContext.fixture: ViewFixture?
         get() = getGlobal("fixture")
         set(value) = putGlobal("fixture", value)
 
@@ -59,14 +59,14 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
                 property.findAnnotation<View>()?.run { view = property as KProperty1<Any, tornadofx.View> }
             }
         }
-        context.fixture = Fixture(inits.toList(), starts.toList(), stops.toList(), view)
+        context.fixture = ViewFixture(inits.toList(), starts.toList(), stops.toList(), view)
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
         return when (parameterContext.parameter.type) {
             FxRobot::class.java -> true
             Scope::class.java -> true
-            App::class.java -> true
+            SetupApp::class.java -> true
             Stage::class.java -> true
             else -> false
         }
@@ -76,7 +76,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         return when(parameterContext.parameter.type) {
             FxRobot::class.java -> extensionContext.robot!!
             Scope::class.java -> extensionContext.scope!!
-            App::class.java -> extensionContext.app!!
+            SetupApp::class.java -> extensionContext.app!!
             Stage::class.java -> extensionContext.stage!!
             else -> false
         }
@@ -92,9 +92,9 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         context.robot = FxRobot()
         fixture?.inits?.forEach { context.robot!!.interact { it.call(context.testInstance.get(), context.scope) } }
         context.view = fixture?.view?.get(context.testInstance.get())
-        context.app = FxToolkit.setupApplication { object : App() {
+        context.app = FxToolkit.setupApplication { object : tornadofx.App() {
             override var scope = context.scope!!
-        } } as App
+        } } as tornadofx.App
         if (fixture?.starts?.isNotEmpty() == true) {
             fixture.starts.forEach {
                 context.robot!!.interact { it.call(context.testInstance.get(), context.stage!!) }

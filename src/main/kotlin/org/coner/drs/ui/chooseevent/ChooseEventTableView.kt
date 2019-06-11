@@ -5,7 +5,7 @@ import tornadofx.*
 
 class ChooseEventTableView : View() {
     val model: ChooseEventModel by inject()
-    val controller: ChooseEventController by inject()
+    val controller: ChooseEventController = find()
     override val root = tableview(model.events) {
         id = "events"
         column("Date", Event::dateProperty) {
@@ -19,10 +19,6 @@ class ChooseEventTableView : View() {
         }
         smartResize()
         bindSelected(model.choiceProperty)
-    }
-
-    init {
-        controller.init()
     }
 
     override fun onDock() {

@@ -68,7 +68,7 @@ abstract class BaseIntegrationTest {
         crispyFishDatabase = null
     }
 
-    private class IntegrationTestApp(appConfigBasePath: File) : DigitalRawSheetApp() {
+    class IntegrationTestApp(appConfigBasePath: File) : DigitalRawSheetApp() {
         override val configBasePath = appConfigBasePath.toPath()
         override val drsProperties = null
         override val forceExitOnStop = false
