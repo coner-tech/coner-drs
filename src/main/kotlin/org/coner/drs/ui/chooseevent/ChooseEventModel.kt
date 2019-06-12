@@ -5,8 +5,6 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import org.coner.drs.domain.entity.Event
 import tornadofx.*
-import tornadofx.getValue
-import tornadofx.setValue
 
 class ChooseEventModel : ViewModel() {
     val events = observableListOf<Event>()
