@@ -16,6 +16,11 @@ class ChooseEventController : Controller() {
     val model: ChooseEventModel by inject()
     val eventGateway: EventGateway by inject()
 
+    fun loadEvents() {
+        model.events.clear()
+        model.events.addAll(eventGateway.list())
+    }
+
     fun addEvent() {
         val wizard = find<AddEventWizard>(AddEventWizard.Scope(scope))
         wizard.onComplete {
@@ -40,8 +45,7 @@ class ChooseEventController : Controller() {
                         .subscribeOnFx()
                         .doOnSubscribe {
                             println("ChooseEventController watchList doOnSubscribe()")
-                            model.events.clear()
-                            model.events.addAll(eventGateway.list())
+                            loadEvents()
                         }
                         .doAfterNext {
                             model.docked = true
