@@ -116,16 +116,16 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         val fixture = context.fixture
         context.stage = FxToolkit.registerPrimaryStage()
         context.robot = FxRobot()
-        fixture?.init?.run { context.robot!!.interact { call(context.testInstance.get(), context.scope) } }
+        fixture?.init?.run { FX.runAndWait { call(context.testInstance.get(), context.scope) } }
         context.view = fixture?.view?.get(context.testInstance.get())
         context.app = FxToolkit.setupApplication { object : tornadofx.App() {
             override var scope = context.scope!!
         } } as App
         val start = fixture?.start
         if (start != null) {
-            context.robot!!.interact { start.call(context.testInstance.get(), context.stage!!) }
+            FX.runAndWait { start.call(context.testInstance.get(), context.stage!!) }
         } else {
-            context.robot!!.interact {
+            FX.runAndWait {
                 context.stage!!.scene = Scene(context.view!!.root)
                 context.stage!!.show()
             }
@@ -133,7 +133,7 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
     }
 
     override fun afterEach(context: ExtensionContext) {
-        context.fixture?.stop?.run { context.robot!!.interact { call(context.testInstance.get()) } }
+        context.fixture?.stop?.run { FX.runAndWait { call(context.testInstance.get()) } }
         FxToolkit.cleanupApplication(context.app!!)
         FxToolkit.cleanupStages()
         context.view = null
