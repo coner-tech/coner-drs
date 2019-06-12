@@ -8,7 +8,7 @@ class ChooseEventView : View("Choose Event") {
         println("ChooseEventView.init()")
     }
 
-    override val root = borderpane() {
+    override val root = borderpane {
         id = "choose-event"
     }
 

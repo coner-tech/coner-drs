@@ -1,18 +1,16 @@
 package org.coner.drs.test.extension
 
-import javafx.scene.Scene
 import javafx.stage.Stage
 import org.junit.jupiter.api.extension.*
 import org.testfx.api.FxRobot
 import org.testfx.api.FxToolkit
 import tornadofx.*
-import tornadofx.App
 import kotlin.reflect.KFunction
-import kotlin.reflect.KProperty1
+import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.*
 import kotlin.reflect.jvm.isAccessible
 
-class TornadoFxViewExtension : TestInstancePostProcessor,
+class TornadoFxAppExtension : TestInstancePostProcessor,
         ParameterResolver,
         BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback  {
 
@@ -22,16 +20,10 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
     private var ExtensionContext.stage: Stage?
         get() = getGlobal("stage")
         set(value) = putGlobal("stage", value)
-    private var ExtensionContext.scope: Scope?
-        get() = getGlobal("scope")
-        set(value) = putGlobal("scope", value)
     private var ExtensionContext.app: tornadofx.App?
         get() = getGlobal("app")
         set(value) = putGlobal("app", value)
-    private var ExtensionContext.view: tornadofx.View?
-        get() = getGlobal("view")
-        set(value) = putGlobal("view", value)
-    private var ExtensionContext.fixture: ViewFixture?
+    private var ExtensionContext.fixture: AppFixture?
         get() = getGlobal("fixture")
         set(value) = putGlobal("fixture", value)
 
@@ -44,11 +36,12 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
     }
 
     override fun postProcessTestInstance(testInstance: Any, context: ExtensionContext) {
-        context.fixture = ViewFixture(
+        context.fixture = AppFixture(
                 init = findInitFunction(testInstance),
+                setupApp = findSetupAppFunction(testInstance),
                 start = findStartFunction(testInstance),
-                stop = findStopFunction(testInstance),
-                view = findViewProperty(testInstance)
+                app = findAppProperty(testInstance),
+                stop = findStopFunction(testInstance)
         )
     }
 
@@ -58,6 +51,24 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         }?.apply {
             isAccessible = true
         }
+    }
+
+    private fun findSetupAppFunction(testInstance: Any): KFunction<*> {
+        return testInstance::class.declaredMemberFunctions.singleOrNull { function ->
+            function.returnType.isSubtypeOf(tornadofx.App::class.starProjectedType)
+                    && function.findAnnotation<SetupApp>() != null
+        }?.apply {
+            isAccessible = true
+        } ?: throw IllegalStateException("Test instance lacks @SetupApp function returning tornadofx.App")
+    }
+
+    private fun findAppProperty(testInstance: Any): KMutableProperty1<Any, tornadofx.App>? {
+        return testInstance::class.declaredMemberProperties.singleOrNull { property ->
+            property.returnType.isSubtypeOf(tornadofx.App::class.starProjectedType)
+                    && property.findAnnotation<App>() != null
+        }?.apply {
+            isAccessible = true
+        } as? KMutableProperty1<Any, tornadofx.App>?
     }
 
     private fun findStartFunction(testInstance: Any): KFunction<*>? {
@@ -76,23 +87,9 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
         }
     }
 
-    private fun findViewProperty(testInstance: Any): KProperty1<Any, tornadofx.View>? {
-        return testInstance::class.declaredMemberProperties.singleOrNull { property ->
-            property.findAnnotation<View>() != null
-        }?.apply {
-            check(returnType.isSubtypeOf(tornadofx.View::class.starProjectedType)) {
-                "Property annotated with @View is not a subtype of tornadofx.View"
-            }
-            isAccessible = true
-        } as? KProperty1<Any, tornadofx.View>?
-    }
-
-
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
         return when (parameterContext.parameter.type) {
             FxRobot::class.java -> true
-            Scope::class.java -> true
-            App::class.java -> true
             Stage::class.java -> true
             else -> false
         }
@@ -101,8 +98,6 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
         return when(parameterContext.parameter.type) {
             FxRobot::class.java -> extensionContext.robot!!
-            Scope::class.java -> extensionContext.scope!!
-            App::class.java -> extensionContext.app!!
             Stage::class.java -> extensionContext.stage!!
             else -> false
         }
@@ -112,32 +107,28 @@ class TornadoFxViewExtension : TestInstancePostProcessor,
     }
 
     override fun beforeEach(context: ExtensionContext) {
-        context.scope = Scope()
-        val fixture = context.fixture
+        val fixture = context.fixture!!
         context.stage = FxToolkit.registerPrimaryStage()
         context.robot = FxRobot()
-        fixture?.init?.run { FX.runAndWait { call(context.testInstance.get(), context.scope) } }
-        context.view = fixture?.view?.get(context.testInstance.get())
-        context.app = FxToolkit.setupApplication { object : tornadofx.App() {
-            override var scope = context.scope!!
-        } } as App
-        val start = fixture?.start
-        if (start != null) {
-            FX.runAndWait { start.call(context.testInstance.get(), context.stage!!) }
-        } else {
-            FX.runAndWait {
-                context.stage!!.scene = Scene(context.view!!.root)
-                context.stage!!.show()
-            }
+        fixture.init?.run {
+            FX.runAndWait { call(context.testInstance.get()) }
+        }
+        val app = FxToolkit.setupApplication {
+            fixture.setupApp.call(context.testInstance.get()) as tornadofx.App
+        } as tornadofx.App
+        context.app = app
+        fixture.app?.set(context.testInstance.get(), app)
+        fixture.start?.run {
+            call(context.testInstance.get(), context.robot!!)
         }
     }
 
     override fun afterEach(context: ExtensionContext) {
-        context.fixture?.stop?.run { FX.runAndWait { call(context.testInstance.get()) } }
+        val fixture = context.fixture!!
+        fixture.stop?.call(context.testInstance.get())
+        FX.runAndWait { context.stage!!.close() }
         FxToolkit.cleanupApplication(context.app!!)
         FxToolkit.cleanupStages()
-        context.view = null
-        context.scope = null
         context.app = null
         context.stage = null
         context.robot = null

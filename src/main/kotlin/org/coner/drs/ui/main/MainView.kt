@@ -40,6 +40,7 @@ class MainView : View() {
         super.onUndock()
         println("MainView#${id}.onUndock()")
         unsubscribe(onChangeToScreenHandler)
+        root.replaceChildren()
     }
 
     private val onChangeToScreenHandler: EventContext.(ChangeToScreenEvent) -> Unit = {

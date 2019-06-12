@@ -43,6 +43,7 @@ class RunEventController : Controller() {
     fun docked() {
         model.disposables.addAll(
                 runGateway.watchList(model.event, model.event.registrations)
+                    .doOnDispose { println("RunEventController runGateway watchList doOnDispose()") }
                     .subscribeOn(Schedulers.io())
                     .observeOnFx()
                     .subscribe(
@@ -53,6 +54,7 @@ class RunEventController : Controller() {
                             Consumer { /* no-op */ }
                     ),
                 registrationGateway.watchList(model.event)
+                        .doOnDispose { println("RunEventController registrationGateway watchList doOnDispose()") }
                         .subscribeOn(Schedulers.io())
                         .observeOnFx()
                         .subscribe(
@@ -66,6 +68,7 @@ class RunEventController : Controller() {
     }
 
     fun undocked() {
+        println("RunEventController.undocked()")
         model.disposables.clear()
         timerService.stop()
     }
