@@ -3,6 +3,7 @@ package org.coner.drs.ui.alterdriversequence
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
 import javafx.concurrent.Task
+import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.domain.service.RunService
@@ -15,20 +16,21 @@ class AlterDriverSequenceController : Controller() {
     private val service: RunService by inject()
 
     init {
-        with(find<SpecifyDriverSequenceAlterationModel>()) {
-            model.registrationProperty.bindBidirectional(registrationProperty)
-            model.relativeProperty.bindBidirectional(relativeProperty)
-            model.sequenceProperty.bindBidirectional(sequenceProperty)
-        }
         model.sequenceProperty.onChange { performDryRunForPreview() }
         model.registrationProperty.onChange { performDryRunForPreview() }
         model.relativeProperty.onChange { performDryRunForPreview() }
     }
 
-    fun showAlterDriverSequenceAndWait(sequence: Int): InsertDriverIntoSequenceResult? {
-        model.event = find<RunEventModel>().event
+    fun showAlterDriverSequenceAndWait(sequence: Int, event: RunEvent): InsertDriverIntoSequenceResult? {
+        model.event = event
+        with(find<SpecifyDriverSequenceAlterationModel>()) {
+            model.registrationProperty.bindBidirectional(registrationProperty)
+            model.relativeProperty.bindBidirectional(relativeProperty)
+            model.sequenceProperty.bindBidirectional(sequenceProperty)
+        }
         model.sequence = sequence
         model.registration = null
+        // deliberately don't reset `relative` to maintain user preference
         find<AlterDriverSequenceView>().openModal(block = true)
         return model.result
     }

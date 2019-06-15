@@ -63,7 +63,7 @@ class RunEventTableViewTest {
                 registration = event.registrations[1]
         )
         every {
-            alterDriverSequenceController.showAlterDriverSequenceAndWait(event.runs[0].sequence)
+            alterDriverSequenceController.showAlterDriverSequenceAndWait(event.runs[0].sequence, event)
         }.answers {
             val runs = listOf(insertRun, event.runs[0])
             event.runs[0].sequence = 2
