@@ -63,7 +63,9 @@ class RunEventTableController : Controller() {
     }
 
     fun showInsertDriver(run: Run) {
-        val result = find<AlterDriverSequenceController>().showAlterDriverSequenceAndWait(run.sequence)
+        val runEventModel: RunEventModel = find()
+        val result = find<AlterDriverSequenceController>()
+                .showAlterDriverSequenceAndWait(run.sequence, runEventModel.event)
         result?.run {
             view.selectRunById(this.insertRunId)
         }

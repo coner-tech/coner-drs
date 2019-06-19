@@ -6,8 +6,8 @@ import assertk.assertions.hasSize
 import assertk.assertions.index
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
-import org.coner.drs.DigitalRawSheetApp
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.io.gateway.EventGateway
@@ -19,18 +19,15 @@ import org.coner.drs.test.fixture.integration.crispyfish.classdefinition.Thscc20
 import org.coner.drs.test.fixture.integration.crispyfish.event.Thscc2019Points1
 import org.coner.drs.test.page.fast.FastChooseEventPage
 import org.coner.drs.test.page.fast.FastStartPage
+import org.coner.drs.test.page.real.RealAlterDriverSequencePage
 import org.coner.drs.test.page.real.RealRunEventPage
-import org.coner.drs.ui.chooseevent.ChooseEventController
+import org.coner.drs.test.page.real.RealRunEventTablePage
 import org.coner.drs.ui.chooseevent.ChooseEventModel
 import org.coner.drs.ui.chooseevent.ChooseEventTableView
-import org.coner.drs.ui.main.MainView
-import org.junit.After
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import org.testfx.api.FxRobot
-import org.testfx.api.FxToolkit
 import tornadofx.*
 import java.nio.file.Path
 import java.time.LocalDate
@@ -48,6 +45,7 @@ class RunEventIntegrationTest {
     lateinit var folders: FilesystemFixture
     lateinit var event: Event
     lateinit var page: RealRunEventPage
+    lateinit var tablePage: RealRunEventTablePage
 
     @Init
     fun init() {
@@ -84,6 +82,7 @@ class RunEventIntegrationTest {
         fastChooseEventPage.clickStartButton()
         this.event = find<EventGateway>(app.scope).list().first()
         this.page = RealRunEventPage(robot)
+        this.tablePage = RealRunEventTablePage(robot)
     }
 
     @Test
@@ -107,5 +106,27 @@ class RunEventIntegrationTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun itShouldInsertDriverIntoSequence(robot: FxRobot) {
+        val runsTableItems = tablePage.runsTable().items
+        Assumptions.assumeThat(runsTableItems).hasSize(0)
+        page.fillAddNextDriverNumbersField("1 HS")
+        page.clickOnAddNextDriverAddButton()
+        val alterDriverSequencePage = RealAlterDriverSequencePage(robot)
+        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
+
+        tablePage.clickInsertDriverIntoSequence(1)
+        specifyDriverSequenceAlterationPage.writeInNumbersField("3 SSC")
+        alterDriverSequencePage.clickOkButton()
+
+        Assertions.assertThat(runsTableItems).hasSize(2)
+        Assertions.assertThat(runsTableItems[0])
+                .hasFieldOrPropertyWithValue("sequence", 1)
+                .hasFieldOrPropertyWithValue("registrationNumbers", "3 SSC")
+        Assertions.assertThat(runsTableItems[1])
+                .hasFieldOrPropertyWithValue("sequence", 2)
+                .hasFieldOrPropertyWithValue("registrationNumbers", "1 HS")
     }
 }
