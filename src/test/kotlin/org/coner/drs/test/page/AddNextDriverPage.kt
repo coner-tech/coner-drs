@@ -11,6 +11,8 @@ interface AddNextDriverPage {
 
     fun root(): Form
 
+    fun sequenceField() : TextInputControl
+
     fun numbersField(): TextInputControl
 
     fun writeInNumbersField(s: String)

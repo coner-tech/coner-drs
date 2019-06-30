@@ -1,6 +1,7 @@
 package org.coner.drs.test.page.real
 
 import javafx.scene.control.SplitMenuButton
+import javafx.scene.control.TextInputControl
 import javafx.scene.input.KeyCode
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.test.page.AddNextDriverPage
@@ -13,6 +14,10 @@ open class RealAddNextDriverPage(
 
     override fun root() = robot.lookup("#add-next-driver")
             .queryAs(Form::class.java)!!
+
+    override fun sequenceField() = robot.from(root())
+            .lookup("#sequence")
+            .queryTextInputControl()
 
     override fun numbersField() = robot.from(root())
             .lookup("#numbers")
