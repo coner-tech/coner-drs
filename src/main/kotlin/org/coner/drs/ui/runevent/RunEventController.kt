@@ -1,5 +1,6 @@
 package org.coner.drs.ui.runevent
 
+import com.github.thomasnield.rxkotlinfx.doOnNextFx
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
@@ -46,6 +47,10 @@ class RunEventController : Controller() {
                     .doOnDispose { println("RunEventController runGateway watchList doOnDispose()") }
                     .subscribeOn(Schedulers.io())
                     .observeOnFx()
+                    .doOnNextFx {
+                        model.event.runForNextDriverBinding.invalidate()
+                        model.event.runForNextTimeBinding.invalidate()
+                    }
                     .subscribe(
                             entityWatchEventConsumer(
                                     idProperty = Run::id,

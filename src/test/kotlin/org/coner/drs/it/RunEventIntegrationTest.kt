@@ -8,6 +8,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.prop
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
+import org.assertj.core.groups.Tuple
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.io.gateway.EventGateway
@@ -17,6 +18,9 @@ import org.coner.drs.test.extension.*
 import org.coner.drs.test.extension.App
 import org.coner.drs.test.fixture.integration.crispyfish.classdefinition.Thscc2019V0Classes
 import org.coner.drs.test.fixture.integration.crispyfish.event.Thscc2019Points1
+import org.coner.drs.test.page.AddNextDriverPage
+import org.coner.drs.test.page.RunEventPage
+import org.coner.drs.test.page.RunEventTablePage
 import org.coner.drs.test.page.fast.FastChooseEventPage
 import org.coner.drs.test.page.fast.FastStartPage
 import org.coner.drs.test.page.real.RealAlterDriverSequencePage
@@ -44,8 +48,9 @@ class RunEventIntegrationTest {
     lateinit var app: tornadofx.App
     lateinit var folders: FilesystemFixture
     lateinit var event: Event
-    lateinit var page: RealRunEventPage
-    lateinit var tablePage: RealRunEventTablePage
+    lateinit var page: RunEventPage
+    lateinit var addNextDriverPage: AddNextDriverPage
+    lateinit var tablePage: RunEventTablePage
 
     @Init
     fun init() {
@@ -82,6 +87,7 @@ class RunEventIntegrationTest {
         fastChooseEventPage.clickStartButton()
         this.event = find<EventGateway>(app.scope).list().first()
         this.page = RealRunEventPage(robot)
+        this.addNextDriverPage = page.toAddNextDriverPage()
         this.tablePage = RealRunEventTablePage(robot)
     }
 
@@ -92,13 +98,12 @@ class RunEventIntegrationTest {
 
     @Test
     fun itShouldAddNextDriver() {
-        Assumptions.assumeThat(page.runsTable().items).hasSize(0)
+        Assumptions.assumeThat(tablePage.runsTable().items).hasSize(0)
 
-        page.clickOnAddNextDriverNumbersField()
-        page.fillAddNextDriverNumbersField("1 HS")
-        page.clickOnAddNextDriverAddButton()
+        addNextDriverPage.writeInNumbersField("1 HS")
+        addNextDriverPage.doAddSelectedRegistration()
 
-        assertThat(page.runsTable()).all {
+        assertThat(tablePage.runsTable()).all {
             this.prop("items") { it.items }.all {
                 hasSize(1)
                 index(0).all {
@@ -112,21 +117,58 @@ class RunEventIntegrationTest {
     fun itShouldInsertDriverIntoSequence(robot: FxRobot) {
         val runsTableItems = tablePage.runsTable().items
         Assumptions.assumeThat(runsTableItems).hasSize(0)
-        page.fillAddNextDriverNumbersField("1 HS")
-        page.clickOnAddNextDriverAddButton()
-        val alterDriverSequencePage = RealAlterDriverSequencePage(robot)
-        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
+        addNextDriverPage.writeInNumbersField("1 HS")
+        addNextDriverPage.doAddSelectedRegistration()
 
-        tablePage.clickInsertDriverIntoSequence(1)
+
+        val alterDriverSequencePage = tablePage.clickInsertDriverIntoSequence(1)
+        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
         specifyDriverSequenceAlterationPage.writeInNumbersField("3 SSC")
         alterDriverSequencePage.clickOkButton()
 
-        Assertions.assertThat(runsTableItems).hasSize(2)
-        Assertions.assertThat(runsTableItems[0])
-                .hasFieldOrPropertyWithValue("sequence", 1)
-                .hasFieldOrPropertyWithValue("registrationNumbers", "3 SSC")
-        Assertions.assertThat(runsTableItems[1])
-                .hasFieldOrPropertyWithValue("sequence", 2)
-                .hasFieldOrPropertyWithValue("registrationNumbers", "1 HS")
+        Assertions.assertThat(runsTableItems)
+                .hasSize(2)
+                .extracting("sequence", "registrationNumbers")
+                .containsExactly(
+                        Tuple(1, "3 SSC"),
+                        Tuple(2, "1 HS")
+                )
+    }
+
+    @Test
+    fun itShouldIncrementAddNextDriverSequenceWhenInsertDriverIntoSequence(robot: FxRobot) {
+        arrayOf("1 HS", "9 SM").forEach {
+            addNextDriverPage.writeInNumbersField(it)
+            addNextDriverPage.doAddSelectedRegistration()
+        }
+        val runsTableItems = tablePage.runsTable().items
+
+        val alterDriverSequencePage = tablePage.clickInsertDriverIntoSequence(2)
+        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
+        specifyDriverSequenceAlterationPage.writeInNumbersField("33 SM")
+        alterDriverSequencePage.clickOkButton()
+
+        Assertions.assertThat(addNextDriverPage.sequenceField().text).isEqualTo("4")
+        Assertions.assertThat(runsTableItems).hasSize(3)
+        Assertions.assertThat(runsTableItems)
+                .extracting("sequence", "registrationNumbers")
+                .containsExactly(
+                        Tuple(1, "1 HS"),
+                        Tuple(2, "33 SM"),
+                        Tuple(3, "9 SM")
+                )
+
+        addNextDriverPage.writeInNumbersField("40 GS")
+        addNextDriverPage.doAddSelectedRegistration()
+
+        Assertions.assertThat(addNextDriverPage.sequenceField().text).isEqualTo("5")
+        Assertions.assertThat(runsTableItems)
+                .extracting("sequence", "registrationNumbers")
+                .containsExactly(
+                        Tuple(1, "1 HS"),
+                        Tuple(2, "33 SM"),
+                        Tuple(3, "9 SM"),
+                        Tuple(4, "40 GS")
+                )
     }
 }

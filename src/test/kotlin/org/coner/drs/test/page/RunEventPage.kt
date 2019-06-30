@@ -7,18 +7,6 @@ import tornadofx.*
 interface RunEventPage {
 
     fun root(): TitledPane
-
-    fun addNextDriverForm(): Form
-
-    fun addNextDriverNumbersField(): TextField
-
-    fun clickOnAddNextDriverNumbersField()
-
-    fun fillAddNextDriverNumbersField(numbers: String)
-
-    fun addNextDriverAddButton(): SplitMenuButton
-
-    fun clickOnAddNextDriverAddButton()
-
-    fun runsTable(): TableView<Run>
+    fun toAddNextDriverPage(): AddNextDriverPage
+    fun toTablePage(): RunEventTablePage
 }

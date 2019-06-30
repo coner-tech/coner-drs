@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.test.page.AlterDriverSequencePage
 import org.coner.drs.test.page.RunEventTablePage
 import org.testfx.api.FxRobot
 import tornadofx.*
@@ -30,11 +31,12 @@ open class RealRunEventTablePage(private val robot: FxRobot) : RunEventTablePage
         robot.clickOn(cell)
     }
 
-    override fun clickInsertDriverIntoSequence(sequence: Int) {
+    override fun clickInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage {
         val cell = tableCellForSequence(sequence)
         robot.rightClickOn(cell)
         robot.clickOn("Driver")
         robot.clickOn("Insert Driver Into Sequence")
+        return RealAlterDriverSequencePage(robot)
     }
 
     override fun keyboardShortcutInsertDriverIntoSequence(sequence: Int) {

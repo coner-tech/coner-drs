@@ -28,6 +28,7 @@ class AddNextDriverView : View("Add Next Driver") {
             vgrow = Priority.ALWAYS
             field(text = "Sequence", orientation = Orientation.VERTICAL) {
                 textfield(runEventModel.event.runForNextDriverProperty.select { it.sequenceProperty }) {
+                    id = "sequence"
                     isEditable = false
                 }
             }
