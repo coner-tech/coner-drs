@@ -8,6 +8,7 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.prop
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
+import org.assertj.core.groups.Tuple
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.io.gateway.EventGateway
@@ -150,14 +151,25 @@ class RunEventIntegrationTest {
 
         Assertions.assertThat(addNextDriverPage.sequenceField().text).isEqualTo("4")
         Assertions.assertThat(runsTableItems).hasSize(3)
-        Assertions.assertThat(runsTableItems[0].registrationNumbers).isEqualTo("1 HS")
-        Assertions.assertThat(runsTableItems[1].registrationNumbers).isEqualTo("33 SM")
-        Assertions.assertThat(runsTableItems[2].registrationNumbers).isEqualTo("9 SM")
+        Assertions.assertThat(runsTableItems)
+                .extracting("sequence", "registrationNumbers")
+                .containsExactly(
+                        Tuple(1, "1 HS"),
+                        Tuple(2, "33 SM"),
+                        Tuple(3, "9 SM")
+                )
 
         addNextDriverPage.writeInNumbersField("40 GS")
         addNextDriverPage.doAddSelectedRegistration()
 
         Assertions.assertThat(addNextDriverPage.sequenceField().text).isEqualTo("5")
-        Assertions.assertThat(runsTableItems[3].registrationNumbers).isEqualTo("40 GS")
+        Assertions.assertThat(runsTableItems)
+                .extracting("sequence", "registrationNumbers")
+                .containsExactly(
+                        Tuple(1, "1 HS"),
+                        Tuple(2, "33 SM"),
+                        Tuple(3, "9 SM"),
+                        Tuple(4, "40 GS")
+                )
     }
 }
