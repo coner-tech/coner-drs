@@ -119,10 +119,10 @@ class RunEventIntegrationTest {
         Assumptions.assumeThat(runsTableItems).hasSize(0)
         addNextDriverPage.writeInNumbersField("1 HS")
         addNextDriverPage.doAddSelectedRegistration()
-        val alterDriverSequencePage = RealAlterDriverSequencePage(robot)
-        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
 
-        tablePage.clickInsertDriverIntoSequence(1)
+
+        val alterDriverSequencePage = tablePage.clickInsertDriverIntoSequence(1)
+        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
         specifyDriverSequenceAlterationPage.writeInNumbersField("3 SSC")
         alterDriverSequencePage.clickOkButton()
 
@@ -141,11 +141,10 @@ class RunEventIntegrationTest {
             addNextDriverPage.writeInNumbersField(it)
             addNextDriverPage.doAddSelectedRegistration()
         }
-        val alterDriverSequencePage = RealAlterDriverSequencePage(robot)
-        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
         val runsTableItems = tablePage.runsTable().items
 
-        tablePage.clickInsertDriverIntoSequence(2)
+        val alterDriverSequencePage = tablePage.clickInsertDriverIntoSequence(2)
+        val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
         specifyDriverSequenceAlterationPage.writeInNumbersField("33 SM")
         alterDriverSequencePage.clickOkButton()
 
