@@ -127,12 +127,12 @@ class RunEventIntegrationTest {
         alterDriverSequencePage.clickOkButton()
 
         Assertions.assertThat(runsTableItems).hasSize(2)
-        Assertions.assertThat(runsTableItems[0])
-                .hasFieldOrPropertyWithValue("sequence", 1)
-                .hasFieldOrPropertyWithValue("registrationNumbers", "3 SSC")
-        Assertions.assertThat(runsTableItems[1])
-                .hasFieldOrPropertyWithValue("sequence", 2)
-                .hasFieldOrPropertyWithValue("registrationNumbers", "1 HS")
+        Assertions.assertThat(runsTableItems)
+                .extracting("sequence", "registrationNumbers")
+                .containsExactly(
+                        Tuple(1, "3 SSC"),
+                        Tuple(2, "1 HS")
+                )
     }
 
     @Test
