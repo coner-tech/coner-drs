@@ -126,8 +126,8 @@ class RunEventIntegrationTest {
         specifyDriverSequenceAlterationPage.writeInNumbersField("3 SSC")
         alterDriverSequencePage.clickOkButton()
 
-        Assertions.assertThat(runsTableItems).hasSize(2)
         Assertions.assertThat(runsTableItems)
+                .hasSize(2)
                 .extracting("sequence", "registrationNumbers")
                 .containsExactly(
                         Tuple(1, "3 SSC"),
