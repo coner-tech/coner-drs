@@ -6,14 +6,14 @@ import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.reactivex.Single
 import javafx.stage.Stage
+import me.carltonwhitehead.tornadofx.junit5.Init
+import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
+import me.carltonwhitehead.tornadofx.junit5.View
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.domain.service.RunService
-import org.coner.drs.test.extension.Init
-import org.coner.drs.test.extension.TornadoFxViewExtension
-import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.fast.FastAlterDriverSequencePage
 import org.coner.drs.test.page.real.RealAlterDriverSequencePage

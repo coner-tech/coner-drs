@@ -4,10 +4,13 @@ import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ListView
 import javafx.scene.control.TextField
+import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.coner.drs.domain.entity.Registration
+import org.coner.drs.ui.OnTabEvent
 import org.coner.drs.ui.RegistrationCellFragment
 import org.coner.drs.util.UpperCaseTextFormatter
 import org.coner.drs.util.tornadofx.takeVerticalArrowKeyPressesAsSelectionsFrom
@@ -17,9 +20,6 @@ class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
     private val controller: AddNextDriverController by inject()
     private val runEventModel: RunEventModel by inject()
-
-    private var numbersField: TextField by singleAssign()
-    private var registrationListView: ListView<Registration> by singleAssign()
 
     override val root = form {
         id = "add-next-driver"
@@ -32,18 +32,25 @@ class AddNextDriverView : View("Add Next Driver") {
                     isEditable = false
                 }
             }
-            field(text = "_Numbers", orientation = Orientation.VERTICAL) {
+            var numbersField by singleAssign<TextField>()
+            field(text = "Numbers", orientation = Orientation.VERTICAL) {
                 vgrow = Priority.ALWAYS
                 (inputContainer as VBox).spacing = 0.0
                 textfield(model.numbersFieldProperty) {
-                    id = "numbers"
                     numbersField = this
+                    id = "numbers"
                     textFormatter = UpperCaseTextFormatter()
                     label.labelFor = this
-                    label.isMnemonicParsing = true
+                    addEventFilter(KeyEvent.KEY_PRESSED) {
+                        when {
+                            it.code == KeyCode.TAB && !it.isShiftDown -> {
+                                it.consume()
+                                fire(OnTabEvent(OnTabEvent.Origin.RunEventAddNextDriverNumbers))
+                            }
+                        }
+                    }
                 }
                 listview<Registration> {
-                    registrationListView = this
                     id = "registrations-list-view"
                     vgrow = Priority.ALWAYS
                     model.registrationList.bindTo(this)
@@ -86,6 +93,11 @@ class AddNextDriverView : View("Add Next Driver") {
         }
     }
 
+    val numbersField: TextField
+        get() = root.lookup("#numbers") as TextField
+    val registrationListView: ListView<Registration>
+        get() = root.lookup("#registrations-list-view") as ListView<Registration>
+
     private fun addFromListSelectionAndReset() {
         controller.addNextDriverFromRegistrationListSelection()
         reset()
@@ -99,6 +111,10 @@ class AddNextDriverView : View("Add Next Driver") {
     private fun reset() {
         model.numbersField = ""
         numbersField.requestFocus()
+    }
+
+    fun focusNumbersField() {
+        numbersField
     }
 
     init {

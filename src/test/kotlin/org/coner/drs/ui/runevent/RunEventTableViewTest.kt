@@ -3,11 +3,11 @@ package org.coner.drs.ui.runevent
 import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
+import me.carltonwhitehead.tornadofx.junit5.Init
+import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
+import me.carltonwhitehead.tornadofx.junit5.View
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
-import org.coner.drs.test.extension.Init
-import org.coner.drs.test.extension.TornadoFxViewExtension
-import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.fast.FastRunEventTablePage
 import org.coner.drs.test.page.real.RealRunEventTablePage

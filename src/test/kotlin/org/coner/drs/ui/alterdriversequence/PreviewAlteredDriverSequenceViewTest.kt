@@ -2,12 +2,12 @@ package org.coner.drs.ui.alterdriversequence
 
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import me.carltonwhitehead.tornadofx.junit5.Init
+import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
+import me.carltonwhitehead.tornadofx.junit5.View
 import org.assertj.core.api.Assertions.assertThat
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.RunEvent
-import org.coner.drs.test.extension.Init
-import org.coner.drs.test.extension.TornadoFxViewExtension
-import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.fast.FastPreviewAlteredDriverSequencePage
 import org.coner.drs.test.page.real.RealPreviewAlteredDriverSequencePage
