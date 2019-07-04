@@ -7,13 +7,13 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import javafx.scene.input.KeyCode
+import me.carltonwhitehead.tornadofx.junit5.Init
+import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
+import me.carltonwhitehead.tornadofx.junit5.View
 import org.assertj.core.api.Assumptions
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.service.RunService
-import org.coner.drs.test.extension.Init
-import org.coner.drs.test.extension.TornadoFxViewExtension
-import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.AddNextDriverPage
 import org.coner.drs.test.page.fast.FastAddNextDriverPage
@@ -71,15 +71,6 @@ class AddNextDriverViewTest {
         realPage.writeInNumbersField(numbers)
 
         assertThat(model.numbersField).isEqualTo(numbers)
-    }
-
-    @Test
-    fun `Alt+N focuses Numbers field`() {
-        Assumptions.assumeThat(fastPage.numbersField().isFocused).isFalse()
-
-        realPage.focusNumbersField()
-
-        Assertions.assertThat(realPage.numbersField()).isFocused
     }
 
     @Test

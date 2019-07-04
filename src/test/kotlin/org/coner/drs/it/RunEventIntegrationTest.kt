@@ -6,6 +6,9 @@ import assertk.assertions.hasSize
 import assertk.assertions.index
 import assertk.assertions.isEqualTo
 import assertk.assertions.prop
+import javafx.scene.input.KeyCode
+import me.carltonwhitehead.tornadofx.junit5.*
+import me.carltonwhitehead.tornadofx.junit5.App
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
 import org.assertj.core.groups.Tuple
@@ -14,8 +17,6 @@ import org.coner.drs.domain.entity.Run
 import org.coner.drs.io.gateway.EventGateway
 import org.coner.drs.it.util.FilesystemFixture
 import org.coner.drs.it.util.IntegrationTestApp
-import org.coner.drs.test.extension.*
-import org.coner.drs.test.extension.App
 import org.coner.drs.test.fixture.integration.crispyfish.classdefinition.Thscc2019V0Classes
 import org.coner.drs.test.fixture.integration.crispyfish.event.Thscc2019Points1
 import org.coner.drs.test.page.AddNextDriverPage
@@ -170,5 +171,19 @@ class RunEventIntegrationTest {
                         Tuple(3, "9 SM"),
                         Tuple(4, "40 GS")
                 )
+    }
+
+    @Test
+    fun itShouldHaveTabFieldOrder(robot: FxRobot) {
+        addNextDriverPage.focusNumbersField()
+        org.testfx.assertions.api.Assertions.assertThat(addNextDriverPage.numbersField()).isFocused
+
+        robot.type(KeyCode.TAB)
+
+        org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
+
+        robot.type(KeyCode.TAB)
+
+        org.testfx.assertions.api.Assertions.assertThat(addNextDriverPage.numbersField()).isFocused
     }
 }

@@ -24,9 +24,7 @@ open class RealAddNextDriverPage(
             .queryTextInputControl()!!
 
     override fun focusNumbersField() {
-        robot.press(KeyCode.ALT)
-        robot.type(KeyCode.N)
-        robot.release(KeyCode.ALT)
+        robot.clickOn(numbersField())
     }
 
     override fun writeInNumbersField(s: String) {

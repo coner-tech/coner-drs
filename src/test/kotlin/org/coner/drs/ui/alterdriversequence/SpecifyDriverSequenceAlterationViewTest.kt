@@ -6,14 +6,14 @@ import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import javafx.scene.input.KeyCode
+import me.carltonwhitehead.tornadofx.junit5.Init
+import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
+import me.carltonwhitehead.tornadofx.junit5.View
 import org.assertj.core.api.Assumptions
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.domain.service.RegistrationService
 import org.coner.drs.domain.service.RunService
-import org.coner.drs.test.extension.Init
-import org.coner.drs.test.extension.TornadoFxViewExtension
-import org.coner.drs.test.extension.View
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.fast.FastSpecifyDriverSequenceAlterationPage
 import org.coner.drs.test.page.real.RealSpecifyDriverSequenceAlterationPage

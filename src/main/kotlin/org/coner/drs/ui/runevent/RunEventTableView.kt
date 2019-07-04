@@ -1,11 +1,15 @@
 package org.coner.drs.ui.runevent
 
 import javafx.scene.control.TableView
+import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.ui.OnTabEvent
 import tornadofx.*
+import java.awt.Event
 import java.util.*
 
 class RunEventTableView : View() {
@@ -14,11 +18,10 @@ class RunEventTableView : View() {
 
     override val root = form {
         id = "run-event-table"
-        fieldset("_Runs") {
+        fieldset("Runs") {
             vgrow = Priority.ALWAYS
             tableview(model.runsSortedBySequence) {
                 id = "runs-table"
-                legend.isMnemonicParsing = true
                 legend.labelFor = this
                 isEditable = false
                 setSortPolicy { false }
@@ -131,15 +134,6 @@ class RunEventTableView : View() {
                         }
                     }
                 }
-                shortcut("Alt+R") {
-                    requestFocus()
-                    var selectIndex = items.indexOfLast { it.rawTime != null }
-                    if (selectIndex > 0 && selectIndex < items.lastIndex) {
-                        selectIndex++
-                    }
-                    selectionModel.select(selectIndex)
-                    scrollTo(selectIndex)
-                }
                 model.runsSortedBySequence.onChange {
                     while (it.next()) {
                         if (it.wasAdded() && it.addedSize == 1) {
@@ -147,11 +141,19 @@ class RunEventTableView : View() {
                         }
                     }
                 }
+                addEventFilter(KeyEvent.KEY_PRESSED) {
+                    when {
+                        it.code == KeyCode.TAB && !it.isShiftDown -> {
+                            it.consume()
+                            fire(OnTabEvent(OnTabEvent.Origin.RunEventRuns))
+                        }
+                    }
+                }
             }
         }
     }
 
-    private val table: TableView<Run>
+    val table: TableView<Run>
         get() = root.lookup("#runs-table") as TableView<Run>
 
     fun selectRunById(selectRunId: UUID) {
@@ -159,5 +161,15 @@ class RunEventTableView : View() {
         table.selectionModel.select(run)
     }
 
+    private val onTableFocusedListener = ChangeListener<Boolean> { _, _, focused -> controller.onTableFocused(focused) }
 
+    override fun onDock() {
+        super.onDock()
+        table.focusedProperty().addListener(onTableFocusedListener)
+    }
+
+    override fun onUndock() {
+        super.onUndock()
+        table.focusedProperty().removeListener(onTableFocusedListener)
+    }
 }
