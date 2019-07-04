@@ -19,6 +19,8 @@ interface AddNextDriverPage {
 
     fun registrationsListView(): ListView<Registration>
 
+    fun focusRegistrationsListView()
+
     fun selectRegistration(registration: Registration)
 
     fun focusNumbersField()

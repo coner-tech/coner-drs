@@ -22,6 +22,4 @@ class RunEventModel : ViewModel() {
     val timerConfigurationTextProperty = SimpleStringProperty(this, "timerConfigurationText", null)
     var timerConfigurationText by timerConfigurationTextProperty
 
-    val fxEventRegistrations = mutableListOf<FXEventRegistration>()
-
 }

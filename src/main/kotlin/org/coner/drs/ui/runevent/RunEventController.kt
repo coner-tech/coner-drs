@@ -14,7 +14,6 @@ import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.gateway.RegistrationGateway
 import org.coner.drs.io.gateway.RunGateway
 import org.coner.drs.io.timer.TimerService
-import org.coner.drs.ui.OnTabEvent
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter
 import tornadofx.*
@@ -71,13 +70,10 @@ class RunEventController : Controller() {
                                 { /* no-op */ }
                         )
         )
-        model.fxEventRegistrations += subscribe<OnTabEvent> { onTabEvent(it) }
     }
 
     fun undocked() {
         println("RunEventController.undocked()")
-        model.fxEventRegistrations.forEach { it.unsubscribe() }
-        model.fxEventRegistrations.clear()
         model.disposables.clear()
         timerService.stop()
     }
@@ -107,10 +103,4 @@ class RunEventController : Controller() {
         }
     }
 
-    fun onTabEvent(onTabEvent: OnTabEvent) {
-        when (onTabEvent.origin) {
-            OnTabEvent.Origin.RunEventAddNextDriverNumbers -> find<RunEventTableView>().table.requestFocus()
-            OnTabEvent.Origin.RunEventRuns -> find<AddNextDriverView>().numbersField.requestFocus()
-        }
-    }
 }

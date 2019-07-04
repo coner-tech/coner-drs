@@ -1,6 +1,5 @@
 package org.coner.drs.ui.runevent
 
-import com.github.thomasnield.rxkotlinfx.observeOnFx
 import javafx.collections.ListChangeListener
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.service.RegistrationService
@@ -36,5 +35,6 @@ class AddNextDriverController : Controller() {
         }
     }
 
+    val locateRunEventTable = { find<RunEventTableView>().table }
 
 }

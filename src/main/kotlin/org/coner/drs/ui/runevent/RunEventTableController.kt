@@ -85,4 +85,6 @@ class RunEventTableController : Controller() {
         }
     }
 
+    val locateAddNextDriverNumbers = { find<AddNextDriverView>().numbersField }
+
 }
