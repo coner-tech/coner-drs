@@ -1,15 +1,12 @@
 package org.coner.drs.ui.runevent
 
 import javafx.scene.control.TableView
-import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
-import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
 import org.coner.drs.domain.entity.Run
-import org.coner.drs.ui.OnTabEvent
+import org.coner.drs.util.tornadofx.overrideFocusTraversal
 import tornadofx.*
-import java.awt.Event
 import java.util.*
 
 class RunEventTableView : View() {
@@ -141,14 +138,10 @@ class RunEventTableView : View() {
                         }
                     }
                 }
-                addEventFilter(KeyEvent.KEY_PRESSED) {
-                    when {
-                        it.code == KeyCode.TAB && !it.isShiftDown -> {
-                            it.consume()
-                            fire(OnTabEvent(OnTabEvent.Origin.RunEventRuns))
-                        }
-                    }
-                }
+                overrideFocusTraversal(
+                        next = controller.locateAddNextDriverNumbers,
+                        previous = controller.locateAddNextDriverNumbers
+                )
             }
         }
     }

@@ -179,11 +179,15 @@ class RunEventIntegrationTest {
         org.testfx.assertions.api.Assertions.assertThat(addNextDriverPage.numbersField()).isFocused
 
         robot.type(KeyCode.TAB)
-
         org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
 
         robot.type(KeyCode.TAB)
-
         org.testfx.assertions.api.Assertions.assertThat(addNextDriverPage.numbersField()).isFocused
+
+        addNextDriverPage.focusRegistrationsListView()
+        org.testfx.assertions.api.Assertions.assertThat(addNextDriverPage.registrationsListView()).isFocused
+
+        robot.type(KeyCode.TAB)
+        org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
     }
 }

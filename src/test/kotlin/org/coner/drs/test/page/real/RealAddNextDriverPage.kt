@@ -36,6 +36,10 @@ open class RealAddNextDriverPage(
             .lookup("#registrations-list-view")
             .queryListView<Registration>()!!
 
+    override fun focusRegistrationsListView() {
+        robot.clickOn(registrationsListView())
+    }
+
     override fun selectRegistration(registration: Registration) {
         focusNumbersField()
         while (registrationsListView().selectionModel.selectedItem != registration) {

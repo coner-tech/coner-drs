@@ -18,6 +18,12 @@ class FastAddNextDriverPage(robot: FxRobot) : RealAddNextDriverPage(robot) {
         }
     }
 
+    override fun focusRegistrationsListView() {
+        robot.interact {
+            registrationsListView().requestFocus()
+        }
+    }
+
     override fun selectRegistration(registration: Registration) {
         robot.interact {
             registrationsListView().selectionModel.select(registration)

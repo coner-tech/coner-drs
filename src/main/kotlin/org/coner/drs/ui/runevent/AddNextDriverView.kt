@@ -4,15 +4,13 @@ import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.ListView
 import javafx.scene.control.TextField
-import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCombination
-import javafx.scene.input.KeyEvent
 import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import org.coner.drs.domain.entity.Registration
-import org.coner.drs.ui.OnTabEvent
 import org.coner.drs.ui.RegistrationCellFragment
 import org.coner.drs.util.UpperCaseTextFormatter
+import org.coner.drs.util.tornadofx.overrideFocusTraversal
 import org.coner.drs.util.tornadofx.takeVerticalArrowKeyPressesAsSelectionsFrom
 import tornadofx.*
 
@@ -41,14 +39,10 @@ class AddNextDriverView : View("Add Next Driver") {
                     id = "numbers"
                     textFormatter = UpperCaseTextFormatter()
                     label.labelFor = this
-                    addEventFilter(KeyEvent.KEY_PRESSED) {
-                        when {
-                            it.code == KeyCode.TAB && !it.isShiftDown -> {
-                                it.consume()
-                                fire(OnTabEvent(OnTabEvent.Origin.RunEventAddNextDriverNumbers))
-                            }
-                        }
-                    }
+                    overrideFocusTraversal(
+                            next = controller.locateRunEventTable,
+                            previous = controller.locateRunEventTable
+                    )
                 }
                 listview<Registration> {
                     id = "registrations-list-view"
@@ -68,6 +62,9 @@ class AddNextDriverView : View("Add Next Driver") {
                         if (this.selectedItem == null) return@shortcut
                         addFromListSelectionAndReset()
                     }
+                    overrideFocusTraversal(
+                            next = controller.locateRunEventTable
+                    )
                 }
             }
             hbox {
