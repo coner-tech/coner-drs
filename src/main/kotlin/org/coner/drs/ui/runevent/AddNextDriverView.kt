@@ -16,7 +16,7 @@ import tornadofx.*
 
 class AddNextDriverView : View("Add Next Driver") {
     private val model: AddNextDriverModel by inject()
-    private val controller: AddNextDriverController by inject()
+    private val controller: AddNextDriverController = find()
     private val runEventModel: RunEventModel by inject()
 
     override val root = form {
@@ -57,10 +57,11 @@ class AddNextDriverView : View("Add Next Driver") {
                             scrollTo(it?.registration)
                         }
                     }
+                    onDoubleClick { controller.addNextDriverFromRegistrationListSelection() }
                     shortcut("Enter") {
                         if (!this.isFocused) return@shortcut
                         if (this.selectedItem == null) return@shortcut
-                        addFromListSelectionAndReset()
+                        controller.addNextDriverFromRegistrationListSelection()
                     }
                     overrideFocusTraversal(
                             next = controller.locateRunEventTable
@@ -74,16 +75,16 @@ class AddNextDriverView : View("Add Next Driver") {
                     item(name = "Force Exact Numbers", keyCombination = KeyCombination.keyCombination("Ctrl+Enter")) {
                         id = "force-exact-numbers"
                         enableWhen(model.numbersFieldContainsNumbersTokensBinding)
-                        action { addFromExactNumbersAndReset() }
+                        action { controller.addNextDriverForceExactNumbers() }
                     }
                     enableWhen(
                             model.numbersFieldContainsNumbersTokensBinding
                                     .or(model.registrationListSelectionProperty.isNotNull)
                     )
-                    action { addFromListSelectionAndReset() }
+                    action { controller.addNextDriverFromRegistrationListSelection() }
                     shortcut(KeyCombination.keyCombination("Enter")) {
                         if (model.registrationListSelectionProperty.isNull.get()) return@shortcut
-                        addFromListSelectionAndReset()
+                        controller.addNextDriverFromRegistrationListSelection()
                     }
                 }
             }
@@ -95,26 +96,4 @@ class AddNextDriverView : View("Add Next Driver") {
     val registrationListView: ListView<Registration>
         get() = root.lookup("#registrations-list-view") as ListView<Registration>
 
-    private fun addFromListSelectionAndReset() {
-        controller.addNextDriverFromRegistrationListSelection()
-        reset()
-    }
-
-    private fun addFromExactNumbersAndReset() {
-        controller.addNextDriverForceExactNumbers()
-        reset()
-    }
-
-    private fun reset() {
-        model.numbersField = ""
-        numbersField.requestFocus()
-    }
-
-    fun focusNumbersField() {
-        numbersField
-    }
-
-    init {
-        controller.init()
-    }
 }
