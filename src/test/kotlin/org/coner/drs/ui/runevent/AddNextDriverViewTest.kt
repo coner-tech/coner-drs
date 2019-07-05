@@ -118,4 +118,13 @@ class AddNextDriverViewTest {
         verify { runService.addNextDriver(runEventModel.event, registration) }
     }
 
+    @Test
+    fun `When double clicking a registration, it should add next driver`(robot: FxRobot) {
+        val registration = runEventModel.event.registrations[0]
+
+        robot.doubleClickOn(registration.numbers)
+
+        verify { runService.addNextDriver(runEventModel.event, registration) }
+    }
+
 }
