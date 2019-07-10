@@ -147,6 +147,24 @@ class RegistrationServiceTest {
                         levenshteinDistanceToNumbersField = 1
                 )
         ),
+        THSCC_2019_POINTS_5_44STS(
+                inRegistrations = listOf(
+                        Registration(number = "140", category = "NOV", handicap = "STR"),
+                        Registration(number = "24", category = "", handicap = "STU"),
+                        Registration(number = "4", category = "", handicap = "STS"),
+                        Registration(number = "40", category = "", handicap = "STR"),
+                        Registration(number = "417", category = "NOV", handicap = "STH"),
+                        Registration(number = "42", category = "NOV", handicap = "STU"),
+                        Registration(number = "44", category = "", handicap = "STS"),
+                        Registration(number = "45", category = "", handicap = "STH"),
+                        Registration(number = "64", category = "", handicap = "STR")
+                ),
+                inNumbersField = "44STS",
+                expected = RegistrationSelectionCandidate(
+                        registration = Registration(number = "44", category = "", handicap = "STS"),
+                        levenshteinDistanceToNumbersField = 1
+                )
+        )
     }
 
     @ParameterizedTest

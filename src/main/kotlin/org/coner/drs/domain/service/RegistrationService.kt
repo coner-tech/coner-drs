@@ -27,11 +27,10 @@ class RegistrationService : Controller() {
         return when (candidates.size) {
             1 -> candidates[0]
             in 2..Int.MAX_VALUE -> {
-                val candidate0LevenshteinDistance = candidates[0].levenshteinDistanceToNumbersField
-                val candidate1LevenshteinDistance = candidates[1].levenshteinDistanceToNumbersField
-                if (candidate0LevenshteinDistance < candidate1LevenshteinDistance) {
-                    candidates[0]
-                } else { null }
+                val candidatesWithMinimumLevenshteinDistance = candidates.filter {
+                    it.levenshteinDistanceToNumbersField == candidates[0].levenshteinDistanceToNumbersField
+                }.sortedByDescending { it.registration.numbers.length }
+                candidatesWithMinimumLevenshteinDistance.first()
             }
             else -> null
         }
