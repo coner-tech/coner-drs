@@ -6,7 +6,9 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import assertk.assertions.prop
 import org.coner.drs.domain.entity.Registration
+import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.test.TornadoFxScopeExtension
+import org.coner.drs.test.fixture.domain.entity.registration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
@@ -88,6 +90,98 @@ class RegistrationServiceTest {
                 prop(Registration::number).isEqualTo(param.expected.number)
                 prop(Registration::category).isEqualTo(param.expected.category)
                 prop(Registration::handicap).isEqualTo(param.expected.handicap)
+            }
+        } else {
+            assertThat(actual).isNull()
+        }
+    }
+
+    enum class AutoSelectionCandidateParam(
+            val inRegistrations: List<Registration>,
+            val inNumbersField: String,
+            val expected: RegistrationSelectionCandidate?
+    ) {
+        THSCC_2019_POINTS_5_4CS(
+                inRegistrations = listOf(
+                        registration("14 CS"),
+                        registration("14 NOV CS"),
+                        registration("4 CS"),
+                        registration("44 CSP")
+                ),
+                inNumbersField = "4CS",
+                expected = RegistrationSelectionCandidate(
+                        registration = registration("4 CS"),
+                        levenshteinDistanceToNumbersField = 1
+                )
+        ),
+        THSCC_2019_POINTS_5_8S(
+                inRegistrations = listOf(
+                        registration("18 NOV ES"),
+                        registration("18 SM"),
+                        registration("48 SM"),
+                        registration("8 STR")
+                        // omitting many for brevity
+                ),
+                inNumbersField = "8S",
+                expected = null
+        ),
+        THSCC_2019_POINTS_5_8ST(
+                inRegistrations = listOf(
+                        registration("8 NOV STX"),
+                        registration("8 STR"),
+                        registration("87 NOV STH")
+                ),
+                inNumbersField = "8ST",
+                expected = RegistrationSelectionCandidate(
+                        registration = registration("8 STR"),
+                        levenshteinDistanceToNumbersField = 2
+                )
+        ),
+        THSCC_2019_POINTS_5_24STU(
+                inRegistrations = listOf(
+                        registration("24 STU"),
+                        registration("42 NOV STU")
+                ),
+                inNumbersField = "24STU",
+                expected = RegistrationSelectionCandidate(
+                        registration = registration("24 STU"),
+                        levenshteinDistanceToNumbersField = 1
+                )
+        ),
+        THSCC_2019_POINTS_5_44STS(
+                inRegistrations = listOf(
+                        registration("140 NOV STR"),
+                        registration("24 STU"),
+                        registration("4 STS"),
+                        registration("40 STR"),
+                        registration("417 NOV STH"),
+                        registration("42 NOV STU"),
+                        registration("44 STS"),
+                        registration("45 STH"),
+                        registration("64 STR")
+                ),
+                inNumbersField = "44STS",
+                expected = RegistrationSelectionCandidate(
+                        registration = registration("44 STS"),
+                        levenshteinDistanceToNumbersField = 1
+                )
+        )
+    }
+
+    @ParameterizedTest
+    @EnumSource(AutoSelectionCandidateParam::class)
+    fun `it should find auto selection candidate`(param: AutoSelectionCandidateParam) {
+        val actual = service.findAutoSelectionCandidate(param.inRegistrations, param.inNumbersField)
+
+        if (param.expected != null) {
+            assertThat(actual).all {
+                prop(RegistrationSelectionCandidate::registration).all {
+                    prop(Registration::number).isEqualTo(param.expected.registration.number)
+                    prop(Registration::category).isEqualTo(param.expected.registration.category)
+                    prop(Registration::handicap).isEqualTo(param.expected.registration.handicap)
+                }
+                prop(RegistrationSelectionCandidate::levenshteinDistanceToNumbersField)
+                        .isEqualTo(param.expected.levenshteinDistanceToNumbersField)
             }
         } else {
             assertThat(actual).isNull()
