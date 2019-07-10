@@ -8,6 +8,7 @@ import assertk.assertions.prop
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.payload.RegistrationSelectionCandidate
 import org.coner.drs.test.TornadoFxScopeExtension
+import org.coner.drs.test.fixture.domain.entity.registration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
@@ -102,23 +103,23 @@ class RegistrationServiceTest {
     ) {
         THSCC_2019_POINTS_5_4CS(
                 inRegistrations = listOf(
-                        Registration(number = "14", category = "", handicap = "CS"),
-                        Registration(number = "14", category = "NOV", handicap = "CS"),
-                        Registration(number = "4", category = "", handicap = "CS"),
-                        Registration(number = "44", category = "", handicap = "CSP")
+                        registration("14 CS"),
+                        registration("14 NOV CS"),
+                        registration("4 CS"),
+                        registration("44 CSP")
                 ),
                 inNumbersField = "4CS",
                 expected = RegistrationSelectionCandidate(
-                        registration = Registration(number = "4", category = "", handicap = "CS"),
+                        registration = registration("4 CS"),
                         levenshteinDistanceToNumbersField = 1
                 )
         ),
         THSCC_2019_POINTS_5_8S(
                 inRegistrations = listOf(
-                        Registration(number = "18", category = "NOV", handicap = "ES"),
-                        Registration(number = "18", category = "", handicap = "SM"),
-                        Registration(number = "48", category = "", handicap = "SM"),
-                        Registration(number = "8", category = "", handicap = "STR")
+                        registration("18 NOV ES"),
+                        registration("18 SM"),
+                        registration("48 SM"),
+                        registration("8 STR")
                         // omitting many for brevity
                 ),
                 inNumbersField = "8S",
@@ -126,42 +127,42 @@ class RegistrationServiceTest {
         ),
         THSCC_2019_POINTS_5_8ST(
                 inRegistrations = listOf(
-                        Registration(number = "8", category = "NOV", handicap = "STX"),
-                        Registration(number = "8", category = "", handicap = "STR"),
-                        Registration(number = "87", category = "NOV", handicap = "STH")
+                        registration("8 NOV STX"),
+                        registration("8 STR"),
+                        registration("87 NOV STH")
                 ),
                 inNumbersField = "8ST",
                 expected = RegistrationSelectionCandidate(
-                        registration = Registration(number = "8", category = "", handicap = "STR"),
+                        registration = registration("8 STR"),
                         levenshteinDistanceToNumbersField = 2
                 )
         ),
         THSCC_2019_POINTS_5_24STU(
                 inRegistrations = listOf(
-                        Registration(number = "24", category = "", handicap = "STU"),
-                        Registration(number = "42", category = "NOV", handicap = "STU")
+                        registration("24 STU"),
+                        registration("42 NOV STU")
                 ),
                 inNumbersField = "24STU",
                 expected = RegistrationSelectionCandidate(
-                        registration = Registration(number = "24", category = "", handicap = "STU"),
+                        registration = registration("24 STU"),
                         levenshteinDistanceToNumbersField = 1
                 )
         ),
         THSCC_2019_POINTS_5_44STS(
                 inRegistrations = listOf(
-                        Registration(number = "140", category = "NOV", handicap = "STR"),
-                        Registration(number = "24", category = "", handicap = "STU"),
-                        Registration(number = "4", category = "", handicap = "STS"),
-                        Registration(number = "40", category = "", handicap = "STR"),
-                        Registration(number = "417", category = "NOV", handicap = "STH"),
-                        Registration(number = "42", category = "NOV", handicap = "STU"),
-                        Registration(number = "44", category = "", handicap = "STS"),
-                        Registration(number = "45", category = "", handicap = "STH"),
-                        Registration(number = "64", category = "", handicap = "STR")
+                        registration("140 NOV STR"),
+                        registration("24 STU"),
+                        registration("4 STS"),
+                        registration("40 STR"),
+                        registration("417 NOV STH"),
+                        registration("42 NOV STU"),
+                        registration("44 STS"),
+                        registration("45 STH"),
+                        registration("64 STR")
                 ),
                 inNumbersField = "44STS",
                 expected = RegistrationSelectionCandidate(
-                        registration = Registration(number = "44", category = "", handicap = "STS"),
+                        registration = registration("44 STS"),
                         levenshteinDistanceToNumbersField = 1
                 )
         )
