@@ -20,15 +20,17 @@ class RunEventTableController : Controller() {
         model.runsSortedBySequence = SortedList(controller.model.event.runs, compareBy(Run::sequence))
     }
 
-    fun onTableFocused(focused: Boolean) {
+    fun onTableFocused(focused: Boolean) = runLater {
         val table = view.table
         if (focused) {
-            var selectIndex = table.items?.indexOfLast { it.rawTime != null } ?: 0
-            if (selectIndex > 0 && selectIndex < table.items.lastIndex) {
-                selectIndex++
+            if (table.selectedItem == null) {
+                var selectIndex = table.items?.indexOfLast { it.rawTime != null } ?: 0
+                if (selectIndex > 0 && selectIndex < table.items.lastIndex) {
+                    selectIndex++
+                }
+                table.selectionModel.select(selectIndex)
+                table.scrollTo(selectIndex)
             }
-            table.selectionModel.select(selectIndex)
-            table.scrollTo(selectIndex)
         } else {
             table.selectionModel.clearSelection()
         }
