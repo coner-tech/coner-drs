@@ -2,6 +2,7 @@ package org.coner.drs.ui.runevent
 
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
+import javafx.collections.ListChangeListener
 import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
@@ -18,6 +19,17 @@ class RunEventTableController : Controller() {
 
     init {
         model.runsSortedBySequence = SortedList(controller.model.event.runs, compareBy(Run::sequence))
+        model.runsSortedBySequence.onChange { onRunsSortedBySequenceChanged(it) }
+    }
+
+    fun onRunsSortedBySequenceChanged(change: ListChangeListener.Change<out Run>) {
+        while (change.next()) {
+            if (change.wasAdded() && change.addedSize == 1) {
+                // TODO: test scenario for #41
+                val run = change.addedSubList.first()
+                runLater { view.table.scrollTo(run) }
+            }
+        }
     }
 
     fun onTableFocused(focused: Boolean) = runLater {
