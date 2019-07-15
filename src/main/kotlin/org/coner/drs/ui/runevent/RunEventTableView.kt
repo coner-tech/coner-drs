@@ -131,13 +131,6 @@ class RunEventTableView : View() {
                         }
                     }
                 }
-                model.runsSortedBySequence.onChange {
-                    while (it.next()) {
-                        if (it.wasAdded() && it.addedSize == 1) {
-                            scrollTo(it.addedSubList.first())
-                        }
-                    }
-                }
                 overrideFocusTraversal(
                         next = controller.locateAddNextDriverNumbers,
                         previous = controller.locateAddNextDriverNumbers
