@@ -22,9 +22,9 @@ import org.coner.drs.test.fixture.integration.crispyfish.event.Thscc2019Points1
 import org.coner.drs.test.page.AddNextDriverPage
 import org.coner.drs.test.page.RunEventPage
 import org.coner.drs.test.page.RunEventTablePage
+import org.coner.drs.test.page.fast.FastAddNextDriverPage
 import org.coner.drs.test.page.fast.FastChooseEventPage
 import org.coner.drs.test.page.fast.FastStartPage
-import org.coner.drs.test.page.real.RealAlterDriverSequencePage
 import org.coner.drs.test.page.real.RealRunEventPage
 import org.coner.drs.test.page.real.RealRunEventTablePage
 import org.coner.drs.ui.chooseevent.ChooseEventModel
@@ -189,5 +189,28 @@ class RunEventIntegrationTest {
 
         robot.type(KeyCode.TAB)
         org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
+    }
+
+
+    @Test
+    fun `When the model runsSortedBySequence gets an item added, the table view should scroll to it`(robot: FxRobot) {
+        // prepare the table with enough items to guarantee the table has to scroll
+        val fastAddNextDriverPage = FastAddNextDriverPage(robot)
+        val registration0 = addNextDriverPage.registrationsListView().items[0]
+        for (i in 0..24) {
+            fastAddNextDriverPage.selectRegistration(registration0)
+            fastAddNextDriverPage.doAddSelectedRegistration()
+        }
+        val latch = CountDownLatch(1)
+        tablePage.runsTable().setOnScrollTo {
+            Assertions.assertThat(it.scrollTarget).isEqualTo(25)
+            latch.countDown()
+        }
+
+        val registration1 = addNextDriverPage.registrationsListView().items[1]
+        addNextDriverPage.selectRegistration(registration1)
+        addNextDriverPage.doAddSelectedRegistration()
+
+        latch.await()
     }
 }

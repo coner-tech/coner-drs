@@ -25,7 +25,6 @@ class RunEventTableController : Controller() {
     fun onRunsSortedBySequenceChanged(change: ListChangeListener.Change<out Run>) {
         while (change.next()) {
             if (change.wasAdded() && change.addedSize == 1) {
-                // TODO: test scenario for #41
                 val run = change.addedSubList.first()
                 runLater { view.table.scrollTo(run) }
             }
