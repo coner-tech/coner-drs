@@ -213,4 +213,25 @@ class RunEventIntegrationTest {
 
         latch.await()
     }
+
+    @Test
+    fun `When clicking the table, it should select clicked run`(robot: FxRobot) {
+        val table = tablePage.runsTable()
+        val fastAddNextDriverPage = FastAddNextDriverPage(robot)
+        for (i in 0..4) {
+            val registration = fastAddNextDriverPage.registrationsListView().items[i]
+            fastAddNextDriverPage.selectRegistration(registration)
+            fastAddNextDriverPage.doAddSelectedRegistration()
+        }
+
+        tablePage.selectSequence(1)
+        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(0)
+
+        tablePage.selectSequence(5)
+        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(4)
+
+        tablePage.selectSequence(3)
+        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(2)
+    }
+
 }
