@@ -191,7 +191,6 @@ class RunEventIntegrationTest {
         org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
     }
 
-
     @Test
     fun `When the model runsSortedBySequence gets an item added, the table view should scroll to it`(robot: FxRobot) {
         // prepare the table with enough items to guarantee the table has to scroll
