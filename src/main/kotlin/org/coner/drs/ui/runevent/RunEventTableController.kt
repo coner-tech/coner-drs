@@ -3,7 +3,6 @@ package org.coner.drs.ui.runevent
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
 import javafx.collections.ListChangeListener
-import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
@@ -18,7 +17,7 @@ class RunEventTableController : Controller() {
     val runService: RunService by inject()
 
     init {
-        model.runsSortedBySequence = SortedList(controller.model.event.runs, compareBy(Run::sequence))
+        model.runsSortedBySequence = controller.model.event.runs.sorted(compareByDescending(Run::sequence))
         model.runsSortedBySequence.onChange { onRunsSortedBySequenceChanged(it) }
     }
 

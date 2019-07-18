@@ -1,5 +1,6 @@
 package org.coner.drs.ui.alterdriversequence
 
+import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.mapper.RunMapper
 import tornadofx.*
 
@@ -14,6 +15,7 @@ class PreviewAlteredDriverSequenceController : Controller() {
                 result != null -> RunMapper.toPreviewAlteredDriverSequenceResult(result)
                 else -> PreviewAlteredDriverSequenceResult(observableListOf(), null)
             }
+            model.previewResultRuns = model.previewResult.runs.sorted(compareByDescending(PreviewAlteredDriverSequenceResult.Run::sequence))
         }
     }
 

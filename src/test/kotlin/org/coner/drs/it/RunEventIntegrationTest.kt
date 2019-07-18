@@ -154,9 +154,9 @@ class RunEventIntegrationTest {
         Assertions.assertThat(runsTableItems)
                 .extracting("sequence", "registrationNumbers")
                 .containsExactly(
-                        Tuple(1, "1 HS"),
+                        Tuple(3, "9 SM"),
                         Tuple(2, "33 SM"),
-                        Tuple(3, "9 SM")
+                        Tuple(1, "1 HS")
                 )
 
         addNextDriverPage.writeInNumbersField("40 GS")
@@ -166,10 +166,10 @@ class RunEventIntegrationTest {
         Assertions.assertThat(runsTableItems)
                 .extracting("sequence", "registrationNumbers")
                 .containsExactly(
-                        Tuple(1, "1 HS"),
-                        Tuple(2, "33 SM"),
+                        Tuple(4, "40 GS"),
                         Tuple(3, "9 SM"),
-                        Tuple(4, "40 GS")
+                        Tuple(2, "33 SM"),
+                        Tuple(1, "1 HS")
                 )
     }
 
