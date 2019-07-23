@@ -11,6 +11,8 @@ import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
 import me.carltonwhitehead.tornadofx.junit5.View
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
+import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.domain.service.RunService
@@ -23,6 +25,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
 import tornadofx.*
+import java.util.*
 import java.util.concurrent.CountDownLatch
 
 @ExtendWith(TornadoFxViewExtension::class, MockKExtension::class)
@@ -60,6 +63,43 @@ internal class AlterDriverSequenceViewTest {
     }
 
     @Test
+    fun `It should display preview result runs`() {
+        val runsTable = fastPage.toPreviewAlteredDriverSequencePage().runsTable()
+        Assumptions.assumeThat(runsTable.items).isNullOrEmpty()
+
+        FX.runAndWait {
+            val insertedRunId = UUID.randomUUID()
+            model.previewResult = InsertDriverIntoSequenceResult(
+                    runs = model.event.runs.apply {
+                        add(Run(id = insertedRunId, event = model.event, sequence = 1))
+                    },
+                    shiftRunIds = emptySet(),
+                    insertRunId = insertedRunId
+            )
+        }
+
+        Assertions.assertThat(runsTable.items).hasSize(1)
+    }
+
+    @Test
+    fun `It should select inserted run in preview`() {
+        val runsTable = fastPage.toPreviewAlteredDriverSequencePage().runsTable()
+
+        FX.runAndWait {
+            val insertedRunId = UUID.randomUUID()
+            model.previewResult = InsertDriverIntoSequenceResult(
+                    runs = model.event.runs.apply {
+                        add(Run(id = insertedRunId, event = model.event, sequence = 1))
+                    },
+                    shiftRunIds = emptySet(),
+                    insertRunId = insertedRunId
+            )
+        }
+
+        Assertions.assertThat(runsTable.selectionModel.selectedIndex).isEqualTo(0)
+    }
+
+    @Test
     fun `It should execute alter driver sequence when user clicks OK`(stage: Stage) {
         Assumptions.assumeThat(model.result).isNull()
         val result: InsertDriverIntoSequenceResult = mockk()
@@ -81,4 +121,30 @@ internal class AlterDriverSequenceViewTest {
         val numbersField = fastPage.toSpecifyDriverSequenceAlterationPage().numbersField()
         Assertions.assertThat(numbersField.isFocused).isTrue()
     }
+}
+
+private fun basicPreviewResult(event: RunEvent): PreviewAlteredDriverSequenceResult {
+    val inserted = PreviewAlteredDriverSequenceResult.Run(
+            run = Run(
+                    event = event,
+                    sequence = 1,
+                    registration = event.registrations[0]
+            ),
+            status = PreviewAlteredDriverSequenceResult.Status.INSERTED
+    )
+
+    return PreviewAlteredDriverSequenceResult(
+            runs = observableListOf(
+                    inserted,
+                    PreviewAlteredDriverSequenceResult.Run(
+                            run = Run(
+                                    event = event,
+                                    sequence = 2,
+                                    registration = event.registrations[1]
+                            ),
+                            status = PreviewAlteredDriverSequenceResult.Status.SHIFTED
+                    )
+            ),
+            insertedRun = inserted
+    )
 }

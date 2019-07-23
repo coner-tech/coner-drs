@@ -131,8 +131,8 @@ class RunEventIntegrationTest {
                 .hasSize(2)
                 .extracting("sequence", "registrationNumbers")
                 .containsExactly(
-                        Tuple(1, "3 SSC"),
-                        Tuple(2, "1 HS")
+                        Tuple(2, "1 HS"),
+                        Tuple(1, "3 SSC")
                 )
     }
 
@@ -202,8 +202,11 @@ class RunEventIntegrationTest {
         }
         val latch = CountDownLatch(1)
         tablePage.runsTable().setOnScrollTo {
-            Assertions.assertThat(it.scrollTarget).isEqualTo(25)
-            latch.countDown()
+            try {
+                Assertions.assertThat(it.scrollTarget).isEqualTo(25)
+            } finally {
+                latch.countDown()
+            }
         }
 
         val registration1 = addNextDriverPage.registrationsListView().items[1]
@@ -224,10 +227,10 @@ class RunEventIntegrationTest {
         }
 
         tablePage.selectSequence(1)
-        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(0)
+        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(4)
 
         tablePage.selectSequence(5)
-        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(4)
+        Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(0)
 
         tablePage.selectSequence(3)
         Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(2)
