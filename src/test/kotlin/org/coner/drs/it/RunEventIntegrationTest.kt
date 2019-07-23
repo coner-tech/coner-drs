@@ -203,7 +203,7 @@ class RunEventIntegrationTest {
         val latch = CountDownLatch(1)
         tablePage.runsTable().setOnScrollTo {
             try {
-                Assertions.assertThat(it.scrollTarget).isEqualTo(25)
+                Assertions.assertThat(it.scrollTarget).isEqualTo(0)
             } finally {
                 latch.countDown()
             }
