@@ -24,8 +24,7 @@ class RunEventTableController : Controller() {
     fun onRunsSortedBySequenceChanged(change: ListChangeListener.Change<out Run>) {
         while (change.next()) {
             if (change.wasAdded() && change.addedSize == 1) {
-                val run = change.addedSubList.first()
-                runLater { view.table.scrollTo(run) }
+                runLater { view.table.scrollTo(0) }
             }
         }
     }
@@ -34,12 +33,12 @@ class RunEventTableController : Controller() {
         val table = view.table
         if (focused) {
             if (table.selectedItem == null) {
-                var selectIndex = table.items?.indexOfLast { it.rawTime != null } ?: 0
+                var selectIndex = table.items?.indexOfFirst { it.rawTime != null } ?: 0
                 if (selectIndex > 0 && selectIndex < table.items.lastIndex) {
-                    selectIndex++
+                    selectIndex--
                 }
                 table.selectionModel.select(selectIndex)
-                table.scrollTo(selectIndex)
+                table.scrollTo(0)
             }
         } else {
             table.selectionModel.clearSelection()
