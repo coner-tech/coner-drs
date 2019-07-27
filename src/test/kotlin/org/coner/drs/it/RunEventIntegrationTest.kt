@@ -236,4 +236,9 @@ class RunEventIntegrationTest {
         Assertions.assertThat(table.selectionModel.selectedIndex).isEqualTo(2)
     }
 
+    @Test
+    fun `When tabbing from numbers field, it should select first run without time`() {
+        TODO("Not going to code this test while the course is hot")
+    }
+
 }
