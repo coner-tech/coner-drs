@@ -33,9 +33,15 @@ class RunEventTableController : Controller() {
         val table = view.table
         if (focused) {
             if (table.selectedItem == null) {
-                var selectIndex = table.items?.indexOfFirst { it.rawTime != null } ?: 0
-                if (selectIndex > 0 && selectIndex < table.items.lastIndex) {
-                    selectIndex--
+                var selectIndex = table.items?.indexOfFirst { it.rawTime != null }
+                if (selectIndex != null) {
+                    if (selectIndex > 0) {
+                        selectIndex--
+                    } else if (selectIndex < 0) {
+                        selectIndex = table.items.lastIndex
+                    }
+                } else {
+                    selectIndex = table.items.lastIndex
                 }
                 table.selectionModel.select(selectIndex)
                 table.scrollTo(0)

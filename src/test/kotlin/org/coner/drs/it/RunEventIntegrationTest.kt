@@ -14,19 +14,18 @@ import org.assertj.core.api.Assumptions
 import org.assertj.core.groups.Tuple
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.domain.entity.TimerConfiguration
 import org.coner.drs.io.gateway.EventGateway
 import org.coner.drs.it.util.FilesystemFixture
 import org.coner.drs.it.util.IntegrationTestApp
 import org.coner.drs.test.fixture.integration.crispyfish.classdefinition.Thscc2019V0Classes
 import org.coner.drs.test.fixture.integration.crispyfish.event.Thscc2019Points1
-import org.coner.drs.test.page.AddNextDriverPage
-import org.coner.drs.test.page.RunEventPage
-import org.coner.drs.test.page.RunEventTablePage
+import org.coner.drs.test.page.*
 import org.coner.drs.test.page.fast.FastAddNextDriverPage
 import org.coner.drs.test.page.fast.FastChooseEventPage
 import org.coner.drs.test.page.fast.FastStartPage
 import org.coner.drs.test.page.real.RealRunEventPage
-import org.coner.drs.test.page.real.RealRunEventTablePage
+import org.coner.drs.test.page.real.RealTimerPage
 import org.coner.drs.ui.chooseevent.ChooseEventModel
 import org.coner.drs.ui.chooseevent.ChooseEventTableView
 import org.junit.jupiter.api.Test
@@ -34,7 +33,10 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import org.testfx.api.FxRobot
 import tornadofx.*
+import java.nio.file.Files
+import java.nio.file.OpenOption
 import java.nio.file.Path
+import java.nio.file.StandardOpenOption
 import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -52,6 +54,8 @@ class RunEventIntegrationTest {
     lateinit var page: RunEventPage
     lateinit var addNextDriverPage: AddNextDriverPage
     lateinit var tablePage: RunEventTablePage
+    lateinit var rightDrawerPage: RunEventRightDrawerPage
+    lateinit var timerPage: TimerPage
 
     @Init
     fun init() {
@@ -89,7 +93,9 @@ class RunEventIntegrationTest {
         this.event = find<EventGateway>(app.scope).list().first()
         this.page = RealRunEventPage(robot)
         this.addNextDriverPage = page.toAddNextDriverPage()
-        this.tablePage = RealRunEventTablePage(robot)
+        this.tablePage = page.toTablePage()
+        this.rightDrawerPage = page.toRightDrawerPage()
+        this.timerPage = rightDrawerPage.toTimerPage()
     }
 
     @Test
@@ -237,8 +243,66 @@ class RunEventIntegrationTest {
     }
 
     @Test
-    fun `When tabbing from numbers field, it should select first run without time`() {
-        TODO("Not going to code this test while the course is hot")
+    fun `When tabbing from numbers field, it should select first run without time`(robot: FxRobot) {
+        val inputFile = startFileInputTimer()
+
+        addNextDriverPage.writeInNumbersField("1 HS")
+        addNextDriverPage.doAddSelectedRegistration()
+        addNextDriverPage.writeInNumbersField("33 SM")
+        addNextDriverPage.doAddSelectedRegistration()
+        robot.type(KeyCode.TAB)
+
+        org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
+        Assertions.assertThat(tablePage.runsTable().selectionModel.selectedIndex).isEqualTo(1)
+
+        receiveTime(inputFile," 123450")
+
+        addNextDriverPage.focusNumbersField()
+        robot.type(KeyCode.TAB)
+
+        org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
+        Assertions.assertThat(tablePage.runsTable().selectionModel.selectedIndex).isEqualTo(0)
+
+        addNextDriverPage.focusNumbersField()
+        receiveTime(inputFile, " 234560")
+        robot.type(KeyCode.TAB)
+
+        org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
+        Assertions.assertThat(tablePage.runsTable().selectionModel.selectedIndex).isEqualTo(0)
+
+        addNextDriverPage.writeInNumbersField("13 SSC")
+        addNextDriverPage.doAddSelectedRegistration()
+        addNextDriverPage.writeInNumbersField("3 SSC")
+        addNextDriverPage.doAddSelectedRegistration()
+        robot.type(KeyCode.TAB)
+
+        org.testfx.assertions.api.Assertions.assertThat(tablePage.runsTable()).isFocused
+        Assertions.assertThat(tablePage.runsTable().selectionModel.selectedIndex).isEqualTo(1)
+
+        stopTimer()
+    }
+
+    private fun startFileInputTimer(): Path {
+        rightDrawerPage.expandTimer()
+        timerPage.pressConfigure()
+        val timerConfigurationPage = timerPage.toTimerConfigurationPage()
+        timerConfigurationPage.chooseType(TimerConfiguration.FileInput::class)
+        val inputFile = createTempFile(directory = tempDir.toFile()).toPath()
+        timerConfigurationPage.chooseFile(inputFile)
+        timerConfigurationPage.pressApply()
+        timerPage.pressStart()
+        rightDrawerPage.collapseTimer()
+        return inputFile
+    }
+
+    private fun stopTimer() {
+        rightDrawerPage.expandTimer()
+        rightDrawerPage.toTimerPage().pressStop()
+        rightDrawerPage.collapseTimer()
+    }
+
+    private fun receiveTime(inputFile: Path, time: String) {
+        Files.write(inputFile, listOf(time), StandardOpenOption.APPEND)
     }
 
 }

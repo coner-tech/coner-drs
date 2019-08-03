@@ -3,6 +3,7 @@ package org.coner.drs.ui.runevent
 import javafx.scene.control.ButtonBar
 import org.coner.drs.domain.entity.TimerConfiguration
 import org.coner.drs.io.timer.TimerService
+import org.coner.drs.ui.TimerConfigurationConverter
 import tornadofx.*
 import java.io.File
 import java.io.FileNotFoundException
@@ -14,24 +15,29 @@ class TimerConfigurationView : View("Configure Timer") {
     private val timerService: TimerService by inject()
 
     override val root = form {
+        id = "timer-configuration"
         minWidth = 640.0
         minHeight = 480.0
         fieldset(title) {
             field("Type") {
-                choicebox(property = model.typeProperty, values = model.types)
+                choicebox(property = model.typeProperty, values = model.types) {
+                    id = "type"
+                    converter = TimerConfigurationConverter()
+                }
             }
             field("Port") {
                 combobox(property = model.serialPortProperty, values = model.serialPorts).required()
                 button("Refresh") { action { refreshSerialPorts() }  }
-                managedWhen { model.typeProperty.isEqualTo(TimerConfiguration.SerialPortInput.label) }
+                managedWhen { model.typeProperty.isEqualTo(TimerConfiguration.SerialPortInput::class) }
                 visibleWhen(managedProperty())
             }
             field("File") {
                 textfield(model.inputFileProperty) {
+                    id = "file-textfield"
                     required()
                 }
                 button("Choose") { action { chooseInputFile() } }
-                managedWhen { model.typeProperty.isEqualTo(TimerConfiguration.FileInput.label) }
+                managedWhen { model.typeProperty.isEqualTo(TimerConfiguration.FileInput::class) }
                 visibleWhen(managedProperty())
             }
         }
@@ -43,12 +49,13 @@ class TimerConfigurationView : View("Configure Timer") {
                 action { close() }
             }
             button("Apply", ButtonBar.ButtonData.OK_DONE) {
+                id = "apply"
                 enableWhen {
                     booleanBinding(model.typeProperty, model.serialPortProperty, model.inputFileProperty) {
                         when (model.type) {
-                            TimerConfiguration.SerialPortInput.label -> model.serialPort?.isNotBlank()
+                            TimerConfiguration.SerialPortInput::class -> model.serialPort?.isNotBlank()
                                     ?: false
-                            TimerConfiguration.FileInput.label -> model.inputFile?.isNotBlank() ?: false
+                            TimerConfiguration.FileInput::class -> model.inputFile?.isNotBlank() ?: false
                             else -> throw IllegalArgumentException("Unrecognized type: ${model.type}")
                         }
                     }
@@ -89,10 +96,10 @@ class TimerConfigurationView : View("Configure Timer") {
 
     private fun save() {
         runEventModel.timerConfiguration = when (model.type) {
-            TimerConfiguration.SerialPortInput.label -> {
+            TimerConfiguration.SerialPortInput::class -> {
                 TimerConfiguration.SerialPortInput(model.serialPort)
             }
-            TimerConfiguration.FileInput.label -> {
+            TimerConfiguration.FileInput::class -> {
                 val file = File(model.inputFile)
                 if (!file.exists() || !file.isFile) throw FileNotFoundException("File not found: ${model.inputFile}")
                 TimerConfiguration.FileInput(file)

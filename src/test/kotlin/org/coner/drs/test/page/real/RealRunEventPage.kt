@@ -6,6 +6,7 @@ import javafx.scene.input.KeyCodeCombination
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.test.page.AddNextDriverPage
 import org.coner.drs.test.page.RunEventPage
+import org.coner.drs.test.page.RunEventRightDrawerPage
 import org.coner.drs.test.page.RunEventTablePage
 import org.testfx.api.FxRobot
 import tornadofx.*
@@ -21,5 +22,9 @@ open class RealRunEventPage(protected val robot: FxRobot) : RunEventPage {
 
     override fun toTablePage(): RunEventTablePage {
         return RealRunEventTablePage(robot)
+    }
+
+    override fun toRightDrawerPage(): RunEventRightDrawerPage {
+        return RealRunEventRightDrawerPage(robot)
     }
 }

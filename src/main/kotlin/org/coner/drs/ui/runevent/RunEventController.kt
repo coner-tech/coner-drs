@@ -75,7 +75,9 @@ class RunEventController : Controller() {
     fun undocked() {
         println("RunEventController.undocked()")
         model.disposables.clear()
-        timerService.stop()
+        if (timerService.model.timer != null) {
+            timerService.stop()
+        }
     }
 
     fun toggleTimer() {

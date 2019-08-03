@@ -11,9 +11,11 @@ class TimerView : View("Timer") {
     val controller: RunEventController by inject()
     val timerService: TimerService by inject()
     override val root = form {
+        id = "timer"
         fieldset(labelPosition = Orientation.VERTICAL) {
             field("Operation") {
                 button(model.controlTextProperty) {
+                    id = "operation-button"
                     enableWhen { model.timerConfigurationProperty.isNotNull }
                     action { runAsyncWithProgress { controller.toggleTimer() } }
                 }
@@ -21,6 +23,7 @@ class TimerView : View("Timer") {
             field(text = "Configuration") {
                 vbox(spacing = 8) {
                     button("Configure") {
+                        id = "configure-button"
                         enableWhen { timerService.model.timerProperty.isNull }
                         action { showConfiguration() }
                     }
