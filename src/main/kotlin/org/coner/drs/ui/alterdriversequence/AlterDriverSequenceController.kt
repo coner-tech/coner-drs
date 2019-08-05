@@ -4,6 +4,7 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
 import javafx.concurrent.Task
 import org.coner.drs.domain.entity.RunEvent
+import org.coner.drs.domain.mapper.RunMapper
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.domain.service.RunService
@@ -19,6 +20,14 @@ class AlterDriverSequenceController : Controller() {
         model.sequenceProperty.onChange { performDryRunForPreview() }
         model.registrationProperty.onChange { performDryRunForPreview() }
         model.relativeProperty.onChange { performDryRunForPreview() }
+        model.previewResultProperty.onChange { result ->
+            val model: PreviewAlteredDriverSequenceModel = find()
+            model.previewResult = when {
+                result != null -> RunMapper.toPreviewAlteredDriverSequenceResult(result)
+                else -> PreviewAlteredDriverSequenceResult(observableListOf(), null)
+            }
+            model.previewResultRuns = model.previewResult.runs.sorted(compareByDescending(PreviewAlteredDriverSequenceResult.Run::sequence))
+        }
     }
 
     fun showAlterDriverSequenceAndWait(sequence: Int, event: RunEvent): InsertDriverIntoSequenceResult? {

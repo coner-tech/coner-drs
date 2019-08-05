@@ -1,6 +1,6 @@
 package org.coner.drs.test.page.fast
 
-import org.coner.drs.test.page.AlterDriverSequencePage
+import org.coner.drs.test.page.PreviewAlteredDriverSequencePage
 import org.coner.drs.test.page.SpecifyDriverSequenceAlterationPage
 import org.coner.drs.test.page.real.RealAlterDriverSequencePage
 import org.testfx.api.FxRobot
@@ -17,5 +17,9 @@ class FastAlterDriverSequencePage(robot: FxRobot) : RealAlterDriverSequencePage(
 
     override fun toSpecifyDriverSequenceAlterationPage(): SpecifyDriverSequenceAlterationPage {
         return FastSpecifyDriverSequenceAlterationPage(robot)
+    }
+
+    override fun toPreviewAlteredDriverSequencePage(): PreviewAlteredDriverSequencePage {
+        return FastPreviewAlteredDriverSequencePage(robot)
     }
 }

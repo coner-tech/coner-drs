@@ -28,14 +28,8 @@ class PreviewAlteredDriverSequenceViewTest {
     private lateinit var realPage: RealPreviewAlteredDriverSequencePage
     private lateinit var fastPage: FastPreviewAlteredDriverSequencePage
 
-    @RelaxedMockK
-    private lateinit var alterDriverSequenceModel: AlterDriverSequenceModel
-
     @Init
     fun init(scope: Scope) {
-        scope.apply {
-            set(alterDriverSequenceModel)
-        }
         view = find(scope)
         model = find(scope)
         controller = find(scope)
@@ -47,49 +41,5 @@ class PreviewAlteredDriverSequenceViewTest {
         fastPage = FastPreviewAlteredDriverSequencePage(robot)
     }
 
-    @Test
-    fun `It should display preview result runs`() {
-        val event = RunEvents.basic()
 
-        model.previewResult = basicPreviewResult(event)
-
-        val runsTable = fastPage.runsTable()
-        assertThat(runsTable.items).hasSize(2)
-    }
-
-    @Test
-    fun `It should select inserted run`() {
-        val event = RunEvents.basic()
-
-        model.previewResult = basicPreviewResult(event)
-
-        val runsTable = fastPage.runsTable()
-        assertThat(runsTable.selectionModel.selectedIndex).isEqualTo(0)
-    }
-}
-
-private fun basicPreviewResult(event: RunEvent): PreviewAlteredDriverSequenceResult {
-    val inserted = PreviewAlteredDriverSequenceResult.Run(
-            run = Run(
-                    event = event,
-                    sequence = 1,
-                    registration = event.registrations[0]
-            ),
-            status = PreviewAlteredDriverSequenceResult.Status.INSERTED
-    )
-
-    return PreviewAlteredDriverSequenceResult(
-            runs = observableListOf(
-                    inserted,
-                    PreviewAlteredDriverSequenceResult.Run(
-                            run = Run(
-                                    event = event,
-                                    sequence = 2,
-                                    registration = event.registrations[1]
-                            ),
-                            status = PreviewAlteredDriverSequenceResult.Status.SHIFTED
-                    )
-            ),
-            insertedRun = inserted
-    )
 }

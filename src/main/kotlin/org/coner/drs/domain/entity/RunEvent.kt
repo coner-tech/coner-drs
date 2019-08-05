@@ -23,7 +23,7 @@ class RunEvent(
 ) {
 
     val registrations = observableListOf<Registration>()
-    val runs = observableListOf<Run>()
+    val runs = observableListOf<Run> { arrayOf(it.sequenceProperty) }
     val runsBySequence = SortedList(runs, compareBy(Run::sequence))
 
     val runForNextDriverBinding = objectBinding(runsBySequence) {

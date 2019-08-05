@@ -9,4 +9,5 @@ interface RunEventPage {
     fun root(): TitledPane
     fun toAddNextDriverPage(): AddNextDriverPage
     fun toTablePage(): RunEventTablePage
+    fun toRightDrawerPage(): RunEventRightDrawerPage
 }

@@ -4,6 +4,7 @@ import javafx.scene.control.Button
 import javafx.scene.control.ButtonBar
 import javafx.scene.layout.BorderPane
 import org.coner.drs.test.page.AlterDriverSequencePage
+import org.coner.drs.test.page.PreviewAlteredDriverSequencePage
 import org.coner.drs.test.page.SpecifyDriverSequenceAlterationPage
 import org.testfx.api.FxRobot
 
@@ -27,5 +28,9 @@ open class RealAlterDriverSequencePage(protected val robot: FxRobot) : AlterDriv
 
     override fun toSpecifyDriverSequenceAlterationPage(): SpecifyDriverSequenceAlterationPage {
         return RealSpecifyDriverSequenceAlterationPage(robot)
+    }
+
+    override fun toPreviewAlteredDriverSequencePage(): PreviewAlteredDriverSequencePage {
+        return RealPreviewAlteredDriverSequencePage(robot)
     }
 }

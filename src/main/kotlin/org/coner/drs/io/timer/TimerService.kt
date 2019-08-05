@@ -49,10 +49,9 @@ class TimerService : Controller() {
     }
 
     fun stop() {
-        model.timer?.stop()
-        runLater {
-            model.timer = null
-        }
+        val timer = model.timer ?: return
+        runLater { model.timer = null }
+        timer.stop()
     }
 
     fun listSerialPorts(): List<String> {

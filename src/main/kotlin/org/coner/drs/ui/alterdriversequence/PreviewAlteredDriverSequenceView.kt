@@ -14,7 +14,7 @@ class PreviewAlteredDriverSequenceView : View() {
         id = "preview-altered-driver-sequence-view"
         fieldset("Preview") {
             vgrow = Priority.ALWAYS
-            tableview(model.previewResultProperty.select { it.runsProperty }) {
+            tableview(model.previewResultRunsProperty) {
                 id = "runs-table"
                 isEditable = false
                 setSortPolicy { false }

@@ -3,7 +3,6 @@ package org.coner.drs.ui.runevent
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
 import javafx.collections.ListChangeListener
-import javafx.collections.transformation.SortedList
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
@@ -18,15 +17,14 @@ class RunEventTableController : Controller() {
     val runService: RunService by inject()
 
     init {
-        model.runsSortedBySequence = SortedList(controller.model.event.runs, compareBy(Run::sequence))
+        model.runsSortedBySequence = controller.model.event.runs.sorted(compareByDescending(Run::sequence))
         model.runsSortedBySequence.onChange { onRunsSortedBySequenceChanged(it) }
     }
 
     fun onRunsSortedBySequenceChanged(change: ListChangeListener.Change<out Run>) {
         while (change.next()) {
             if (change.wasAdded() && change.addedSize == 1) {
-                val run = change.addedSubList.first()
-                runLater { view.table.scrollTo(run) }
+                runLater { view.table.scrollTo(0) }
             }
         }
     }
@@ -35,12 +33,18 @@ class RunEventTableController : Controller() {
         val table = view.table
         if (focused) {
             if (table.selectedItem == null) {
-                var selectIndex = table.items?.indexOfLast { it.rawTime != null } ?: 0
-                if (selectIndex > 0 && selectIndex < table.items.lastIndex) {
-                    selectIndex++
+                var selectIndex = table.items?.indexOfFirst { it.rawTime != null }
+                if (selectIndex != null) {
+                    if (selectIndex > 0) {
+                        selectIndex--
+                    } else if (selectIndex < 0) {
+                        selectIndex = table.items.lastIndex
+                    }
+                } else {
+                    selectIndex = table.items.lastIndex
                 }
                 table.selectionModel.select(selectIndex)
-                table.scrollTo(selectIndex)
+                table.scrollTo(0)
             }
         } else {
             table.selectionModel.clearSelection()

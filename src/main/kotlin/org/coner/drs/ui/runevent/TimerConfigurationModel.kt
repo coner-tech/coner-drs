@@ -1,16 +1,18 @@
 package org.coner.drs.ui.runevent
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import org.coner.drs.domain.entity.TimerConfiguration
 import tornadofx.*
+import kotlin.reflect.KClass
 
 class TimerConfigurationModel : ViewModel() {
-    val types = observableList(
-            TimerConfiguration.SerialPortInput.label,
-            TimerConfiguration.FileInput.label
+    val types = observableListOf(
+            TimerConfiguration.SerialPortInput::class,
+            TimerConfiguration.FileInput::class
     )
 
-    val typeProperty = SimpleStringProperty(this, "type", TimerConfiguration.SerialPortInput.label)
+    val typeProperty = SimpleObjectProperty<KClass<*>>(this, "type", TimerConfiguration.SerialPortInput::class)
     var type by typeProperty
 
     val serialPortProperty = SimpleStringProperty(this, "serialPort")
@@ -19,11 +21,6 @@ class TimerConfigurationModel : ViewModel() {
     val inputFileProperty = SimpleStringProperty(this, "inputFile")
     var inputFile by inputFileProperty
 
-
-    val serialPorts = observableList<String>()
+    val serialPorts = observableListOf<String>()
 
 }
-
-val TimerConfiguration.SerialPortInput.Companion.label: String get() = "Serial Port"
-val TimerConfiguration.FileInput.Companion.label: String get() = "File"
-
