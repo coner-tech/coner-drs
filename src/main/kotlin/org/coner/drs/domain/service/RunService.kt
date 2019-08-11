@@ -80,6 +80,17 @@ class RunService : Controller() {
         saveSync(run)
     }
 
+    fun changeTime(run: Run, time: BigDecimal?): Completable {
+        return controller.scheduleCompletable {
+            changeTimeSync(run, time)
+        }
+    }
+
+    fun changeTimeSync(run: Run, time: BigDecimal?) {
+        run.rawTime = time
+        saveSync(run)
+    }
+
     fun incrementCones(run: Run): Completable {
         return controller.scheduleCompletable {
             incrementConesSync(run)

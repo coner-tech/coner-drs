@@ -83,4 +83,9 @@ class RunEventTableViewTest {
 
         Assertions.assertThat(runsTable.selectionModel.selectedItem).isSameAs(insertRun)
     }
+
+    @Test
+    fun `When user clears time it should prompt before clearing`() {
+        TODO()
+    }
 }
