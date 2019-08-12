@@ -87,6 +87,15 @@ class RunEventTableView : View() {
                             action { controller.showInsertDriver(selectedItem ?: return@action) }
                         }
                     }
+                    menu("Time") {
+                        item(
+                                name = "Clear Time",
+                                keyCombination = KeyCombination.keyCombination("Ctrl+C")
+                        ) {
+                            enableWhen(selectionModel.selectedItemProperty().isNotNull)
+                            action { controller.clearTime() }
+                        }
+                    }
                     menu("Penalty") {
                         item(
                                 name = "Add Cone",

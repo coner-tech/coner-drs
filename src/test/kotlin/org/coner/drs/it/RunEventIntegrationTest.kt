@@ -28,11 +28,13 @@ import org.coner.drs.test.page.real.RealRunEventPage
 import org.coner.drs.test.page.real.RealTimerPage
 import org.coner.drs.ui.chooseevent.ChooseEventModel
 import org.coner.drs.ui.chooseevent.ChooseEventTableView
+import org.coner.drs.ui.runevent.RunEventModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import org.testfx.api.FxRobot
 import tornadofx.*
+import java.math.BigDecimal
 import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
@@ -280,6 +282,27 @@ class RunEventIntegrationTest {
         Assertions.assertThat(tablePage.runsTable().selectionModel.selectedIndex).isEqualTo(1)
 
         stopTimer()
+    }
+
+
+    @Test
+    fun `When user clears time it should prompt before clearing`(robot: FxRobot) {
+        val inputFile = startFileInputTimer()
+        addNextDriverPage.writeInNumbersField("1 HS")
+        addNextDriverPage.doAddSelectedRegistration()
+        val latch = CountDownLatch(1)
+        tablePage.runsTable().items[0].rawTimeProperty.addListener { _, _, _ ->
+            latch.countDown()
+        }
+        receiveTime(inputFile, " 123450")
+        latch.await()
+        Assumptions.assumeThat(tablePage.runsTable().items[0].rawTime).isNotNull()
+
+        tablePage.clickClearTime(1)
+        robot.clickOn("OK")
+
+        Assertions.assertThat(tablePage.runsTable().items[0])
+                .hasFieldOrPropertyWithValue("rawTime", null)
     }
 
     private fun startFileInputTimer(): Path {

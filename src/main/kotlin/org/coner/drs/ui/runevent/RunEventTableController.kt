@@ -3,6 +3,7 @@ package org.coner.drs.ui.runevent
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.schedulers.Schedulers
 import javafx.collections.ListChangeListener
+import javafx.scene.control.ButtonType
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
@@ -99,6 +100,21 @@ class RunEventTableController : Controller() {
                 .showAlterDriverSequenceAndWait(run.sequence, runEventModel.event)
         result?.run {
             view.selectRunById(this.insertRunId)
+        }
+    }
+
+    fun clearTime() {
+        val run = view.table.selectedItem ?: return
+        confirm(
+                header = "Clear Time?",
+                content = "Clear time from run with sequence ${run.sequence}?",
+                confirmButton = ButtonType.OK,
+                cancelButton = ButtonType.CANCEL
+        ) {
+            runService.changeTime(run, null)
+                    .subscribeOn(Schedulers.computation())
+                    .observeOnFx()
+                    .subscribe()
         }
     }
 

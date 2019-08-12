@@ -12,4 +12,5 @@ interface RunEventTablePage {
     fun selectSequence(sequence: Int)
     fun clickInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage
     fun keyboardShortcutInsertDriverIntoSequence(sequence: Int)
+    fun clickClearTime(sequence: Int)
 }

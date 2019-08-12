@@ -247,4 +247,21 @@ class RunServiceTest {
 
         verify(exactly = 2) { gateway.save(any()) }
     }
+
+    @Test
+    fun `It should clear time from run`() {
+        val event = RunEvents.basic()
+        val run = Run(
+                event = event,
+                registration = event.registrations[0],
+                rawTime = BigDecimal.valueOf(123456, 3)
+        )
+        Assumptions.assumeThat(run.rawTime).isNotNull()
+
+        service.changeTime(run, null).blockingAwait()
+
+        Assertions.assertThat(run)
+                .hasFieldOrPropertyWithValue("rawTime", null)
+        verify { gateway.save(run) }
+    }
 }
