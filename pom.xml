@@ -26,8 +26,8 @@
         <appdirs.version>1.0.3</appdirs.version>
         <apache-commons-text.version>1.6</apache-commons-text.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
-        <junit5.platform.version>1.4.1</junit5.platform.version>
-        <junit5.jupiter.version>5.4.1</junit5.jupiter.version>
+        <junit5.platform.version>1.5.1</junit5.platform.version>
+        <junit5.jupiter.version>5.5.1</junit5.jupiter.version>
         <testfx.version>4.0.15-alpha</testfx.version>
         <assertk.version>0.16</assertk.version>
         <mockk.version>1.9.3.kotlin12</mockk.version>
