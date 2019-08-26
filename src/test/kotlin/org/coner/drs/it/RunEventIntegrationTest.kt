@@ -25,18 +25,14 @@ import org.coner.drs.test.page.fast.FastAddNextDriverPage
 import org.coner.drs.test.page.fast.FastChooseEventPage
 import org.coner.drs.test.page.fast.FastStartPage
 import org.coner.drs.test.page.real.RealRunEventPage
-import org.coner.drs.test.page.real.RealTimerPage
 import org.coner.drs.ui.chooseevent.ChooseEventModel
 import org.coner.drs.ui.chooseevent.ChooseEventTableView
-import org.coner.drs.ui.runevent.RunEventModel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import org.testfx.api.FxRobot
 import tornadofx.*
-import java.math.BigDecimal
 import java.nio.file.Files
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
 import java.time.LocalDate
@@ -298,7 +294,7 @@ class RunEventIntegrationTest {
         latch.await()
         Assumptions.assumeThat(tablePage.runsTable().items[0].rawTime).isNotNull()
 
-        tablePage.clickClearTime(1)
+        tablePage.keyboardShortcutClearTime(1)
         robot.clickOn("OK")
 
         Assertions.assertThat(tablePage.runsTable().items[0])
