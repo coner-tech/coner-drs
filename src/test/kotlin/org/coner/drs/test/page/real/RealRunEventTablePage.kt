@@ -48,10 +48,11 @@ open class RealRunEventTablePage(private val robot: FxRobot) : RunEventTablePage
         robot.release(KeyCode.CONTROL)
     }
 
-    override fun clickClearTime(sequence: Int) {
+    override fun keyboardShortcutClearTime(sequence: Int) {
         val cell = tableCellForSequence(sequence)
-        robot.rightClickOn(cell)
-        robot.clickOn("Time")
-        robot.clickOn("Clear Time")
+        robot.clickOn(cell)
+        robot.press(KeyCode.CONTROL)
+        robot.type(KeyCode.C)
+        robot.release(KeyCode.CONTROL)
     }
 }
