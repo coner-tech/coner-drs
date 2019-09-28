@@ -1,26 +1,20 @@
 package org.coner.drs.util
 
 import org.assertj.core.api.SoftAssertions
-import org.coner.drs.di.KatanaModules
-import org.coner.drs.di.NumberFormats
 import org.junit.Before
 import org.junit.Test
-import org.rewedigital.katana.Component
 import java.math.BigDecimal
-import java.text.NumberFormat
 
-class NumberFormatsTest {
+class NumberFormatTest {
 
-    private lateinit var component: Component
 
     @Before
     fun before() {
-        component = Component(KatanaModules.numberFormats)
     }
 
     @Test
     fun runTimes() {
-        val runTimeFormat: NumberFormat = component.injectNow(NumberFormats.RUN_TIME)
+        val runTimeFormat = NumberFormat.forRunTimes()
         val data = listOf(
                 0 to "0.000",
                 BigDecimal.valueOf(0, 3) to "0.000",

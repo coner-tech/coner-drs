@@ -1,5 +1,5 @@
 package org.coner.drs.di
 
-enum class NumberFormats {
+enum class NumberFormatNames {
     RUN_TIME
 }
