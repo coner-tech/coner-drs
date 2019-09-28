@@ -5,13 +5,17 @@ import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
 import org.coner.drs.domain.entity.Run
+import org.coner.drs.di.NumberFormats
 import org.coner.drs.util.tornadofx.overrideFocusTraversal
 import tornadofx.*
+import java.text.NumberFormat
 import java.util.*
 
 class RunEventTableView : View() {
     val model: RunEventTableModel by inject()
     val controller: RunEventTableController = find()
+    private val container: RunEventContainer by inject()
+    private val runTimeFormat: NumberFormat by container.component.inject(NumberFormats.RUN_TIME)
 
     override val root = form {
         id = "run-event-table"
@@ -29,7 +33,9 @@ class RunEventTableView : View() {
                 column("Car Model", Run::registrationCarModelProperty)
                 column("Car Color", Run::registrationCarColorProperty)
                 column("Time", Run::rawTimeProperty) {
-
+                    cellFormat {
+                        text = runTimeFormat.format(it)
+                    }
                 }
                 column("Penalties", Run::compositePenaltyProperty) {
                     cellFormat { penalties ->

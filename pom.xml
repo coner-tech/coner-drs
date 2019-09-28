@@ -18,6 +18,7 @@
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
+        <katana.version>1.7.1</katana.version>
         <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
         <snoozle.version>0.2.1</snoozle.version>
@@ -60,6 +61,11 @@
             <groupId>com.github.thomasnield</groupId>
             <artifactId>rxkotlinfx</artifactId>
             <version>${rxkotlinfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.rewedigital.katana</groupId>
+            <artifactId>katana-core</artifactId>
+            <version>${katana.version}</version>
         </dependency>
 
         <dependency>
@@ -238,6 +244,15 @@
             <releases>
                 <enabled>false</enabled>
             </releases>
+        </repository>
+
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>jcenter</id>
+            <name>bintray</name>
+            <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
 </project>
