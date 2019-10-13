@@ -5,8 +5,11 @@ import javafx.scene.image.Image
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import net.harawata.appdirs.AppDirsFactory
+import org.coner.drs.di.KatanaInjected
+import org.coner.drs.di.numberFormatModule
 import org.coner.drs.ui.main.MainView
 import org.coner.style.ConerFxStylesheet
+import org.rewedigital.katana.Component
 import tornadofx.*
 import tornadofx.Stylesheet
 import java.net.URI
@@ -17,7 +20,7 @@ import java.util.*
 open class DigitalRawSheetApp : App(
         primaryView = MainView::class,
         stylesheet = DrsStylesheet::class
-) {
+), KatanaInjected {
 
     init {
         importStylesheet("/style/coner-unsafe.css")
@@ -34,6 +37,8 @@ open class DigitalRawSheetApp : App(
                     "coner"
             )
     ))
+
+    override val component = Component(numberFormatModule())
 
     open val forceExitOnStop = true
 
