@@ -4,10 +4,13 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import me.carltonwhitehead.tornadofx.junit5.Init
-import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
-import me.carltonwhitehead.tornadofx.junit5.View
+import me.carltonwhitehead.tornadofx.junit5.SetupApp
+import me.carltonwhitehead.tornadofx.junit5.Start
+import me.carltonwhitehead.tornadofx.junit5.TornadoFxAppExtension
+import org.coner.drs.di.numberFormatModule
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
+import org.coner.drs.test.TestApp
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.fast.FastRunEventTablePage
 import org.coner.drs.test.page.real.RealRunEventTablePage
@@ -15,14 +18,15 @@ import org.coner.drs.ui.alterdriversequence.AlterDriverSequenceController
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.rewedigital.katana.Component
 import org.testfx.api.FxRobot
 import org.testfx.assertions.api.Assertions
 import tornadofx.*
 
-@ExtendWith(TornadoFxViewExtension::class, MockKExtension::class)
+@ExtendWith(TornadoFxAppExtension::class, MockKExtension::class)
 class RunEventTableViewTest {
 
-    @View
+    private lateinit var app: App
     private lateinit var view: RunEventTableView
     private lateinit var model: RunEventTableModel
     private lateinit var controller: RunEventTableController
@@ -30,14 +34,22 @@ class RunEventTableViewTest {
     private lateinit var realPage: RealRunEventTablePage
     private lateinit var fastPage: FastRunEventTablePage
 
-    @Init
-    fun init(scope: Scope) {
-        find<RunEventModel>(scope).apply {
-            event = RunEvents.basic()
+    @SetupApp
+    fun setupApp() = TestApp(Component(numberFormatModule())).apply {
+        app = this
+    }
+
+    @Start
+    fun start(robot: FxRobot) {
+        app.run {
+            find<RunEventModel>(scope).apply {
+                event = RunEvents.basic()
+            }
+            controller = find(scope)
+            model = find(scope)
+            view = find(scope)
         }
-        controller = find(scope)
-        model = find(scope)
-        view = find(scope)
+        FX.runAndWait { view.openWindow() }
     }
 
     @BeforeEach
