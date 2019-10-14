@@ -3,15 +3,13 @@ package org.coner.drs.it
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
-import com.github.thomasnield.rxkotlinfx.changes
-import com.github.thomasnield.rxkotlinfx.observeOnFx
-import com.github.thomasnield.rxkotlinfx.subscribeOnFx
 import javafx.scene.input.KeyCode
 import me.carltonwhitehead.tornadofx.junit5.*
 import me.carltonwhitehead.tornadofx.junit5.App
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
 import org.assertj.core.groups.Tuple
+import org.awaitility.Awaitility.await
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.TimerConfiguration
@@ -308,13 +306,10 @@ class RunEventIntegrationTest {
         receiveTime(inputFile, " 987650")
         receiveTime(inputFile, " 876540")
         addNextDriverPage.writeInNumbersField("1 HS")
-        val latch = CountDownLatch(1)
-        tablePage.runsTable().items.onChange { while (it.next()) latch.countDown() }
 
         addNextDriverPage.doAddSelectedRegistration()
 
-        latch.await()
-        FX.runAndWait {
+        await().untilAsserted {
             assertThat(tablePage.runsTable().items).all {
                 hasSize(2)
                 index(0).all {
@@ -351,7 +346,13 @@ class RunEventIntegrationTest {
     }
 
     private fun receiveTime(inputFile: Path, time: String) {
+        val timeAsBigDecimal = BigDecimal.valueOf(time.reversed().trim().toLong(), 3)
+        val beforeCount = tablePage.runsTable().items.count { it.rawTime == timeAsBigDecimal }
         Files.write(inputFile, listOf(time), StandardOpenOption.APPEND)
+        val afterCount = beforeCount + 1
+        await().until {
+            tablePage.runsTable().items.count { it.rawTime == timeAsBigDecimal } == afterCount
+        }
     }
 
 }
