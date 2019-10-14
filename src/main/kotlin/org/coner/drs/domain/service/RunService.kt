@@ -17,6 +17,25 @@ class RunService : Controller() {
     private val gateway: RunGateway by inject()
     private val controller: DomainServiceController by inject()
 
+    fun findRunForNextDriver(runEvent: RunEvent): Run {
+        val indexOfLastRunWithDriver = runEvent.runsBySequence.indexOfLast { it.registration != null }
+        if (indexOfLastRunWithDriver >= 0) {
+            return if (indexOfLastRunWithDriver in 0 until runEvent.runsBySequence.lastIndex) {
+                runEvent.runsBySequence[indexOfLastRunWithDriver + 1]
+            } else {
+                Run(
+                        event = runEvent,
+                        sequence = runEvent.runsBySequence[indexOfLastRunWithDriver].sequence + 1
+                )
+            }
+        }
+        return runEvent.runsBySequence.firstOrNull { it.registration == null }
+                ?: Run(
+                        event = runEvent,
+                        sequence = 1
+                )
+    }
+
     fun findRunForNextTime(runEvent: RunEvent): Single<Run> {
         return controller.scheduleSingle {
             findRunForNextTimeSync(runEvent)

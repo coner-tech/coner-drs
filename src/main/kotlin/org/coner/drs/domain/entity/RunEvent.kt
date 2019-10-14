@@ -23,26 +23,11 @@ class RunEvent(
 ) {
 
     val registrations = observableListOf<Registration>()
-    val runs = observableListOf<Run> { arrayOf(it.sequenceProperty) }
+    val runs = observableListOf<Run> { arrayOf(it.sequenceProperty, it.registrationProperty, it.rawTimeProperty) }
     val runsBySequence = SortedList(runs, compareBy(Run::sequence))
 
     val runForNextDriverBinding = objectBinding(runsBySequence) {
-        val indexOfLastRunWithDriver = runsBySequence.indexOfLast { it.registration != null }
-        if (indexOfLastRunWithDriver >= 0) {
-            if (indexOfLastRunWithDriver in 0 until runsBySequence.lastIndex) {
-                runsBySequence[indexOfLastRunWithDriver + 1]
-            } else {
-                Run(
-                        event = this@RunEvent,
-                        sequence = runsBySequence[indexOfLastRunWithDriver].sequence + 1
-                )
-            }
-        } else {
-            Run(
-                    event = this@RunEvent,
-                    sequence = 1
-            )
-        }
+        service.findRunForNextDriver(this@RunEvent)
     }
     val runForNextDriverProperty = SimpleObjectProperty<Run>(this, "runForNextDriver").apply {
         bind(runForNextDriverBinding)

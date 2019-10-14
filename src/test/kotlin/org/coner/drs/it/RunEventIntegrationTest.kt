@@ -2,10 +2,10 @@ package org.coner.drs.it
 
 import assertk.all
 import assertk.assertThat
-import assertk.assertions.hasSize
-import assertk.assertions.index
-import assertk.assertions.isEqualTo
-import assertk.assertions.prop
+import assertk.assertions.*
+import com.github.thomasnield.rxkotlinfx.changes
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import com.github.thomasnield.rxkotlinfx.subscribeOnFx
 import javafx.scene.input.KeyCode
 import me.carltonwhitehead.tornadofx.junit5.*
 import me.carltonwhitehead.tornadofx.junit5.App
@@ -32,6 +32,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import org.testfx.api.FxRobot
 import tornadofx.*
+import java.math.BigDecimal
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
@@ -299,6 +300,35 @@ class RunEventIntegrationTest {
 
         Assertions.assertThat(tablePage.runsTable().items[0])
                 .hasFieldOrPropertyWithValue("rawTime", null)
+    }
+
+    @Test // https://github.com/caeos/coner-drs/issues/48
+    fun whenItHasReceivedTimesCreatingNewRunsNextAddedDriverShouldntGetDuplicateSequenceNumber() {
+        val inputFile = startFileInputTimer()
+        receiveTime(inputFile, " 987650")
+        receiveTime(inputFile, " 876540")
+        addNextDriverPage.writeInNumbersField("1 HS")
+        val latch = CountDownLatch(1)
+        tablePage.runsTable().items.onChange { while (it.next()) latch.countDown() }
+
+        addNextDriverPage.doAddSelectedRegistration()
+
+        latch.await()
+        FX.runAndWait {
+            assertThat(tablePage.runsTable().items).all {
+                hasSize(2)
+                index(0).all {
+                    prop(Run::sequence).isEqualTo(2)
+                    prop(Run::rawTime).isEqualTo(BigDecimal.valueOf(45678, 3))
+                    prop(Run::registration).isNull()
+                }
+                index(1).all {
+                    prop(Run::sequence).isEqualTo(1)
+                    prop(Run::rawTime).isEqualTo(BigDecimal.valueOf(56789, 3))
+                    prop(Run::registration).isNotNull()
+                }
+            }
+        }
     }
 
     private fun startFileInputTimer(): Path {
