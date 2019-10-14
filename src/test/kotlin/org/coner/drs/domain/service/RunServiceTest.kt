@@ -1,24 +1,24 @@
 package org.coner.drs.domain.service
 
 import assertk.all
-import assertk.assertions.*
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
+import assertk.assertions.isSameAs
+import assertk.assertions.prop
 import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
-import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
 import org.coner.drs.io.gateway.RunGateway
 import org.coner.drs.test.TornadoFxScopeExtension
 import org.coner.drs.test.fixture.domain.entity.RunEvents
-import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import tornadofx.*
 import java.math.BigDecimal
-import java.util.concurrent.CountDownLatch
 
 @ExtendWith(TornadoFxScopeExtension::class)
 class RunServiceTest {
