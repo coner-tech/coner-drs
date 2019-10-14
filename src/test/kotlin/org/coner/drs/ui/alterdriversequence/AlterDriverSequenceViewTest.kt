@@ -11,6 +11,7 @@ import me.carltonwhitehead.tornadofx.junit5.TornadoFxViewExtension
 import me.carltonwhitehead.tornadofx.junit5.View
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assumptions
+import org.awaitility.Awaitility.await
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceRequest
@@ -19,14 +20,12 @@ import org.coner.drs.domain.service.RunService
 import org.coner.drs.test.fixture.domain.entity.RunEvents
 import org.coner.drs.test.page.fast.FastAlterDriverSequencePage
 import org.coner.drs.test.page.real.RealAlterDriverSequencePage
-import org.coner.drs.ui.runevent.RunEventModel
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.testfx.api.FxRobot
 import tornadofx.*
 import java.util.*
-import java.util.concurrent.CountDownLatch
 
 @ExtendWith(TornadoFxViewExtension::class, MockKExtension::class)
 internal class AlterDriverSequenceViewTest {
@@ -103,15 +102,13 @@ internal class AlterDriverSequenceViewTest {
     fun `It should execute alter driver sequence when user clicks OK`(stage: Stage) {
         Assumptions.assumeThat(model.result).isNull()
         val result: InsertDriverIntoSequenceResult = mockk()
-        val latch = CountDownLatch(1)
         every {
             runService.insertDriverIntoSequence(any())
         }.returns(Single.just(result))
-        model.resultProperty.onChangeOnce { latch.countDown() }
 
         realPage.clickOkButton()
 
-        latch.await()
+        await().until { model.result != null }
         Assertions.assertThat(model.result).isSameAs(result)
         Assertions.assertThat(stage.isShowing).isFalse()
     }
