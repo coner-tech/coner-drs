@@ -79,12 +79,12 @@ class RunEventIntegrationTest {
                         eventControlFile = eventControlFile.file
                 )
         )
-        val latch = CountDownLatch(2)
         val fastChooseEventPage = FastChooseEventPage(robot)
-        find<ChooseEventModel>(app.scope).dockedProperty.onChangeOnce { runLater { latch.countDown() } }
-        find<ChooseEventTableView>(app.scope).root.items.onChange { runLater { latch.countDown() } }
         FX.runAndWait { find<EventGateway>(app.scope).save(event) }
-        latch.await(1, TimeUnit.SECONDS)
+
+        await("startup: choose event docked").until { find<ChooseEventModel>(app.scope).docked }
+        await("startup: choose event table populated").until { find<ChooseEventTableView>(app.scope).root.items.isNotEmpty() }
+
         fastChooseEventPage.selectEvent { it.id == event.id }
         fastChooseEventPage.clickStartButton()
         this.event = find<EventGateway>(app.scope).list().first()
@@ -203,6 +203,8 @@ class RunEventIntegrationTest {
             fastAddNextDriverPage.selectRegistration(registration0)
             fastAddNextDriverPage.doAddSelectedRegistration()
         }
+
+        // TODO: convert to awaitility
         val latch = CountDownLatch(1)
         tablePage.runsTable().setOnScrollTo {
             try {
@@ -285,12 +287,7 @@ class RunEventIntegrationTest {
         val inputFile = startFileInputTimer()
         addNextDriverPage.writeInNumbersField("1 HS")
         addNextDriverPage.doAddSelectedRegistration()
-        val latch = CountDownLatch(1)
-        tablePage.runsTable().items[0].rawTimeProperty.addListener { _, _, _ ->
-            latch.countDown()
-        }
         receiveTime(inputFile, " 123450")
-        latch.await()
         Assumptions.assumeThat(tablePage.runsTable().items[0].rawTime).isNotNull()
 
         tablePage.keyboardShortcutClearTime(1)
