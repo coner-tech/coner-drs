@@ -218,6 +218,22 @@ class RunService : Controller() {
         return result
     }
 
+    fun deleteRun(event: RunEvent, run: Run) {
+        val runs = event.runs
+                .map { RunMapper.copy(it) }
+                .sortedBy(Run::sequence)
+                .toMutableList()
+        when (runs.removeIf { it.id == run.id }) {
+            false -> return // TODO: error handling
+        }
+        val decrementSequenceRuns = runs.filter { it.sequence > run.sequence }
+        decrementSequenceRuns.forEach {
+            it.sequence = it.sequence - 1
+        }
+        gateway.delete(run)
+        saveSync(*decrementSequenceRuns.toTypedArray())
+    }
+
     private fun saveSync(vararg runs: Run) {
         runs.forEach { gateway.save(it) }
     }

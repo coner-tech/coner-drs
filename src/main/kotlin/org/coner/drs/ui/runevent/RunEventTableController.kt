@@ -118,6 +118,22 @@ class RunEventTableController : Controller() {
         }
     }
 
+    fun deleteRun() {
+        val run = view.table.selectedItem ?: return
+        confirm(
+                header = "Delete Run?",
+                content = "Delete run with sequence ${run.sequence}?",
+                confirmButton = ButtonType.OK,
+                cancelButton = ButtonType.CANCEL,
+                owner = view.currentStage
+        ) {
+            val runEventModel: RunEventModel = find()
+            runAsync {
+                runService.deleteRun(runEventModel.event, run)
+            }
+        }
+    }
+
     val locateAddNextDriverNumbers = { find<AddNextDriverView>().numbersField }
 
 }

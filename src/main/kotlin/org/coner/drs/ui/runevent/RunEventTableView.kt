@@ -149,6 +149,13 @@ class RunEventTableView : View(), KatanaInjected {
                             enableWhen(selectionModel.selectedItemProperty().isNotNull)
                         }
                     }
+                    item(
+                            name = "Delete",
+                            keyCombination = KeyCombination.keyCombination("Ctrl+Delete")
+                    ) {
+                        enableWhen(selectionModel.selectedItemProperty().isNotNull)
+                        action { controller.deleteRun() }
+                    }
                 }
                 overrideFocusTraversal(
                         next = controller.locateAddNextDriverNumbers,
