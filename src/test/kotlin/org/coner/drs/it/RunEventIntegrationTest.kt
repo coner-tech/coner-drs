@@ -3,6 +3,7 @@ package org.coner.drs.it
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.*
+import javafx.scene.Node
 import javafx.scene.input.KeyCode
 import me.carltonwhitehead.tornadofx.junit5.*
 import me.carltonwhitehead.tornadofx.junit5.App
@@ -34,6 +35,7 @@ import java.math.BigDecimal
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardOpenOption
+import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -69,6 +71,11 @@ class RunEventIntegrationTest {
         startPage.setRawSheetDatabase(folders.rawSheetDatabase)
         startPage.setCrispyFishDatabase(folders.crispyFishDatabase.toFile())
         startPage.clickStartButton()
+
+        await("startup: choose event docked")
+                .atMost(Duration.ofSeconds(2))
+                .until { find<ChooseEventModel>(app.scope).docked }
+
         val classDefinitionFile = Thscc2019V0Classes.produceClassDefinitionFile(folders.crispyFishDatabase.toFile())
         val eventControlFile = Thscc2019Points1.produceEventControlFile(folders.crispyFishDatabase.toFile(), classDefinitionFile)
         val event = Event(
@@ -82,8 +89,9 @@ class RunEventIntegrationTest {
         val fastChooseEventPage = FastChooseEventPage(robot)
         FX.runAndWait { find<EventGateway>(app.scope).save(event) }
 
-        await("startup: choose event docked").until { find<ChooseEventModel>(app.scope).docked }
-        await("startup: choose event table populated").until { find<ChooseEventTableView>(app.scope).root.items.isNotEmpty() }
+        await("startup: choose event table populated")
+                .atMost(Duration.ofSeconds(2))
+                .until { find<ChooseEventTableView>(app.scope).root.items.isNotEmpty() }
 
         fastChooseEventPage.selectEvent { it.id == event.id }
         fastChooseEventPage.clickStartButton()
@@ -291,6 +299,7 @@ class RunEventIntegrationTest {
         Assumptions.assumeThat(tablePage.runsTable().items[0].rawTime).isNotNull()
 
         tablePage.keyboardShortcutClearTime(1)
+        await("clear time dialog to appear").until { robot.lookup("OK").tryQuery<Node>().isPresent }
         robot.clickOn("OK")
 
         Assertions.assertThat(tablePage.runsTable().items[0])

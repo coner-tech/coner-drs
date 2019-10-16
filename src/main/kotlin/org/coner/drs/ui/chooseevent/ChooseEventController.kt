@@ -46,10 +46,7 @@ class ChooseEventController : Controller() {
                         .doOnSubscribe {
                             println("ChooseEventController watchList doOnSubscribe()")
                             loadEvents()
-                        }
-                        .doAfterNext {
                             model.docked = true
-                            println("ChooseEventController.model.docked = ${model.docked}")
                         }
                         .doOnComplete {
                             println("ChooseEventController watchList doOnComplete()")
