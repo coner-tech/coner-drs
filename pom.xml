@@ -33,6 +33,7 @@
         <assertk.version>0.19</assertk.version>
         <mockk.version>1.9.3.kotlin12</mockk.version>
         <tornadofx-junit5.version>1.1.1</tornadofx-junit5.version>
+        <awaitility.version>4.0.1</awaitility.version>
     </properties>
 
     <dependencies>
@@ -153,6 +154,12 @@
             <groupId>me.carltonwhitehead.tornadofx-junit5</groupId>
             <artifactId>tornadofx-junit5</artifactId>
             <version>${tornadofx-junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
