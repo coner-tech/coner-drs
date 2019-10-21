@@ -1,10 +1,13 @@
 package org.coner.drs.test.page.real
 
+import javafx.scene.Node
 import javafx.scene.control.TableCell
 import javafx.scene.control.TableView
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
+import org.awaitility.Awaitility
+import org.awaitility.Awaitility.await
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.test.page.AlterDriverSequencePage
 import org.coner.drs.test.page.RunEventTablePage
@@ -31,21 +34,14 @@ open class RealRunEventTablePage(private val robot: FxRobot) : RunEventTablePage
         robot.clickOn(cell)
     }
 
-    override fun clickInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage {
-        val cell = tableCellForSequence(sequence)
-        robot.rightClickOn(cell)
-        robot.clickOn("Driver")
-        robot.clickOn("Insert Driver Into Sequence")
-        return RealAlterDriverSequencePage(robot)
-    }
-
-    override fun keyboardShortcutInsertDriverIntoSequence(sequence: Int) {
-        check(runsTable().selectionModel.selectedItem.sequence == sequence) {
+    override fun keyboardShortcutInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage {
+        check(runsTable().selectionModel.selectedItem?.sequence == sequence) {
             "Select run with sequence prior to use"
         }
         robot.press(KeyCode.CONTROL)
         robot.type(KeyCode.INSERT)
         robot.release(KeyCode.CONTROL)
+        return RealAlterDriverSequencePage(robot)
     }
 
     override fun keyboardShortcutClearTime(sequence: Int) {
@@ -53,6 +49,14 @@ open class RealRunEventTablePage(private val robot: FxRobot) : RunEventTablePage
         robot.clickOn(cell)
         robot.press(KeyCode.CONTROL)
         robot.type(KeyCode.C)
+        robot.release(KeyCode.CONTROL)
+    }
+
+    override fun keyboardShortcutDeleteRun(sequence: Int) {
+        val cell = tableCellForSequence(sequence)
+        robot.clickOn(cell)
+        robot.press(KeyCode.CONTROL)
+        robot.type(KeyCode.DELETE)
         robot.release(KeyCode.CONTROL)
     }
 }

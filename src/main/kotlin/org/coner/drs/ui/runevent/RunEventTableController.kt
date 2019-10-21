@@ -124,8 +124,7 @@ class RunEventTableController : Controller() {
                 header = "Delete Run?",
                 content = "Delete run with sequence ${run.sequence}?",
                 confirmButton = ButtonType.OK,
-                cancelButton = ButtonType.CANCEL,
-                owner = view.currentStage
+                cancelButton = ButtonType.CANCEL
         ) {
             val runEventModel: RunEventModel = find()
             runAsync {

@@ -12,12 +12,4 @@ class FastRunEventTablePage(private val robot: FxRobot) : RealRunEventTablePage(
             selectionModel.select(items.first { it.sequence == sequence })
         }
     }
-
-    override fun clickInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage {
-        selectSequence(sequence)
-        robot.press(KeyCode.CONTROL)
-        robot.type(KeyCode.INSERT)
-        robot.release(KeyCode.CONTROL)
-        return FastAlterDriverSequencePage(robot)
-    }
 }
