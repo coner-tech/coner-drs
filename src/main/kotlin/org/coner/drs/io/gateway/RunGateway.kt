@@ -40,6 +40,10 @@ class RunGateway : Controller() {
                 ) }
     }
 
+    fun delete(run: Run) {
+        db.remove(RunMapper.toDbEntity(run))
+    }
+
     /* refactor to service */
     fun hydrateWithRegistrationMetadata(runs: List<Run>, registrations: List<Registration>, destructive: Boolean = false) {
         for (run in runs) {

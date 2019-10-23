@@ -38,7 +38,6 @@ import java.nio.file.StandardOpenOption
 import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @ExtendWith(TornadoFxAppExtension::class)
 class RunEventIntegrationTest {
@@ -132,8 +131,8 @@ class RunEventIntegrationTest {
         addNextDriverPage.writeInNumbersField("1 HS")
         addNextDriverPage.doAddSelectedRegistration()
 
-
-        val alterDriverSequencePage = tablePage.clickInsertDriverIntoSequence(1)
+        tablePage.selectSequence(1)
+        val alterDriverSequencePage = tablePage.keyboardShortcutInsertDriverIntoSequence(1)
         val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
         specifyDriverSequenceAlterationPage.writeInNumbersField("3 SSC")
         alterDriverSequencePage.clickOkButton()
@@ -155,7 +154,8 @@ class RunEventIntegrationTest {
         }
         val runsTableItems = tablePage.runsTable().items
 
-        val alterDriverSequencePage = tablePage.clickInsertDriverIntoSequence(2)
+        tablePage.selectSequence(2)
+        val alterDriverSequencePage = tablePage.keyboardShortcutInsertDriverIntoSequence(2)
         val specifyDriverSequenceAlterationPage = alterDriverSequencePage.toSpecifyDriverSequenceAlterationPage()
         specifyDriverSequenceAlterationPage.writeInNumbersField("33 SM")
         alterDriverSequencePage.clickOkButton()
@@ -330,6 +330,18 @@ class RunEventIntegrationTest {
                 }
             }
         }
+    }
+
+    @Test
+    fun itShouldDeleteRun(robot: FxRobot) {
+        addNextDriverPage.writeInNumbersField("1 HS")
+        addNextDriverPage.doAddSelectedRegistration()
+        await("until runs table populated").until { tablePage.runsTable().items.isNotEmpty() }
+
+        tablePage.keyboardShortcutDeleteRun(1)
+        robot.type(KeyCode.ENTER)
+
+        await("until runs table empty").untilAsserted { assertThat(tablePage.runsTable().items).isEmpty() }
     }
 
     private fun startFileInputTimer(): Path {

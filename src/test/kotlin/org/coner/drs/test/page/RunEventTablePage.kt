@@ -10,7 +10,7 @@ interface RunEventTablePage {
     fun runsTable(): TableView<Run>
     fun tableCellForSequence(sequence: Int): TableCell<Run, Int>
     fun selectSequence(sequence: Int)
-    fun clickInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage
-    fun keyboardShortcutInsertDriverIntoSequence(sequence: Int)
+    fun keyboardShortcutInsertDriverIntoSequence(sequence: Int): AlterDriverSequencePage
     fun keyboardShortcutClearTime(sequence: Int)
+    fun keyboardShortcutDeleteRun(sequence: Int)
 }
