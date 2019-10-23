@@ -199,7 +199,7 @@
                             <goal>write-project-properties</goal>
                         </goals>
                         <configuration>
-                            <outputFile>${project.build.outputDirectory}/drs.properties</outputFile>
+                            <outputFile>${project.build.outputDirectory}/build.properties</outputFile>
                         </configuration>
                     </execution>
                 </executions>

@@ -8,7 +8,6 @@ import java.nio.file.Path
 
 class IntegrationTestApp(appConfigBasePath: Path) : DigitalRawSheetApp() {
     override val configBasePath = appConfigBasePath
-    override val drsProperties = null
     override val forceExitOnStop = false
     override var scope = Scope()
 

@@ -3,19 +3,17 @@ package org.coner.drs
 import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import javafx.stage.StageStyle
 import net.harawata.appdirs.AppDirsFactory
 import org.coner.drs.di.KatanaInjected
 import org.coner.drs.di.numberFormatModule
+import org.coner.drs.domain.controller.BuildPropertiesController
+import org.coner.drs.domain.model.BuildProperties
 import org.coner.drs.ui.main.MainView
 import org.coner.style.ConerFxStylesheet
 import org.rewedigital.katana.Component
 import tornadofx.*
-import tornadofx.Stylesheet
-import java.net.URI
+import java.io.File
 import java.nio.file.Path
-import java.nio.file.Paths
-import java.util.*
 
 open class DigitalRawSheetApp : App(
         primaryView = MainView::class,
@@ -25,18 +23,12 @@ open class DigitalRawSheetApp : App(
     init {
         importStylesheet("/style/coner-unsafe.css")
     }
-
-    open val drsProperties: PropertyResourceBundle? by lazy {
-        PropertyResourceBundle(resources.url("/drs.properties").openStream())
-    }
-
-    override val configBasePath: Path = Paths.get(URI.create("file://" + AppDirsFactory.getInstance()
+    override val configBasePath: Path = AppDirsFactory.getInstance()
             .getUserConfigDir(
                     "digital-raw-sheet",
-                    drsProperties?.getString("coner-drs.version"),
+                    "0.0.0",
                     "coner"
-            )
-    ))
+            ).let { userConfigDir: String -> File(userConfigDir).toPath() }
 
     override val component = Component(numberFormatModule())
 
