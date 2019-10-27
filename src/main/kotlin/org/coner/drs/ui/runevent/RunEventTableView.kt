@@ -38,7 +38,7 @@ class RunEventTableView : View(), KatanaInjected {
                 column("Car Color", Run::registrationCarColorProperty)
                 column("Time", Run::rawTimeProperty) {
                     cellFormat {
-                        text = runTimeFormat.format(it)
+                        graphic = label(runTimeFormat.format(it))
                     }
                 }
                 column("Penalties", Run::compositePenaltyProperty) {
