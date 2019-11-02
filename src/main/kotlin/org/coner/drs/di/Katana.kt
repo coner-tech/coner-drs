@@ -2,23 +2,17 @@ package org.coner.drs.di
 
 import org.coner.drs.util.NumberFormat
 import org.rewedigital.katana.Component
+import org.rewedigital.katana.KatanaTrait
 import org.rewedigital.katana.Module
 import org.rewedigital.katana.dsl.compact.factory
 
-interface KatanaInjected {
-    val component: Component
-}
-
-val tornadofx.Component.katanaApp: KatanaInjected
-    get() = when (val app = app) {
-        is KatanaInjected -> app
-        else -> throw IllegalStateException("Can't access \"katanaApp\" because \"app\" isn't KatanaInjected!")
-    }
+val tornadofx.Component.katanaAppComponent: Component
+    get() = (app as KatanaTrait).component
 
 enum class NumberFormatNames {
     RUN_TIME
 }
 
-fun numberFormatModule() = Module {
+val numberFormatModule = Module {
     factory(name = NumberFormatNames.RUN_TIME) { NumberFormat.forRunTimes() }
 }

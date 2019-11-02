@@ -35,7 +35,7 @@ class RunEventTableViewTest {
     private lateinit var fastPage: FastRunEventTablePage
 
     @SetupApp
-    fun setupApp() = TestApp(Component(numberFormatModule())).apply {
+    fun setupApp() = TestApp(Component(numberFormatModule)).apply {
         app = this
     }
 

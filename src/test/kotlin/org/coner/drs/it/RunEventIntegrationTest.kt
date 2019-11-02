@@ -203,33 +203,6 @@ class RunEventIntegrationTest {
     }
 
     @Test
-    fun `When the model runsSortedBySequence gets an item added, the table view should scroll to it`(robot: FxRobot) {
-        // prepare the table with enough items to guarantee the table has to scroll
-        val fastAddNextDriverPage = FastAddNextDriverPage(robot)
-        val registration0 = addNextDriverPage.registrationsListView().items[0]
-        for (i in 0..24) {
-            fastAddNextDriverPage.selectRegistration(registration0)
-            fastAddNextDriverPage.doAddSelectedRegistration()
-        }
-
-        // TODO: convert to awaitility
-        val latch = CountDownLatch(1)
-        tablePage.runsTable().setOnScrollTo {
-            try {
-                Assertions.assertThat(it.scrollTarget).isEqualTo(0)
-            } finally {
-                latch.countDown()
-            }
-        }
-
-        val registration1 = addNextDriverPage.registrationsListView().items[1]
-        addNextDriverPage.selectRegistration(registration1)
-        addNextDriverPage.doAddSelectedRegistration()
-
-        latch.await()
-    }
-
-    @Test
     fun `When clicking the table, it should select clicked run`(robot: FxRobot) {
         val table = tablePage.runsTable()
         val fastAddNextDriverPage = FastAddNextDriverPage(robot)

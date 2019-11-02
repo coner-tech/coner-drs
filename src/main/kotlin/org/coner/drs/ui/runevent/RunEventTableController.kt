@@ -19,15 +19,6 @@ class RunEventTableController : Controller() {
 
     init {
         model.runsSortedBySequence = controller.model.event.runs.sorted(compareByDescending(Run::sequence))
-        model.runsSortedBySequence.onChange { onRunsSortedBySequenceChanged(it) }
-    }
-
-    fun onRunsSortedBySequenceChanged(change: ListChangeListener.Change<out Run>) {
-        while (change.next()) {
-            if (change.wasAdded() && change.addedSize == 1) {
-                runLater { view.table.scrollTo(0) }
-            }
-        }
     }
 
     fun onTableFocused(focused: Boolean) = runLater {

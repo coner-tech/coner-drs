@@ -4,22 +4,21 @@ import javafx.scene.control.TableView
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
-import org.coner.drs.di.KatanaInjected
 import org.coner.drs.di.NumberFormatNames
-import org.coner.drs.di.katanaApp
-import org.coner.drs.di.numberFormatModule
+import org.coner.drs.di.katanaAppComponent
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.util.tornadofx.overrideFocusTraversal
 import org.rewedigital.katana.Component
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
 import java.text.NumberFormat
 import java.util.*
 
-class RunEventTableView : View(), KatanaInjected {
+class RunEventTableView : View(), KatanaTrait {
     val model: RunEventTableModel by inject()
     val controller: RunEventTableController = find()
-    override val component = Component(katanaApp.component)
-    private val runTimeFormat by component.inject<NumberFormat>(NumberFormatNames.RUN_TIME)
+    override val component = Component(katanaAppComponent)
+    private val runTimeFormat: NumberFormat by component.inject(NumberFormatNames.RUN_TIME)
 
     override val root = form {
         id = "run-event-table"
