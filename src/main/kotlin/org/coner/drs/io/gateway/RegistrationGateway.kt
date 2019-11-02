@@ -9,6 +9,7 @@ import org.coner.drs.domain.mapper.RegistrationMapper
 import org.coner.drs.io.crispyfish.buildEventControlFile
 import tornadofx.*
 import java.nio.file.Path
+import java.nio.file.WatchEvent
 
 class RegistrationGateway : Controller() {
 
@@ -21,11 +22,9 @@ class RegistrationGateway : Controller() {
     fun watchList(event: Event): Observable<List<Registration>> {
         val eventControlFile = event.buildEventControlFile()
         val registrationFileName = eventControlFile.registrationFile().file.name
+        fun WatchEvent<*>.fileName(): String = (context() as Path).toFile().name
         return PathObservables.watchNonRecursive(eventControlFile.file.parentFile.toPath())
-                .filter {
-                    val watchedEventFileName = (it.context() as Path).toFile().name
-                    watchedEventFileName == registrationFileName
-                }
+                .filter { watchEvent -> watchEvent.fileName() == registrationFileName }
                 .map { list(event).blockingGet() }
     }
 }
