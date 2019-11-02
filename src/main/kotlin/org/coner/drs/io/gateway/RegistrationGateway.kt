@@ -19,12 +19,11 @@ class RegistrationGateway : Controller() {
     }
 
     fun watchList(event: Event): Observable<List<Registration>> {
-        return PathObservables.watchNonRecursive(
-                event.buildEventControlFile().file.parentFile.toPath()
-        )
+        val eventControlFile = event.buildEventControlFile()
+        val registrationFileName = eventControlFile.registrationFile().file.name
+        return PathObservables.watchNonRecursive(eventControlFile.file.parentFile.toPath())
                 .filter {
                     val watchedEventFileName = (it.context() as Path).toFile().name
-                    val registrationFileName = event.buildEventControlFile().registrationFile().file.name
                     watchedEventFileName == registrationFileName
                 }
                 .map { list(event).blockingGet() }
