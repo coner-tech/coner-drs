@@ -204,12 +204,19 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
-                <groupId>com.zenjava</groupId>
+                <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.8.3</version>
+                <version>0.0.3</version>
                 <configuration>
                     <mainClass>org.coner.drs.DigitalRawSheetAppKt</mainClass>
+                    <options>
+                        <option>--add-opens</option>
+                        <option>javafx.controls/javafx.scene.control=ALL-UNNAMED</option>
+                        <option>--add-opens</option>
+                        <option>javafx.graphics/javafx.scene=ALL-UNNAMED</option>
+                    </options>
                 </configuration>
             </plugin>
 
