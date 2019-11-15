@@ -35,6 +35,7 @@
         <mockk.version>1.9.3.kotlin12</mockk.version>
         <tornadofx-junit5.version>1.1.1</tornadofx-junit5.version>
         <awaitility.version>4.0.1</awaitility.version>
+        <zip4j.version>2.2.4</zip4j.version>
     </properties>
 
     <dependencies>
@@ -168,6 +169,11 @@
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>${zip4j.version}</version>
         </dependency>
     </dependencies>
 
