@@ -27,6 +27,7 @@
         <appdirs.version>1.0.3</appdirs.version>
         <apache-commons-text.version>1.7</apache-commons-text.version>
         <j2html.version>1.4.0</j2html.version>
+        <kotlinx.html.version>0.6.12</kotlinx.html.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
         <junit5.platform.version>1.5.1</junit5.platform.version>
         <junit5.jupiter.version>5.5.1</junit5.jupiter.version>
@@ -114,6 +115,11 @@
             <groupId>com.j2html</groupId>
             <artifactId>j2html</artifactId>
             <version>${j2html.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-html-jvm</artifactId>
+            <version>${kotlinx.html.version}</version>
         </dependency>
 
         <!-- Test -->
