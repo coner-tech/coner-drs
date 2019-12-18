@@ -31,24 +31,24 @@ class KotlinxHtmlAuditListReport(
     private fun BODY.auditListTable()  = table {
         thead { }
         caption { text("Audit List") }
-        thead { auditListTableHead() }
+        auditListTableHead()
         tbody {
             event.runsBySequence.forEach { run ->
-                tr { auditListTableRow(run) }
+                auditListTableRow(run)
             }
         }
     }
 
-    private fun THEAD.auditListTableHead() = tr {
+    private fun TABLE.auditListTableHead() = thead { tr {
         th { text("Sequence") }
         th { text("Numbers") }
         th { text("Time") }
         th { text("Penalty") }
         th { text("Driver") }
         th { text("Car") }
-    }
+    } }
 
-    private fun TR.auditListTableRow(run: Run) {
+    private fun TBODY.auditListTableRow(run: Run) = tr {
         td("sequence") { text(run.sequence.toString()) }
         td("numbers") { text(run.registrationNumbers) }
         td("time") { text(runTimeNumberFormat.format(run.rawTime)) }
