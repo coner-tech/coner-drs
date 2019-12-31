@@ -1,13 +1,9 @@
 package org.coner.drs.io.db.entity
 
-import org.coner.snoozle.db.AutomaticVersionedEntity
-import org.coner.snoozle.db.Entity
-import org.coner.snoozle.db.EntityPath
+import org.coner.snoozle.db.entity.Entity
 import java.math.BigDecimal
 import java.util.*
 
-@EntityPath("/events/{eventId}/runs/{id}")
-@AutomaticVersionedEntity
 data class RunDbEntity(
         val id: UUID = UUID.randomUUID(),
         val eventId: UUID,
