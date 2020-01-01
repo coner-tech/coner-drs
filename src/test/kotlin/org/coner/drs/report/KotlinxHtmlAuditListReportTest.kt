@@ -27,7 +27,7 @@ class KotlinxHtmlAuditListReportTest {
         val eventId = fixture.source.eventIds.single()
         val event = FixtureUtil.loadRunEvent(app, fixture, eventId)
 
-        val actual = KotlinxHtmlAuditListReport(event, NumberFormat.forRunTimes()).render()
+        val actual = KotlinxHtmlAuditListReport(NumberFormat.forRunTimes()).render(event)
 
 //        Desktop.getDesktop()
 //                .open(

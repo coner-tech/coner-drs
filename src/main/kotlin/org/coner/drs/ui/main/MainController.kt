@@ -5,6 +5,7 @@ import org.coner.drs.io.gateway.EventGateway
 import org.coner.drs.ui.runevent.RunEventFragment
 import org.coner.drs.ui.start.StartView
 import org.coner.drs.ui.chooseevent.ChooseEventView
+import org.coner.drs.ui.start.StartModel
 import tornadofx.*
 
 class MainController : Controller() {
@@ -26,7 +27,10 @@ class MainController : Controller() {
             }
             is Screen.RunEvent -> {
                 val runEvent = eventGateway.asRunEvent(screen.event)
-                find<RunEventFragment>(RunEventFragment::event to runEvent)
+                find<RunEventFragment>(
+                        RunEventFragment::event to runEvent,
+                        RunEventFragment::subscriber to find<StartModel>().subscriber
+                )
             }
         }
         model.screen = screen

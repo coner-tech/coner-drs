@@ -1,5 +1,6 @@
 package org.coner.drs.ui.start
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
 import tornadofx.*
 import java.io.File
@@ -22,10 +23,18 @@ class StartModel : ViewModel() {
     )
     var crispyFishDatabase by crispyFishDatabaseProperty
 
+    val subscriberProperty = SimpleBooleanProperty(
+            this,
+            "subscriber",
+            config.boolean("subscriber", true)
+    )
+    var subscriber by subscriberProperty
+
     override fun onCommit() {
         with(config) {
             set("rawSheetDatabase" to rawSheetDatabase)
             set("crispyFishDatabase" to crispyFishDatabase.absolutePath)
+            set("subscriber" to subscriber)
             save()
         }
     }

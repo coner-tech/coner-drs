@@ -1,5 +1,6 @@
 package org.coner.drs.io.db
 
+import org.coner.drs.io.db.blob.EventReport
 import org.coner.drs.io.db.entity.EventDbEntity
 import org.coner.drs.io.db.entity.RunDbEntity
 import org.coner.snoozle.db.Database
@@ -19,6 +20,9 @@ class DigitalRawSheetDatabase(
         entity<RunDbEntity> {
             path = "events" / { it.eventId } / "runs" / { it.id } + ".json"
             versioning = EntityVersioningStrategy.AutomaticInternalVersioning
+        }
+        blob<EventReport> {
+            path = "events" / { it.eventId } / "reports" / string { it.name } + "." + string { it.extension }
         }
     }
 }

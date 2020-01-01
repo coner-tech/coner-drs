@@ -4,14 +4,14 @@ import kotlinx.html.*
 import kotlinx.html.stream.createHTML
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.RunEvent
+import org.coner.drs.domain.entity.TextReport
 import java.text.NumberFormat
 
 class KotlinxHtmlAuditListReport(
-        event: RunEvent,
         runTimeNumberFormat: NumberFormat
-) : AuditListReport(event, runTimeNumberFormat) {
+) : AuditListReport(runTimeNumberFormat) {
 
-    override fun render() = createHTML().html {
+    override fun render(event: RunEvent) = createHTML().html {
         head {
             title("${event.name} - ${event.date} - Audit List")
             style(type = StyleType.textCss) {
@@ -24,11 +24,11 @@ class KotlinxHtmlAuditListReport(
             }
         }
         body {
-            auditListTable()
+            auditListTable(event)
         }
     }
 
-    private fun BODY.auditListTable()  = table {
+    private fun BODY.auditListTable(event: RunEvent)  = table {
         thead { }
         caption { text("Audit List") }
         auditListTableHead()

@@ -5,7 +5,6 @@ import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.gateway.EventGateway
 import org.coner.drs.io.gateway.RegistrationGateway
 import org.coner.drs.io.gateway.RunGateway
-import org.coner.drs.report.J2HtmlAuditListReportTest
 import tornadofx.*
 import java.util.*
 

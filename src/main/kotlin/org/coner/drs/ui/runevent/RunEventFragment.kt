@@ -6,6 +6,7 @@ import tornadofx.*
 
 class RunEventFragment : Fragment("Run Event") {
     val event: RunEvent by param()
+    val subscriber: Boolean by param()
     val eventScope = Scope()
 
     val model: RunEventModel by inject(eventScope)
@@ -13,22 +14,22 @@ class RunEventFragment : Fragment("Run Event") {
 
     init {
         model.event = event
+        model.subscriber = subscriber
         controller.init()
     }
 
-    override val root = titledpane(event.name) {
+    override val root = borderpane {
         id = "run-event"
-        isCollapsible = false
-        prefHeightProperty().bind(parentProperty().select { (it as Region).heightProperty() })
-        borderpane {
-            left {
-                add(find<AddNextDriverView>(eventScope))
-            }
-            center {
-                add(find<RunEventTableView>(eventScope))
-            }
-            right { add(find<RunEventRightDrawerView>(eventScope)) }
+        top {
+            add(find<RunEventTopView>(eventScope))
         }
+        left {
+            add(find<AddNextDriverView>(eventScope))
+        }
+        center {
+            add(find<RunEventTableView>(eventScope))
+        }
+        right { add(find<RunEventRightDrawerView>(eventScope)) }
     }
 
     override fun onDock() {

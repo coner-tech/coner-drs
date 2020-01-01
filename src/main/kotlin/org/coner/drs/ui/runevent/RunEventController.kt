@@ -2,21 +2,26 @@ package org.coner.drs.ui.runevent
 
 import com.github.thomasnield.rxkotlinfx.doOnNextFx
 import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
+import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.TimerConfiguration
+import org.coner.drs.domain.service.ReportService
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.io.db.entityWatchEventConsumer
 import org.coner.drs.io.gateway.RegistrationGateway
 import org.coner.drs.io.gateway.RunGateway
 import org.coner.drs.io.timer.TimerService
+import org.coner.drs.ui.start.StartModel
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter
 import tornadofx.*
+import java.util.concurrent.TimeUnit
 
 class RunEventController : Controller() {
     val model: RunEventModel by inject()
@@ -24,6 +29,7 @@ class RunEventController : Controller() {
     val runGateway: RunGateway by inject()
     val runService: RunService by inject()
     val timerService: TimerService by inject()
+    val reportService: ReportService by inject()
 
     fun init() {
         Single.zip(
@@ -38,38 +44,45 @@ class RunEventController : Controller() {
                     model.event.registrations.setAll(registrations)
                     model.event.runs.setAll(runs)
                     runGateway.hydrateWithRegistrationMetadata(runs, registrations)
+                    if (model.subscriber) {
+                        reportService.generateAuditList(model.event)
+                    }
                 }
     }
 
     fun docked() {
-        model.disposables.addAll(
-                runGateway.watchList(model.event, model.event.registrations)
-                    .doOnDispose { println("RunEventController runGateway watchList doOnDispose()") }
-                    .subscribeOn(Schedulers.io())
-                    .observeOnFx()
-                    .doOnNextFx {
-                        model.event.runForNextDriverBinding.invalidate()
-                        model.event.runForNextTimeBinding.invalidate()
-                    }
-                    .subscribe(
-                            entityWatchEventConsumer(
-                                    idProperty = Run::id,
-                                    list = model.event.runs
-                            ),
-                            Consumer { /* no-op */ }
-                    ),
-                registrationGateway.watchList(model.event)
-                        .doOnDispose { println("RunEventController registrationGateway watchList doOnDispose()") }
-                        .subscribeOn(Schedulers.io())
-                        .observeOnFx()
-                        .subscribe(
-                                { registrations ->
-                                    model.event.registrations.setAll(registrations)
-                                    runGateway.hydrateWithRegistrationMetadata(model.event.runs, registrations, true)
-                                },
-                                { /* no-op */ }
-                        )
-        )
+        val watch = runGateway.watchList(model.event, model.event.registrations)
+        model.disposables += watch
+                .doOnDispose { println("RunEventController runGateway watchList doOnDispose()") }
+                .subscribeOn(Schedulers.io())
+                .observeOnFx()
+                .doOnNextFx {
+                    model.event.runForNextDriverBinding.invalidate()
+                    model.event.runForNextTimeBinding.invalidate()
+                }
+                .subscribe(
+                        entityWatchEventConsumer(
+                                idProperty = Run::id,
+                                list = model.event.runs
+                        ),
+                        Consumer { /* no-op */ }
+                )
+        if (model.subscriber) {
+            model.disposables += watch
+                    .observeOn(Schedulers.computation())
+                    .subscribe { reportService.generateAuditList(model.event) }
+        }
+        model.disposables += registrationGateway.watchList(model.event)
+                .doOnDispose { println("RunEventController registrationGateway watchList doOnDispose()") }
+                .subscribeOn(Schedulers.io())
+                .observeOnFx()
+                .subscribe(
+                        { registrations ->
+                            model.event.registrations.setAll(registrations)
+                            runGateway.hydrateWithRegistrationMetadata(model.event.runs, registrations, true)
+                        },
+                        { /* no-op */ }
+                )
     }
 
     fun undocked() {
