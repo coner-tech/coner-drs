@@ -21,7 +21,7 @@
         <katana.version>1.7.1</katana.version>
         <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.2.1</snoozle.version>
+        <snoozle.version>0.3.0</snoozle.version>
         <jackson.version>2.9.9</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.3</appdirs.version>

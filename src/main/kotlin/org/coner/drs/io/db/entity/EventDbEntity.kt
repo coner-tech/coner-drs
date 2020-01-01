@@ -1,11 +1,9 @@
 package org.coner.drs.io.db.entity
 
-import org.coner.snoozle.db.Entity
-import org.coner.snoozle.db.EntityPath
+import org.coner.snoozle.db.entity.Entity
 import java.time.LocalDate
 import java.util.*
 
-@EntityPath("/events/{id}")
 data class EventDbEntity(
         val id: UUID = UUID.randomUUID(),
         val date: LocalDate,

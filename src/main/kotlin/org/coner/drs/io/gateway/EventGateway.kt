@@ -8,6 +8,7 @@ import org.coner.drs.domain.mapper.EventMapper
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.io.db.entity.EventDbEntity
+import org.coner.drs.io.db.getEvent
 import tornadofx.*
 
 class EventGateway : Controller() {
@@ -17,22 +18,22 @@ class EventGateway : Controller() {
     val mapper by lazy { EventMapper(io.model.pathToCrispyFishDatabase!!) }
 
     fun list(): List<Event> {
-        return db.list<EventDbEntity>().map { mapper.toUiEntity(it)!! }
+        return db.entity<EventDbEntity>().list().map { mapper.toUiEntity(it)!! }
     }
 
     fun asRunEvent(event: Event): RunEvent? {
-        val dbEntity = db.get(EventDbEntity::id to event.id)
+        val dbEntity = db.entity<EventDbEntity>().getEvent(event.id)
         return mapper.toRunEventUiEntity(dbEntity)
     }
 
     fun save(event: Event) {
-        db.put(mapper.toDbEntity(event))
+        db.entity<EventDbEntity>().put(mapper.toDbEntity(event))
     }
 
-    fun watchList(): Observable<EntityWatchEvent<Event>> = db.watchListing<EventDbEntity>()
+    fun watchList(): Observable<EntityWatchEvent<Event>> = db.entity<EventDbEntity>().watchListing()
             .subscribeOn(Schedulers.io())
-            .map { EntityWatchEvent<Event>(
-                    watchEvent = it.watchEvent,
+            .map { EntityWatchEvent(
+                    entityEvent = it,
                     id = it.id,
                     entity = mapper.toUiEntity(it.entity)
             ) }
