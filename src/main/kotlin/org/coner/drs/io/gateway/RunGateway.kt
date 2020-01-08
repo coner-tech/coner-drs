@@ -18,21 +18,21 @@ class RunGateway : Controller() {
     private val db = io.model.db!!
     private val eventGateway: EventGateway by inject(FX.defaultScope)
 
-    fun list(event: Event): Single<List<Run>> = Single.fromCallable { db.list(
-            RunDbEntity::eventId to eventGateway.mapper.toDbEntity(event).id
+    fun list(event: Event): Single<List<Run>> = Single.fromCallable { db.entity<RunDbEntity>().list(
+            eventGateway.mapper.toDbEntity(event).id
     ).map {
         RunMapper.toUiEntity(event = event, dbEntity = it) as Run
     } }
 
     fun save(run: Run) {
-        db.put(RunMapper.toDbEntity(run))
+        db.entity<RunDbEntity>().put(RunMapper.toDbEntity(run))
     }
 
     fun watchList(event: Event, registrations: List<Registration>): Observable<EntityWatchEvent<Run>> {
-        return db.watchListing(RunDbEntity::eventId to eventGateway.mapper.toDbEntity(event).id)
+        return db.entity<RunDbEntity>().watchListing(eventGateway.mapper.toDbEntity(event).id)
                 .subscribeOn(Schedulers.io())
                 .map { EntityWatchEvent(
-                        watchEvent = it.watchEvent,
+                        entityEvent = it,
                         id = it.id,
                         entity = RunMapper.toUiEntity(event, it.entity).apply {
                             if (this != null) hydrateWithRegistrationMetadata(this, registrations)
@@ -41,7 +41,7 @@ class RunGateway : Controller() {
     }
 
     fun delete(run: Run) {
-        db.remove(RunMapper.toDbEntity(run))
+        db.entity<RunDbEntity>().delete(RunMapper.toDbEntity(run))
     }
 
     /* refactor to service */

@@ -17,15 +17,18 @@
         <tornadofx.version>1.7.20-SNAPSHOT</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
+        <rxkotlin.version>2.4.0</rxkotlin.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
         <katana.version>1.7.1</katana.version>
         <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.2.1</snoozle.version>
+        <snoozle.version>0.3.2</snoozle.version>
         <jackson.version>2.9.9</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.3</appdirs.version>
         <apache-commons-text.version>1.7</apache-commons-text.version>
+        <j2html.version>1.4.0</j2html.version>
+        <kotlinx.html.version>0.6.12</kotlinx.html.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
         <junit5.platform.version>1.5.1</junit5.platform.version>
         <junit5.jupiter.version>5.5.1</junit5.jupiter.version>
@@ -34,6 +37,8 @@
         <mockk.version>1.9.3.kotlin12</mockk.version>
         <tornadofx-junit5.version>1.1.1</tornadofx-junit5.version>
         <awaitility.version>4.0.1</awaitility.version>
+        <zip4j.version>2.2.4</zip4j.version>
+        <jsoup.version>1.12.1</jsoup.version>
     </properties>
 
     <dependencies>
@@ -57,6 +62,11 @@
             <groupId>no.tornado</groupId>
             <artifactId>tornadofx-controlsfx</artifactId>
             <version>${tornadofx-controlsfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxkotlin</artifactId>
+            <version>${rxkotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.thomasnield</groupId>
@@ -105,6 +115,17 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>${apache-commons-text.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.j2html</groupId>
+            <artifactId>j2html</artifactId>
+            <version>${j2html.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-html-jvm</artifactId>
+            <version>${kotlinx.html.version}</version>
         </dependency>
 
         <!-- Test -->
@@ -161,6 +182,16 @@
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>${zip4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
         </dependency>
     </dependencies>
 

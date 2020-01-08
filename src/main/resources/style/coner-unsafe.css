@@ -20,7 +20,10 @@
     -fx-fill: -fx-text-background-color;
 }
 
-.context-menu .label {
+.context-menu > .label {
   -fx-text-fill: -fx-text-background-color;
 }
 
+.menu-item:focused > .label {
+    -fx-text-fill: white;
+}

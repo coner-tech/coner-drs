@@ -11,6 +11,9 @@ class RunEventModel : ViewModel() {
     val eventProperty = SimpleObjectProperty<RunEvent>()
     var event by eventProperty
 
+    // TODO: re-evaluate this during https://github.com/caeos/coner-drs/issues/63
+    var subscriber: Boolean by singleAssign()
+
     val disposables = CompositeDisposable()
 
     val controlTextProperty = SimpleStringProperty(this, "controlText")
