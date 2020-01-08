@@ -29,14 +29,6 @@ class KotlinxHtmlAuditListReportTest {
 
         val actual = KotlinxHtmlAuditListReport(NumberFormat.forRunTimes()).render(event)
 
-//        Desktop.getDesktop()
-//                .open(
-//                        tempDir.resolve("itShouldRender.html").apply {
-//                            writeText(actual)
-//                        }
-//                )
-//        Thread.sleep(1000)
-
         AuditListReportTestUtil.assert(actual)
     }
 }
