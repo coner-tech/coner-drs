@@ -7,6 +7,7 @@ import tornadofx.*
 interface RunEventPage {
 
     fun root(): TitledPane
+    fun onTopPage(fn: RunEventTopPage.() -> Unit)
     fun toAddNextDriverPage(): AddNextDriverPage
     fun toTablePage(): RunEventTablePage
     fun toRightDrawerPage(): RunEventRightDrawerPage

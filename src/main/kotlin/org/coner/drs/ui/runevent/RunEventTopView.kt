@@ -1,6 +1,7 @@
 package org.coner.drs.ui.runevent
 
 import javafx.geometry.Pos
+import javafx.scene.control.Label
 import javafx.scene.control.MenuItem
 import javafx.scene.layout.Priority
 import org.coner.drs.DrsStylesheet
@@ -14,11 +15,13 @@ class RunEventTopView : View() {
     var fileExit: MenuItem by singleAssign()
     var reportsAuditList: MenuItem by singleAssign()
     var helpAbout: MenuItem by singleAssign()
+    var eventName: Label by singleAssign()
 
     override val root = hbox(
             spacing = 16,
             alignment = Pos.CENTER_LEFT
     ) {
+        id = "run-event-top-view"
         add<LogoView>()
         menubar {
             menu("File") {
@@ -40,7 +43,10 @@ class RunEventTopView : View() {
         pane {
             hgrow = Priority.ALWAYS
         }
-        label(model.eventProperty.select { it.nameProperty })
+        label(model.eventProperty.select { it.nameProperty }) {
+            eventName = this
+            id = "event-name"
+        }
         addClass(DrsStylesheet.topBar)
     }
 

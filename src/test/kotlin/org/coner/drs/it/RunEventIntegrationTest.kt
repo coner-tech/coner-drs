@@ -104,7 +104,9 @@ class RunEventIntegrationTest {
 
     @Test
     fun itShouldDisplayEvent() {
-        assertThat(page.root().text).isEqualTo(event.name)
+        page.onTopPage {
+            assertThat(eventName().text).isEqualTo(event.name)
+        }
     }
 
     @Test
