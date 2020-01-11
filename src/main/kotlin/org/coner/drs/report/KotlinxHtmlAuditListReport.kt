@@ -50,11 +50,11 @@ class KotlinxHtmlAuditListReport(
 
     private fun TBODY.auditListTableRow(run: Run) = tr {
         td("sequence") { text(run.sequence.toString()) }
-        td("numbers") { text(run.registrationNumbers) }
-        td("time") { text(runTimeNumberFormat.format(run.rawTime)) }
+        td("numbers") { text(run.registrationNumbers ?: "") }
+        td("time") { text(run.rawTime?.let { runTimeNumberFormat.format(it) } ?: "" ) }
         auditListTablePenaltyData(run)
-        td("driver") { text(run.registrationDriverName) }
-        td("car") { text(run.registrationCarModel) }
+        td("driver") { text(run.registrationDriverName ?: "") }
+        td("car") { text(run.registrationCarModel ?: "") }
     }
 
     private fun TR.auditListTablePenaltyData(run: Run) = td("penalty") {
