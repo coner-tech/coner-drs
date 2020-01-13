@@ -65,7 +65,7 @@ open class DigitalRawSheetsApp : App(
         val uiComponent = stage.uiComponent<UIComponent>()!!
         stage.titleProperty().bind(
                 stringBinding(uiComponent.titleProperty) {
-                    "Coner Digital Raw Sheet - ${uiComponent.title}"
+                    "Coner Digital Raw Sheets - ${uiComponent.title}"
                 })
         stage.width = 1024.0
         stage.height = 720.0
