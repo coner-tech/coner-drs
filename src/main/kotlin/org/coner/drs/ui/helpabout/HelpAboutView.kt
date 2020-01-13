@@ -20,13 +20,18 @@
 package org.coner.drs.ui.helpabout
 
 import javafx.geometry.Pos
+import javafx.scene.control.Button
+import javafx.scene.control.ButtonBar
 import javafx.scene.control.TabPane
+import javafx.scene.layout.Priority
 import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.icon.IconView
 import org.coner.style.ConerFxStylesheet
 import tornadofx.*
 
 class HelpAboutView : View("About") {
+
+    var closeButton: Button by singleAssign()
 
     override val root = vbox {
         hbox {
@@ -48,6 +53,13 @@ class HelpAboutView : View("About") {
             tab<AuthorsView>()
             tab<AcknowledgementsView>()
             this.tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
+            vgrow = Priority.ALWAYS
+        }
+        buttonbar {
+            button(text = "Close", type = ButtonBar.ButtonData.CANCEL_CLOSE) {
+                closeButton = this
+            }
+            padding = insets(8)
         }
     }
 
@@ -55,8 +67,13 @@ class HelpAboutView : View("About") {
         super.onDock()
         currentStage?.let {
             it.minWidth = 480.0
-            it.minHeight = 320.0
+            it.minHeight = 480.0
         }
+        find<HelpAboutController>().docked()
     }
 
+    override fun onUndock() {
+        super.onUndock()
+        find<HelpAboutController>().undocked()
+    }
 }

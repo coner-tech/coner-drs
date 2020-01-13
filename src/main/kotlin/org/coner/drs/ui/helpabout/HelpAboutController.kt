@@ -19,16 +19,30 @@
 
 package org.coner.drs.ui.helpabout
 
-import javafx.scene.layout.Priority
+import com.github.thomasnield.rxkotlinfx.actionEvents
+import com.github.thomasnield.rxkotlinfx.observeOnFx
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.plusAssign
+import javafx.event.ActionEvent
 import tornadofx.*
 
-class DescriptionView : View("Description") {
-    override val root = vbox {
-        textarea(""" 
-            TODO: Description
-        """.trimIndent()) {
-            vgrow = Priority.ALWAYS
-            isEditable = false
-        }
+class HelpAboutController : Controller() {
+
+    private val disposables = CompositeDisposable()
+
+    private val view by inject<HelpAboutView>()
+
+    fun docked() {
+        disposables += view.closeButton.actionEvents()
+                .observeOnFx()
+                .subscribe { onHelpAboutCloseButtonClicked() }
+    }
+
+    fun undocked() {
+        disposables.clear()
+    }
+
+    fun onHelpAboutCloseButtonClicked() {
+        view.close()
     }
 }
