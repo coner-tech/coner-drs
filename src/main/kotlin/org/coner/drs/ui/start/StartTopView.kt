@@ -1,13 +1,9 @@
 package org.coner.drs.ui.start
 
-import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.control.MenuItem
-import javafx.scene.layout.*
-import org.coner.drs.DigitalRawSheetApp
-import org.coner.drs.DrsStylesheet
+import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.logo.LogoView
-import org.coner.style.ConerLogoPalette
 import tornadofx.*
 
 class StartTopView : View() {

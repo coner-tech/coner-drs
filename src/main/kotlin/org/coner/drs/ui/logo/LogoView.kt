@@ -1,7 +1,6 @@
 package org.coner.drs.ui.logo
 
-import javafx.scene.layout.StackPane
-import org.coner.drs.DrsStylesheet
+import org.coner.drs.ui.DrsStylesheet
 import tornadofx.*
 
 class LogoView : Fragment() {

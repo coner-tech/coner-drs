@@ -2,15 +2,12 @@ package org.coner.drs
 
 import javafx.application.Application
 import javafx.scene.image.Image
-import javafx.scene.paint.Color
 import javafx.stage.Stage
 import net.harawata.appdirs.AppDirsFactory
 import org.coner.drs.di.numberFormatModule
 import org.coner.drs.di.reportModule
+import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.main.MainView
-import org.coner.style.ConerExtendedPalette
-import org.coner.style.ConerFxStylesheet
-import org.coner.style.ConerLogoPalette
 import org.rewedigital.katana.Component
 import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
@@ -69,42 +66,3 @@ fun main(args: Array<String>) {
     Application.launch(DigitalRawSheetApp::class.java, *args)
 }
 
-class DrsStylesheet : Stylesheet(ConerFxStylesheet::class) {
-
-    companion object {
-        val logo by cssclass("logo")
-        val icon by cssclass("icon")
-        val logoImage by cssid("image")
-        val penalties by cssclass("penalties")
-        val topBar by cssclass("top-bar")
-    }
-
-    init {
-        topBar {
-            label {
-                textFill = Color.WHITE
-            }
-            padding = box(16.px)
-            backgroundColor = multi(ConerLogoPalette.DARK_GRAY)
-            menuBar {
-                backgroundColor = multi(Color.TRANSPARENT)
-            }
-            menu {
-                label {
-                    textFill = Color.WHITE
-                }
-            }
-            menuItem {
-                label {
-                    textFill = Color.BLACK
-                }
-                and(focused) {
-                    label {
-                        textFill = Color.WHITE
-                    }
-                }
-            }
-        }
-    }
-
-}

@@ -4,7 +4,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.control.MenuItem
 import javafx.scene.layout.Priority
-import org.coner.drs.DrsStylesheet
+import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.logo.LogoView
 import tornadofx.*
 

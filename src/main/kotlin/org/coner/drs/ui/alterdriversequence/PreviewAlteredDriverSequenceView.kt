@@ -2,7 +2,7 @@ package org.coner.drs.ui.alterdriversequence
 
 import javafx.scene.layout.Priority
 import javafx.util.StringConverter
-import org.coner.drs.DrsStylesheet
+import org.coner.drs.ui.DrsStylesheet
 import tornadofx.*
 
 class PreviewAlteredDriverSequenceView : View() {

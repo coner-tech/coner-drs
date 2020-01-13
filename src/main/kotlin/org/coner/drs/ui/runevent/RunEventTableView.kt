@@ -3,7 +3,7 @@ package org.coner.drs.ui.runevent
 import javafx.scene.control.TableView
 import javafx.scene.input.KeyCombination
 import javafx.scene.layout.Priority
-import org.coner.drs.DrsStylesheet
+import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.di.NumberFormatNames
 import org.coner.drs.di.katanaAppComponent
 import org.coner.drs.domain.entity.Run

@@ -11,6 +11,7 @@ class ConerFxStylesheet : Stylesheet() {
 
     companion object {
         val h1 by cssclass("h1")
+        val h2 by cssclass("h2")
     }
 
     init {
@@ -23,6 +24,11 @@ class ConerFxStylesheet : Stylesheet() {
         }
         h1 {
             fontSize = 24.pt
+            fontWeight = FontWeight.BOLD
+            padding = box(0.px, 8.px)
+        }
+        h2 {
+            fontSize = 18.pt
             fontWeight = FontWeight.BOLD
             padding = box(0.px, 8.px)
         }
