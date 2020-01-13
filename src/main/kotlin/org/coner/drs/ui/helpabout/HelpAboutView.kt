@@ -42,7 +42,7 @@ class HelpAboutView : View("About") {
                 label("Coner") {
                     addClass(ConerFxStylesheet.h1)
                 }
-                label("Digital Raw Sheet") {
+                label("Digital Raw Sheets") {
                     addClass(ConerFxStylesheet.h2)
                 }
             }
