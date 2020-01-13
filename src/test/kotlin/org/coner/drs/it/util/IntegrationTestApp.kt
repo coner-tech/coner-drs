@@ -20,12 +20,11 @@
 package org.coner.drs.it.util
 
 import javafx.stage.Stage
-import org.coner.drs.DigitalRawSheetApp
+import org.coner.drs.DigitalRawSheetsApp
 import tornadofx.*
-import java.io.File
 import java.nio.file.Path
 
-class IntegrationTestApp(appConfigBasePath: Path) : DigitalRawSheetApp() {
+class IntegrationTestApp(appConfigBasePath: Path) : DigitalRawSheetsApp() {
     override val configBasePath = appConfigBasePath
     override val forceExitOnStop = false
     override var scope = Scope()
