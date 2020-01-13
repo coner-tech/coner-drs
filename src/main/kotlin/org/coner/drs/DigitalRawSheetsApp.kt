@@ -33,7 +33,7 @@ import tornadofx.*
 import java.io.File
 import java.nio.file.Path
 
-open class DigitalRawSheetApp : App(
+open class DigitalRawSheetsApp : App(
         primaryView = MainView::class,
         stylesheet = DrsStylesheet::class
 ), KatanaTrait {
@@ -43,7 +43,7 @@ open class DigitalRawSheetApp : App(
     }
     override val configBasePath: Path = AppDirsFactory.getInstance()
             .getUserConfigDir(
-                    "digital-raw-sheet",
+                    "digital-raw-sheets",
                     "0.0.0",
                     "coner"
             ).let { userConfigDir: String -> File(userConfigDir).toPath() }
@@ -82,6 +82,6 @@ open class DigitalRawSheetApp : App(
 }
 
 fun main(args: Array<String>) {
-    Application.launch(DigitalRawSheetApp::class.java, *args)
+    Application.launch(DigitalRawSheetsApp::class.java, *args)
 }
 
