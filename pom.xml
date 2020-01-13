@@ -240,7 +240,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.8.3</version>
                 <configuration>
-                    <mainClass>org.coner.drs.DigitalRawSheetAppKt</mainClass>
+                    <mainClass>org.coner.drs.DigitalRawSheetsAppKt</mainClass>
                 </configuration>
             </plugin>
 
@@ -262,7 +262,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.coner.drs.DigitalRawSheetAppKt</mainClass>
+                                    <mainClass>org.coner.drs.DigitalRawSheetsAppKt</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
