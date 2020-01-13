@@ -73,6 +73,7 @@ class DrsStylesheet : Stylesheet(ConerFxStylesheet::class) {
 
     companion object {
         val logo by cssclass("logo")
+        val icon by cssclass("icon")
         val logoImage by cssid("image")
         val penalties by cssclass("penalties")
         val topBar by cssclass("top-bar")
