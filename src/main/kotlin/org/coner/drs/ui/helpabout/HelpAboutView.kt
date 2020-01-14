@@ -63,12 +63,18 @@ class HelpAboutView : View("About") {
         }
     }
 
+    init {
+        currentStage?.let {
+            it.width = 480.0
+            it.minWidth = it.width
+            it.height = 480.0
+            it.minHeight = it.height
+        }
+    }
+
     override fun onDock() {
         super.onDock()
-        currentStage?.let {
-            it.minWidth = 480.0
-            it.minHeight = 480.0
-        }
+
         find<HelpAboutController>().docked()
     }
 

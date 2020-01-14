@@ -19,19 +19,20 @@
 
 package org.coner.drs.ui.helpabout
 
-import javafx.scene.layout.Priority
 import tornadofx.*
 
 class DescriptionView : View("Description") {
-    override val root = vbox {
-        textarea("""
-            Coner is a project building free, open source autocross event operations software.
 
-            Digital Raw Sheets is a computer-based replacement for paper raw sheets. It reduces the drag of working raw sheets by acquiring times automatically and making it push-button simple to key in drivers and penalties.
-        """.trimIndent()) {
-            vgrow = Priority.ALWAYS
-            isEditable = false
-            isWrapText = true
+    private val description = """
+        Coner is free, open source autocross event operations software.
+        
+        Digital Raw Sheets is an app replacement for paper raw sheets. It reduces the drag of working raw sheets by acquiring times automatically and making it push-button simple to key in drivers and penalties.
+    """.trimIndent()
+
+    override val root = vbox(spacing = 16) {
+        padding = insets(8)
+        textflow {
+            text(description)
         }
     }
 }
