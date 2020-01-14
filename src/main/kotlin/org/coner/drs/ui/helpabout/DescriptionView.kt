@@ -19,20 +19,29 @@
 
 package org.coner.drs.ui.helpabout
 
+import javafx.scene.control.Hyperlink
 import tornadofx.*
+import tornadofx.controlsfx.hyperlinklabel
 
 class DescriptionView : View("Description") {
+
+    var sourceCodeHyperlink: Hyperlink by singleAssign()
 
     private val description = """
         Coner is free, open source autocross event operations software.
         
         Digital Raw Sheets is an app replacement for paper raw sheets. It reduces the drag of working raw sheets by acquiring times automatically and making it push-button simple to key in drivers and penalties.
+        
+        
     """.trimIndent()
 
     override val root = vbox(spacing = 16) {
         padding = insets(8)
         textflow {
             text(description)
+            hyperlink("Source Code") {
+                sourceCodeHyperlink = this
+            }
         }
     }
 }

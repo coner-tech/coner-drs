@@ -23,19 +23,27 @@ import com.github.thomasnield.rxkotlinfx.actionEvents
 import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.schedulers.Schedulers
 import javafx.event.ActionEvent
+import org.coner.drs.util.browseTo
 import tornadofx.*
+import java.awt.Desktop
+import java.net.URI
+import javax.swing.SwingUtilities
 
 class HelpAboutController : Controller() {
 
     private val disposables = CompositeDisposable()
 
     private val view by inject<HelpAboutView>()
+    private val descriptionView by inject<DescriptionView>()
 
     fun docked() {
         disposables += view.closeButton.actionEvents()
                 .observeOnFx()
                 .subscribe { onHelpAboutCloseButtonClicked() }
+        disposables += descriptionView.sourceCodeHyperlink.actionEvents()
+                .subscribe { onHelpAboutDescriptionSourceCodeHyperlinkClicked() }
     }
 
     fun undocked() {
@@ -44,5 +52,9 @@ class HelpAboutController : Controller() {
 
     fun onHelpAboutCloseButtonClicked() {
         view.close()
+    }
+
+    private fun onHelpAboutDescriptionSourceCodeHyperlinkClicked() {
+        Desktop.getDesktop().browseTo("http://github.com/caeos/coner-drs")
     }
 }
