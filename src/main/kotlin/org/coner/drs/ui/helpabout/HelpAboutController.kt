@@ -25,20 +25,45 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
 import javafx.event.ActionEvent
+import org.coner.drs.di.domainServicesModule
+import org.coner.drs.di.katanaAppComponent
+import org.coner.drs.domain.service.VersionService
 import org.coner.drs.util.browseTo
+import org.rewedigital.katana.Component
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
 import javax.swing.SwingUtilities
 
-class HelpAboutController : Controller() {
+class HelpAboutController : Controller(), KatanaTrait {
 
-    private val disposables = CompositeDisposable()
+    override val component = Component(
+            modules = listOf(
+                    domainServicesModule
+            )
+    )
+
+    private val model by inject<HelpAboutModel>()
 
     private val view by inject<HelpAboutView>()
     private val descriptionView by inject<DescriptionView>()
 
+    private val disposables = CompositeDisposable()
+
+    private val versionService: VersionService by component.inject()
+
+    fun showViewAsModal() {
+        view.openModal()?.let {
+            it.width = 480.0
+            it.minWidth = it.width
+            it.height = 480.0
+            it.minHeight = it.height
+        }
+    }
+
     fun docked() {
+        model.version = versionService.version
         disposables += view.closeButton.actionEvents()
                 .observeOnFx()
                 .subscribe { onHelpAboutCloseButtonClicked() }

@@ -17,28 +17,16 @@
  *
  */
 
-package org.coner.drs.ui.logo
+package org.coner.drs.ui.helpabout
 
-import org.coner.drs.ui.DrsStylesheet
+import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
+import tornadofx.getValue
+import tornadofx.setValue
 
-class LogoView : Fragment() {
-    val size: Size by param(Size.X96)
+class HelpAboutModel : ViewModel() {
 
-    override val root = stackpane {
-        addClass(DrsStylesheet.logo)
-        imageview(url = "/coner-logo/coner-logo_$size.png") {
-            setId(DrsStylesheet.logoImage)
-        }
-    }
+    val versionProperty = SimpleStringProperty(this, "version")
+    var version by versionProperty
 
-    enum class Size {
-        X96,
-        X128,
-        X256,
-        X1024;
-
-        override fun toString(): String {
-            return name.substring(1)
-        }}
 }

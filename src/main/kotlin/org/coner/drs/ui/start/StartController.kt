@@ -24,6 +24,8 @@ import com.github.thomasnield.rxkotlinfx.observeOnFx
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import javafx.application.Platform
+import org.coner.drs.ui.helpabout.HelpAboutController
+import org.coner.drs.ui.helpabout.HelpAboutView
 import org.coner.drs.ui.main.ChangeToScreenEvent
 import org.coner.drs.ui.main.Screen
 import tornadofx.*
@@ -68,7 +70,7 @@ class StartController : Controller() {
             disposables += fileExit.actionEvents()
                 .subscribe { Platform.exit() }
             disposables += helpAbout.actionEvents()
-                    .subscribe { TODO() }
+                    .subscribe { find<HelpAboutController>().showViewAsModal() }
         }
     }
 

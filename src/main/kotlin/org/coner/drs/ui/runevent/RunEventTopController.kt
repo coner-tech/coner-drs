@@ -27,6 +27,7 @@ import io.reactivex.schedulers.Schedulers
 import javafx.application.Platform
 import org.coner.drs.domain.entity.TextReport
 import org.coner.drs.io.gateway.EventReportGateway
+import org.coner.drs.ui.helpabout.HelpAboutController
 import tornadofx.*
 import java.awt.Desktop
 
@@ -44,7 +45,7 @@ class RunEventTopController : Controller() {
                 .observeOn(Schedulers.io())
                 .subscribe { displayReportAuditList() }
         disposables += view.helpAbout.actionEvents()
-                .subscribe { TODO() }
+                .subscribe { find<HelpAboutController>().showViewAsModal() }
     }
 
     fun undocked() {

@@ -17,28 +17,12 @@
  *
  */
 
-package org.coner.drs.ui.logo
+package org.coner.drs.di
 
-import org.coner.drs.ui.DrsStylesheet
-import tornadofx.*
+import org.coner.drs.domain.service.VersionService
+import org.rewedigital.katana.Module
+import org.rewedigital.katana.dsl.compact.singleton
 
-class LogoView : Fragment() {
-    val size: Size by param(Size.X96)
-
-    override val root = stackpane {
-        addClass(DrsStylesheet.logo)
-        imageview(url = "/coner-logo/coner-logo_$size.png") {
-            setId(DrsStylesheet.logoImage)
-        }
-    }
-
-    enum class Size {
-        X96,
-        X128,
-        X256,
-        X1024;
-
-        override fun toString(): String {
-            return name.substring(1)
-        }}
+val domainServicesModule = Module {
+    singleton { VersionService() }
 }

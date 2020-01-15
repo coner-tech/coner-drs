@@ -26,6 +26,7 @@ import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
 import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.icon.IconView
+import org.coner.drs.ui.logo.LogoView
 import org.coner.style.ConerFxStylesheet
 import tornadofx.*
 
@@ -33,18 +34,20 @@ class HelpAboutView : View("About") {
 
     var closeButton: Button by singleAssign()
 
+    private val model: HelpAboutModel by inject()
+
     override val root = vbox {
-        hbox {
+        vbox {
             addClass(DrsStylesheet.topBar)
-            add<IconView>(IconView::size to IconView.Size.X128)
-            vbox {
-                alignment = Pos.BOTTOM_LEFT
-                label("Coner") {
-                    addClass(ConerFxStylesheet.h1)
-                }
-                label("Digital Raw Sheets") {
-                    addClass(ConerFxStylesheet.h2)
-                }
+            alignment = Pos.CENTER
+            add<LogoView>(LogoView::size to LogoView.Size.X256)
+            label("Digital Raw Sheets") {
+                addClass(ConerFxStylesheet.h1)
+            }
+            hbox {
+                alignment = Pos.CENTER
+                label("Version ")
+                label(model.versionProperty)
             }
         }
         tabpane {
@@ -63,18 +66,8 @@ class HelpAboutView : View("About") {
         }
     }
 
-    init {
-        currentStage?.let {
-            it.width = 480.0
-            it.minWidth = it.width
-            it.height = 480.0
-            it.minHeight = it.height
-        }
-    }
-
     override fun onDock() {
         super.onDock()
-
         find<HelpAboutController>().docked()
     }
 

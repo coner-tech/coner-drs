@@ -20,6 +20,7 @@
 package org.coner.drs.ui.helpabout
 
 import org.coner.drs.ui.DrsStylesheet
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
 
 class HelpAboutApp : App(
