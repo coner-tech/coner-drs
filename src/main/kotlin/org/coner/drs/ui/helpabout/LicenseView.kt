@@ -19,11 +19,18 @@
 
 package org.coner.drs.ui.helpabout
 
+import javafx.scene.text.Font
 import tornadofx.*
 
 class LicenseView : View("License") {
 
-    override val root = pane {
-        label("TODO: License")
+    override val root = scrollpane {
+        padding = insets(8)
+        textflow {
+            text(resources.text("/LICENSE")) {
+                font = Font.font("sans-serif", 11.5)
+            }
+        }
     }
+
 }

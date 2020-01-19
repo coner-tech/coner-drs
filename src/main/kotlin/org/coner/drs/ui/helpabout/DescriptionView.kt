@@ -35,7 +35,7 @@ class DescriptionView : View("Description") {
         
     """.trimIndent()
 
-    override val root = vbox(spacing = 16) {
+    override val root = vbox {
         padding = insets(8)
         textflow {
             text(description)

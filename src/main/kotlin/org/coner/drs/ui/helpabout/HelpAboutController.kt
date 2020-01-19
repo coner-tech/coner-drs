@@ -54,12 +54,7 @@ class HelpAboutController : Controller(), KatanaTrait {
     private val versionService: VersionService by component.inject()
 
     fun showViewAsModal() {
-        view.openModal()?.let {
-            it.width = 480.0
-            it.minWidth = it.width
-            it.height = 480.0
-            it.minHeight = it.height
-        }
+        view.openModal()
     }
 
     fun docked() {
@@ -69,6 +64,10 @@ class HelpAboutController : Controller(), KatanaTrait {
                 .subscribe { onHelpAboutCloseButtonClicked() }
         disposables += descriptionView.sourceCodeHyperlink.actionEvents()
                 .subscribe { onHelpAboutDescriptionSourceCodeHyperlinkClicked() }
+        requireNotNull(view.currentStage).let {
+            it.minWidth = it.width
+            it.minHeight = it.height
+        }
     }
 
     fun undocked() {

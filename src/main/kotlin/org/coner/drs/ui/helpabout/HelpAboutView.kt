@@ -37,6 +37,8 @@ class HelpAboutView : View("About") {
     private val model: HelpAboutModel by inject()
 
     override val root = vbox {
+        prefWidth = 530.0
+        prefHeight = 640.0
         vbox {
             addClass(DrsStylesheet.topBar)
             alignment = Pos.CENTER
