@@ -20,49 +20,37 @@
 package org.coner.drs.ui.helpabout
 
 import javafx.geometry.Pos
-import javafx.scene.control.Button
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.TabPane
 import javafx.scene.layout.Priority
+import javafx.scene.text.TextAlignment
 import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.logo.LogoView
 import org.coner.style.ConerFxStylesheet
 import tornadofx.*
 
-class HelpAboutView : View("About") {
-
-    var closeButton: Button by singleAssign()
+class SplashView : View() {
 
     private val model: HelpAboutModel by inject()
-    private val controller: HelpAboutController by inject()
 
     override val root = vbox {
-        prefWidth = 530.0
-        prefHeight = 640.0
-        add<SplashView>()
-        tabpane {
-            tab<DescriptionView>()
-            tab<LicenseView>()
-            tab<CreditsView>()
-            tab<AcknowledgementsView>()
-            this.tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
-            vgrow = Priority.ALWAYS
+        addClass(DrsStylesheet.topBar)
+        alignment = Pos.CENTER
+        add<LogoView>(LogoView::size to LogoView.Size.X256)
+        label("Digital Raw Sheets") {
+            addClass(ConerFxStylesheet.h1)
         }
-        buttonbar {
-            button(text = "Close", type = ButtonBar.ButtonData.CANCEL_CLOSE) {
-                closeButton = this
+        hbox {
+            textflow {
+                label("Version ")
+                label(model.versionProperty)
             }
-            padding = insets(8)
+            pane {
+                hgrow = Priority.ALWAYS
+            }
+            textflow {
+                label("Copyright ")
+                label(model.licenseYearProperty.stringBinding { it?.toString() })
+                label(" Carlton Whitehead")
+            }
         }
-    }
-
-    override fun onDock() {
-        super.onDock()
-        controller.docked()
-    }
-
-    override fun onUndock() {
-        super.onUndock()
-        controller.undocked()
     }
 }

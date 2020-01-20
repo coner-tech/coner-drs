@@ -19,14 +19,19 @@
 
 package org.coner.drs.ui.helpabout
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 import tornadofx.getValue
 import tornadofx.setValue
+import java.time.Year
 
 class HelpAboutModel : ViewModel() {
 
     val versionProperty = SimpleStringProperty(this, "version")
     var version by versionProperty
+
+    val licenseYearProperty = SimpleObjectProperty<Year>(this, "licenseYear")
+    var licenseYear by licenseYearProperty
 
 }

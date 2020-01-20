@@ -34,6 +34,7 @@ import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
+import java.time.Year
 import javax.swing.SwingUtilities
 
 class HelpAboutController : Controller(), KatanaTrait {
@@ -59,6 +60,7 @@ class HelpAboutController : Controller(), KatanaTrait {
 
     fun docked() {
         model.version = versionService.version
+        model.licenseYear = Year.now()
         disposables += view.closeButton.actionEvents()
                 .observeOnFx()
                 .subscribe { onHelpAboutCloseButtonClicked() }

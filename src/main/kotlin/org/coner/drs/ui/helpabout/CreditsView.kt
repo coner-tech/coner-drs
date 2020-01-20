@@ -21,9 +21,9 @@ package org.coner.drs.ui.helpabout
 
 import tornadofx.*
 
-class AuthorsView : View("Authors") {
+class CreditsView : View("Credits") {
 
     override val root = pane {
-        label("TODO: Authors")
+        label("TODO: Credits")
     }
 }
