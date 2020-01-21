@@ -47,7 +47,7 @@ class SplashView : View() {
                 hgrow = Priority.ALWAYS
             }
             textflow {
-                label("Copyright ")
+                label("Copyright 2018-")
                 label(model.licenseYearProperty.stringBinding { it?.toString() })
                 label(" Carlton Whitehead")
             }

@@ -19,33 +19,13 @@
 
 package org.coner.drs.ui.helpabout
 
-import javafx.geometry.Pos
-import javafx.scene.layout.Priority
-import javafx.scene.text.FontWeight
-import javafx.scene.text.TextAlignment
 import tornadofx.*
 
-class CreditsView : View("Credits") {
+class CreditsController : Controller() {
 
     private val model: CreditsModel by inject()
 
-    override val root = scrollpane {
-        isFitToWidth = true
-        stackpane {
-            padding = insets(8)
-            textflow {
-                model.credits.forEachIndexed { index, section ->
-                    textAlignment = TextAlignment.CENTER
-                    text(section.name) {
-                        style {
-                            fontWeight = FontWeight.BOLD
-                        }
-                    }
-                    text("\n")
-                    text(section.credits.joinToString("\n") { it.name })
-                    if (index != model.credits.lastIndex) text("\n\n")
-                }
-            }
-        }
+    init {
+
     }
 }
