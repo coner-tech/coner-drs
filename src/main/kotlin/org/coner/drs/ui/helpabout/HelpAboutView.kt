@@ -44,7 +44,6 @@ class HelpAboutView : View("About") {
             tab<DescriptionView>()
             tab<LicenseView>()
             tab<CreditsView>()
-            tab<AcknowledgementsView>()
             this.tabClosingPolicy = TabPane.TabClosingPolicy.UNAVAILABLE
             vgrow = Priority.ALWAYS
         }
