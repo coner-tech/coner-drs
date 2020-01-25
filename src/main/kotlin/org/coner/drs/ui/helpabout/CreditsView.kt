@@ -20,12 +20,15 @@
 package org.coner.drs.ui.helpabout
 
 import javafx.geometry.Pos
+import javafx.scene.control.Hyperlink
 import javafx.scene.layout.Priority
 import javafx.scene.text.FontWeight
 import javafx.scene.text.TextAlignment
 import tornadofx.*
 
 class CreditsView : View("Credits") {
+
+    var fileAnIssueHyperlink: Hyperlink by singleAssign()
 
     private val model: CreditsModel by inject()
 
@@ -43,7 +46,11 @@ class CreditsView : View("Credits") {
                     }
                     text("\n")
                     text(section.credits.joinToString("\n") { it.name })
-                    if (index != model.credits.lastIndex) text("\n\n")
+                    text("\n\n")
+                }
+                text("If someone is missing from this list, please")
+                hyperlink("file an issue.") {
+                    fileAnIssueHyperlink = this
                 }
             }
         }

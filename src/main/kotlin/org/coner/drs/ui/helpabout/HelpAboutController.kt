@@ -49,6 +49,7 @@ class HelpAboutController : Controller(), KatanaTrait {
 
     private val view by inject<HelpAboutView>()
     private val descriptionView by inject<DescriptionView>()
+    private val creditsView by inject<CreditsView>()
 
     private val disposables = CompositeDisposable()
 
@@ -66,6 +67,8 @@ class HelpAboutController : Controller(), KatanaTrait {
                 .subscribe { onHelpAboutCloseButtonClicked() }
         disposables += descriptionView.sourceCodeHyperlink.actionEvents()
                 .subscribe { onHelpAboutDescriptionSourceCodeHyperlinkClicked() }
+        disposables += creditsView.fileAnIssueHyperlink.actionEvents()
+                .subscribe { onHelpAboutCreditsHyperlinkClicked() }
         requireNotNull(view.currentStage).let {
             it.minWidth = it.width
             it.minHeight = it.height
@@ -81,6 +84,10 @@ class HelpAboutController : Controller(), KatanaTrait {
     }
 
     private fun onHelpAboutDescriptionSourceCodeHyperlinkClicked() {
-        Desktop.getDesktop().browseTo("http://github.com/caeos/coner-drs")
+        Desktop.getDesktop().browseTo("https://github.com/caeos/coner-drs")
+    }
+
+    private fun onHelpAboutCreditsHyperlinkClicked() {
+        Desktop.getDesktop().browseTo("https://github.com/caeos/coner-drs/issues/new")
     }
 }
