@@ -1,23 +1,39 @@
+/*
+ * Coner Digital Raw Sheets - reduce the drag of working autocross raw sheets
+ * Copyright (C) 2018-2020 Carlton Whitehead
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ */
+
 package org.coner.drs
 
 import javafx.application.Application
 import javafx.scene.image.Image
-import javafx.scene.paint.Color
 import javafx.stage.Stage
 import net.harawata.appdirs.AppDirsFactory
 import org.coner.drs.di.numberFormatModule
 import org.coner.drs.di.reportModule
+import org.coner.drs.ui.DrsStylesheet
 import org.coner.drs.ui.main.MainView
-import org.coner.style.ConerExtendedPalette
-import org.coner.style.ConerFxStylesheet
-import org.coner.style.ConerLogoPalette
 import org.rewedigital.katana.Component
 import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
 import java.io.File
 import java.nio.file.Path
 
-open class DigitalRawSheetApp : App(
+open class DigitalRawSheetsApp : App(
         primaryView = MainView::class,
         stylesheet = DrsStylesheet::class
 ), KatanaTrait {
@@ -27,7 +43,7 @@ open class DigitalRawSheetApp : App(
     }
     override val configBasePath: Path = AppDirsFactory.getInstance()
             .getUserConfigDir(
-                    "digital-raw-sheet",
+                    "digital-raw-sheets",
                     "0.0.0",
                     "coner"
             ).let { userConfigDir: String -> File(userConfigDir).toPath() }
@@ -49,7 +65,7 @@ open class DigitalRawSheetApp : App(
         val uiComponent = stage.uiComponent<UIComponent>()!!
         stage.titleProperty().bind(
                 stringBinding(uiComponent.titleProperty) {
-                    "Coner Digital Raw Sheet - ${uiComponent.title}"
+                    "Coner Digital Raw Sheets - ${uiComponent.title}"
                 })
         stage.width = 1024.0
         stage.height = 720.0
@@ -66,44 +82,6 @@ open class DigitalRawSheetApp : App(
 }
 
 fun main(args: Array<String>) {
-    Application.launch(DigitalRawSheetApp::class.java, *args)
+    Application.launch(DigitalRawSheetsApp::class.java, *args)
 }
 
-class DrsStylesheet : Stylesheet(ConerFxStylesheet::class) {
-
-    companion object {
-        val logo by cssclass("logo")
-        val logoImage by cssid("image")
-        val penalties by cssclass("penalties")
-        val topBar by cssclass("top-bar")
-    }
-
-    init {
-        topBar {
-            label {
-                textFill = Color.WHITE
-            }
-            padding = box(16.px)
-            backgroundColor = multi(ConerLogoPalette.DARK_GRAY)
-            menuBar {
-                backgroundColor = multi(Color.TRANSPARENT)
-            }
-            menu {
-                label {
-                    textFill = Color.WHITE
-                }
-            }
-            menuItem {
-                label {
-                    textFill = Color.BLACK
-                }
-                and(focused) {
-                    label {
-                        textFill = Color.WHITE
-                    }
-                }
-            }
-        }
-    }
-
-}

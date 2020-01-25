@@ -8,11 +8,16 @@
     <artifactId>drs</artifactId>
     <version>0.0-SNAPSHOT</version>
 
-    <description>Digital Raw Sheets - reduce the drag of working autocross raw sheets</description>
+    <organization>
+        <name>Coner</name>
+        <url>https://github.com/caeos</url>
+    </organization>
+    <name>Digital Raw Sheets</name>
+    <description>Digital Raw Sheets is an app replacement for paper raw sheets. It reduces the drag of working raw sheets by acquiring times automatically and making it push-button simple to key in drivers and penalties.</description>
 
     <properties>
         <coner-drs.version>${project.version}</coner-drs.version>
-        <kotlin.version>1.3.50</kotlin.version>
+        <kotlin.version>1.3.61</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <tornadofx.version>1.7.20-SNAPSHOT</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
@@ -236,17 +241,55 @@
                 </executions>
             </plugin>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <includes>
+                                        <include>LICENSE</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.8.3</version>
                 <configuration>
-                    <mainClass>org.coner.drs.DigitalRawSheetAppKt</mainClass>
+                    <mainClass>org.coner.drs.DigitalRawSheetsAppKt</mainClass>
                 </configuration>
             </plugin>
 
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -262,7 +305,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.coner.drs.DigitalRawSheetAppKt</mainClass>
+                                    <mainClass>org.coner.drs.DigitalRawSheetsAppKt</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
