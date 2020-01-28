@@ -1,0 +1,16 @@
+language: java
+jdk: openjdk8
+services:
+  - xvfb
+    
+before_install:
+  - sudo apt-get install -y openjfx
+
+install: skip
+
+script:
+  - ./mvnw test
+    
+cache:
+  directories:
+    - $HOME/.m2
