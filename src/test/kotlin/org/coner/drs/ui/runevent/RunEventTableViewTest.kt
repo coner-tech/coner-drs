@@ -26,6 +26,7 @@ import me.carltonwhitehead.tornadofx.junit5.Init
 import me.carltonwhitehead.tornadofx.junit5.SetupApp
 import me.carltonwhitehead.tornadofx.junit5.Start
 import me.carltonwhitehead.tornadofx.junit5.TornadoFxAppExtension
+import org.awaitility.Awaitility
 import org.coner.drs.di.numberFormatModule
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
@@ -112,6 +113,8 @@ class RunEventTableViewTest {
 
         realPage.keyboardShortcutInsertDriverIntoSequence(sequence)
 
-        Assertions.assertThat(runsTable.selectionModel.selectedItem).isSameAs(insertRun)
+        Awaitility.await().untilAsserted {
+            Assertions.assertThat(runsTable.selectionModel.selectedItem).isSameAs(insertRun)
+        }
     }
 }
