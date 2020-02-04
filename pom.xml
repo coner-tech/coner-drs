@@ -25,9 +25,8 @@
         <rxkotlin.version>2.4.0</rxkotlin.version>
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
         <katana.version>1.7.1</katana.version>
-        <rxfilewatcher.version>1.0.0-SNAPSHOT</rxfilewatcher.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.3.2</snoozle.version>
+        <snoozle.version>0.3.3</snoozle.version>
         <jackson.version>2.9.9</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.3</appdirs.version>
@@ -88,11 +87,6 @@
             <groupId>org.coner</groupId>
             <artifactId>snoozle</artifactId>
             <version>${snoozle.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>de.helmbold</groupId>
-            <artifactId>rxfilewatcher</artifactId>
-            <version>${rxfilewatcher.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
