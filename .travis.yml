@@ -9,7 +9,7 @@ before_install:
 install: skip
 
 script:
-  - ./mvnw test
+  - ./mvnw package -DskipTests=true
     
 cache:
   directories:
