@@ -15,9 +15,8 @@
     </organization>
     <modules>
         <module>app</module>
+        <module>node</module>
     </modules>
-    <name>Digital Raw Sheets</name>
-    <description>Digital Raw Sheets is an app replacement for paper raw sheets. It reduces the drag of working raw sheets by acquiring times automatically and making it push-button simple to key in drivers and penalties.</description>
 
     <repositories>
         <repository>

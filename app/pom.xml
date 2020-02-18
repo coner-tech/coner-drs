@@ -28,7 +28,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>app</artifactId>
+    <artifactId>drs-app</artifactId>
 
     <properties>
         <coner-drs.version>${project.version}</coner-drs.version>
