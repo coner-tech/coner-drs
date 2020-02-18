@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Coner Digital Raw Sheets - reduce the drag of working autocross raw sheets
+  ~ Copyright (C) 2018-2020 Carlton Whitehead
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>org.coner.drs</groupId>
+        <version>0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>app</artifactId>
+
+    <properties>
+        <coner-drs.version>${project.version}</coner-drs.version>
+        <kotlin.version>1.3.61</kotlin.version>
+        <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+        <tornadofx.version>1.7.20-SNAPSHOT</tornadofx.version>
+        <controlsfx.version>8.40.14</controlsfx.version>
+        <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
+        <rxkotlin.version>2.4.0</rxkotlin.version>
+        <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
+        <katana.version>1.7.1</katana.version>
+        <coner-timer.version>0.1.1</coner-timer.version>
+        <snoozle.version>0.3.3</snoozle.version>
+        <jackson.version>2.9.9</jackson.version>
+        <crispy-fish.version>0.2.0</crispy-fish.version>
+        <appdirs.version>1.0.3</appdirs.version>
+        <apache-commons-text.version>1.7</apache-commons-text.version>
+        <j2html.version>1.4.0</j2html.version>
+        <kotlinx.html.version>0.6.12</kotlinx.html.version>
+        <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
+        <junit5.platform.version>1.5.1</junit5.platform.version>
+        <junit5.jupiter.version>5.5.1</junit5.jupiter.version>
+        <testfx.version>4.0.16-alpha</testfx.version>
+        <assertk.version>0.19</assertk.version>
+        <mockk.version>1.9.3.kotlin12</mockk.version>
+        <tornadofx-junit5.version>1.1.1</tornadofx-junit5.version>
+        <awaitility.version>4.0.1</awaitility.version>
+        <zip4j.version>2.2.4</zip4j.version>
+        <jsoup.version>1.12.1</jsoup.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- Runtime -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>${controlsfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.tornado</groupId>
+            <artifactId>tornadofx</artifactId>
+            <version>${tornadofx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>no.tornado</groupId>
+            <artifactId>tornadofx-controlsfx</artifactId>
+            <version>${tornadofx-controlsfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.reactivex.rxjava2</groupId>
+            <artifactId>rxkotlin</artifactId>
+            <version>${rxkotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.thomasnield</groupId>
+            <artifactId>rxkotlinfx</artifactId>
+            <version>${rxkotlinfx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.rewedigital.katana</groupId>
+            <artifactId>katana-core</artifactId>
+            <version>${katana.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>snoozle</artifactId>
+            <version>${snoozle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>coner-timer-library</artifactId>
+            <version>${coner-timer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.coner</groupId>
+            <artifactId>crispy-fish-library</artifactId>
+            <version>${crispy-fish.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.harawata</groupId>
+            <artifactId>appdirs</artifactId>
+            <version>${appdirs.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>${apache-commons-text.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.j2html</groupId>
+            <artifactId>j2html</artifactId>
+            <version>${j2html.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-html-jvm</artifactId>
+            <version>${kotlinx.html.version}</version>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>${junit5.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit5.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit5.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit5.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>testfx-junit5</artifactId>
+            <version>${testfx.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.willowtreeapps.assertk</groupId>
+            <artifactId>assertk-jvm</artifactId>
+            <version>${assertk.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <version>${mockk.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.carltonwhitehead.tornadofx-junit5</groupId>
+            <artifactId>tornadofx-junit5</artifactId>
+            <version>${tornadofx-junit5.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>${awaitility.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.lingala.zip4j</groupId>
+            <artifactId>zip4j</artifactId>
+            <version>${zip4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
+        <plugins>
+            <plugin>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <version>${kotlin.version}</version>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <goals> <goal>compile</goal> </goals>
+                    </execution>
+
+                    <execution>
+                        <id>test-compile</id>
+                        <goals> <goal>test-compile</goal> </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>${properties-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-project-properties-into-build</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.outputDirectory}/build.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <includes>
+                                        <include>LICENSE</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <mainClass>org.coner.drs.DigitalRawSheetsAppKt</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>org.coner.drs.DigitalRawSheetsAppKt</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
