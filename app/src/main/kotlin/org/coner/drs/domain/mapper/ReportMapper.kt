@@ -20,8 +20,7 @@
 package org.coner.drs.domain.mapper
 
 import org.coner.drs.domain.entity.Event
-import org.coner.drs.domain.entity.TextReport
-import org.coner.drs.io.db.blob.EventReport
+import org.coner.drs.node.db.blob.EventReport
 
 object ReportMapper {
     fun toAuditList(event: Event) = EventReport(

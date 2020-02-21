@@ -17,7 +17,7 @@
  *
  */
 
-package org.coner.drs.io.db.entity
+package org.coner.drs.node.db.entity
 
 import org.coner.snoozle.db.entity.Entity
 import java.math.BigDecimal

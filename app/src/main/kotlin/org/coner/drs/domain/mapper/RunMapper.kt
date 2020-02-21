@@ -23,7 +23,7 @@ import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.payload.InsertDriverIntoSequenceResult
-import org.coner.drs.io.db.entity.RunDbEntity
+import org.coner.drs.node.db.entity.RunDbEntity
 import org.coner.drs.ui.alterdriversequence.PreviewAlteredDriverSequenceResult
 import tornadofx.*
 import kotlin.streams.toList

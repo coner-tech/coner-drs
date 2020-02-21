@@ -28,7 +28,7 @@ import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.mapper.RunMapper
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
-import org.coner.drs.io.db.entity.RunDbEntity
+import org.coner.drs.node.db.entity.RunDbEntity
 import tornadofx.*
 
 class RunGateway : Controller() {

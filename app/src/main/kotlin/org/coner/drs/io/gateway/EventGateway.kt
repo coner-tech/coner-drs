@@ -26,8 +26,8 @@ import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.domain.mapper.EventMapper
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
-import org.coner.drs.io.db.entity.EventDbEntity
-import org.coner.drs.io.db.getEvent
+import org.coner.drs.node.db.entity.EventDbEntity
+import org.coner.drs.node.db.getEvent
 import tornadofx.*
 
 class EventGateway : Controller() {

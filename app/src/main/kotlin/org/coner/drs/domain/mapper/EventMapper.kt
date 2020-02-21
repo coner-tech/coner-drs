@@ -21,7 +21,7 @@ package org.coner.drs.domain.mapper
 
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.RunEvent
-import org.coner.drs.io.db.entity.EventDbEntity
+import org.coner.drs.node.db.entity.EventDbEntity
 import java.io.File
 
 class EventMapper(

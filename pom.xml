@@ -18,6 +18,20 @@
         <module>node</module>
     </modules>
 
+    <properties>
+        <kotlin.version>1.3.61</kotlin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib-jdk8</artifactId>
+                <version>${kotlin.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <repositories>
         <repository>
             <id>sonatype-nexus-snapshots</id>

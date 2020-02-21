@@ -17,7 +17,7 @@
  *
  */
 
-package org.coner.drs.io.db.blob
+package org.coner.drs.node.db.blob
 
 import org.coner.snoozle.db.blob.Blob
 import java.util.*

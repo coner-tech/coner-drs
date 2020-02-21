@@ -23,7 +23,7 @@ import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.TextReport
 import org.coner.drs.domain.mapper.ReportMapper
 import org.coner.drs.io.DrsIoController
-import org.coner.drs.io.db.blob.EventReport
+import org.coner.drs.node.db.blob.EventReport
 import tornadofx.*
 import java.nio.file.Path
 

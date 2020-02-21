@@ -32,7 +32,6 @@
 
     <properties>
         <coner-drs.version>${project.version}</coner-drs.version>
-        <kotlin.version>1.3.61</kotlin.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <tornadofx.version>1.7.20-SNAPSHOT</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
@@ -41,7 +40,6 @@
         <rxkotlinfx.version>2.2.2</rxkotlinfx.version>
         <katana.version>1.7.1</katana.version>
         <coner-timer.version>0.1.1</coner-timer.version>
-        <snoozle.version>0.3.3</snoozle.version>
         <jackson.version>2.9.9</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.3</appdirs.version>
@@ -61,12 +59,16 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.coner.drs</groupId>
+            <artifactId>drs-node</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Runtime -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
@@ -99,11 +101,6 @@
             <version>${katana.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.coner</groupId>
-            <artifactId>snoozle</artifactId>
-            <version>${snoozle.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>

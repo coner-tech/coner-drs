@@ -17,11 +17,11 @@
  *
  */
 
-package org.coner.drs.io.db
+package org.coner.drs.node.db
 
-import org.coner.drs.io.db.blob.EventReport
-import org.coner.drs.io.db.entity.EventDbEntity
-import org.coner.drs.io.db.entity.RunDbEntity
+import org.coner.drs.node.db.blob.EventReport
+import org.coner.drs.node.db.entity.EventDbEntity
+import org.coner.drs.node.db.entity.RunDbEntity
 import org.coner.snoozle.db.Database
 import org.coner.snoozle.db.entity.EntityResource
 import org.coner.snoozle.db.versioning.EntityVersioningStrategy
@@ -47,4 +47,4 @@ class DigitalRawSheetDatabase(
 }
 
 fun EntityResource<EventDbEntity>.getEvent(id: UUID) = get(id)
-fun EntityResource<RunDbEntity>.getRun(runId: UUID, id: UUID) = get(runId, id)
+fun EntityResource<RunDbEntity>.getRun(eventId: UUID, id: UUID) = get(eventId, id)
