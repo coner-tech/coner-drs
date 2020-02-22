@@ -16,6 +16,10 @@ class RunService(
 
     fun listRuns(eventId: UUID) = resource.list(eventId)
 
+    fun findRunById(eventId: UUID, id: UUID): RunDbEntity {
+        return resource.getRun(eventId = eventId, id = id)
+    }
+
     fun findRunForNextDriver(eventId: UUID): RunDbEntity {
         val runsBySequence = listRuns(eventId).sortedBy { it.sequence }
         val indexOfLastRunWithDriver = runsBySequence.indexOfLast { it.hasDriver() }
@@ -175,8 +179,8 @@ class RunService(
         }
         val result = AlterDriverSequenceResult(
                 runs = runs,
-                insertRunId = insertRun.id,
-                shiftRunIds = shiftRuns.map { it.id }.toHashSet()
+                insertedRunId = insertRun.id,
+                shiftedRunIds = shiftRuns.map { it.id }.toHashSet()
         )
         if (!request.dryRun) {
             resource.put(insertRun)

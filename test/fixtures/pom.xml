@@ -9,45 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>drs-node</artifactId>
-
-    <properties>
-        <snoozle.version>0.3.3</snoozle.version>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.coner.drs</groupId>
-                <artifactId>drs-test-common-dependencies</artifactId>
-                <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <!-- Runtime -->
-        <dependency>
-            <groupId>org.coner</groupId>
-            <artifactId>snoozle</artifactId>
-            <version>${snoozle.version}</version>
-        </dependency>
-
-        <!-- Test -->
-        <dependency>
-            <groupId>org.coner.drs</groupId>
-            <artifactId>drs-test-common-dependencies</artifactId>
-            <version>${project.version}</version>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
-
+    <artifactId>drs-test-fixtures</artifactId>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <plugins>
@@ -72,5 +37,6 @@
             </plugin>
         </plugins>
     </build>
+
 
 </project>

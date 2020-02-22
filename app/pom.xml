@@ -47,16 +47,24 @@
         <j2html.version>1.4.0</j2html.version>
         <kotlinx.html.version>0.6.12</kotlinx.html.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
-        <junit5.platform.version>1.5.1</junit5.platform.version>
-        <junit5.jupiter.version>5.5.1</junit5.jupiter.version>
         <testfx.version>4.0.16-alpha</testfx.version>
-        <assertk.version>0.19</assertk.version>
         <mockk.version>1.9.3.kotlin12</mockk.version>
         <tornadofx-junit5.version>1.1.1</tornadofx-junit5.version>
         <awaitility.version>4.0.1</awaitility.version>
-        <zip4j.version>2.2.4</zip4j.version>
         <jsoup.version>1.12.1</jsoup.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.coner.drs</groupId>
+                <artifactId>drs-test-common-dependencies</artifactId>
+                <version>${project.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -142,39 +150,17 @@
 
         <!-- Test -->
         <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-runner</artifactId>
-            <version>${junit5.platform.version}</version>
+            <groupId>org.coner.drs</groupId>
+            <artifactId>drs-test-common-dependencies</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit5.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <version>${junit5.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit5.jupiter.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit5</artifactId>
             <version>${testfx.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.willowtreeapps.assertk</groupId>
-            <artifactId>assertk-jvm</artifactId>
-            <version>${assertk.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -194,11 +180,6 @@
             <artifactId>awaitility</artifactId>
             <version>${awaitility.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.lingala.zip4j</groupId>
-            <artifactId>zip4j</artifactId>
-            <version>${zip4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>

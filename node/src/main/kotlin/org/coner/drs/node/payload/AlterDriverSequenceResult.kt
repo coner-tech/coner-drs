@@ -5,6 +5,6 @@ import java.util.*
 
 class AlterDriverSequenceResult(
         val runs: List<RunDbEntity>,
-        val insertRunId: UUID,
-        val shiftRunIds: Set<UUID>
+        val insertedRunId: UUID,
+        val shiftedRunIds: Set<UUID>
 )

@@ -16,6 +16,8 @@
     <modules>
         <module>app</module>
         <module>node</module>
+        <module>test/common-dependencies</module>
+        <module>test/fixtures</module>
     </modules>
 
     <properties>
