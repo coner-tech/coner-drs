@@ -19,6 +19,7 @@
 
 package org.coner.drs.node.db.entity
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import org.coner.snoozle.db.entity.Entity
 import java.math.BigDecimal
 import java.util.*
@@ -30,7 +31,7 @@ data class RunDbEntity(
         val category: String = "",
         val handicap: String = "",
         val number: String = "",
-        val rawTime: BigDecimal? = null,
+        @JsonFormat(shape = JsonFormat.Shape.STRING) val rawTime: BigDecimal? = null,
         val cones: Int = 0,
         val didNotFinish: Boolean = false,
         val disqualified: Boolean = false,

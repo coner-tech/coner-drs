@@ -150,7 +150,7 @@ class RunService(
     }
 
     fun alterDriverSequence(request: AlterDriverSequenceRequest): AlterDriverSequenceResult {
-        val runs = listRuns(request.eventId)
+        val inputRuns = listRuns(request.eventId)
                 .sortedBy { it.sequence }
                 .toMutableList()
         val insertSequence = when(request.relative) {
@@ -158,32 +158,39 @@ class RunService(
             AlterDriverSequenceRequest.Relative.AFTER -> request.sequence + 1
         }
         val insertIndex = insertSequence - 1 // sequence is 1-indexed, lists are 0-indexed
-        val insertRun = RunDbEntity(
+        val insertedRun = RunDbEntity(
                 eventId = request.eventId,
                 category = request.category,
                 handicap = request.handicap,
                 number = request.number,
                 sequence = insertSequence,
-                rawTime = runs.getOrNull(insertIndex)?.rawTime
+                rawTime = inputRuns.getOrNull(insertIndex)?.rawTime
         )
-        runs.add(insertIndex, insertRun)
-        val shiftRuns = runs.filterIndexed { index, run ->
-            index >= insertIndex && run.id != insertRun.id
+        inputRuns.add(insertIndex, insertedRun)
+        val shiftRuns = inputRuns.filterIndexed { index, run ->
+            index >= insertIndex && run.id != insertedRun.id
         }
-        shiftRuns.mapIndexed { index, shiftRun ->
+        val shiftedRunsById = shiftRuns.mapIndexed { index, shiftRun ->
             val nextShiftRun = index + 1
-            shiftRun.copy(
+            shiftRun.id to shiftRun.copy(
                     sequence = shiftRun.sequence + 1,
                     rawTime = shiftRuns.getOrNull(nextShiftRun)?.rawTime
             )
-        }
+        }.toMap()
+        val outputRuns = inputRuns.mapNotNull {
+            when (shiftedRunsById.containsKey(it.id)) {
+                true -> shiftedRunsById[it.id]
+                false -> it
+            }
+        }.sortedBy { it.sequence }
+
         val result = AlterDriverSequenceResult(
-                runs = runs,
-                insertedRunId = insertRun.id,
-                shiftedRunIds = shiftRuns.map { it.id }.toHashSet()
+                runs = outputRuns,
+                insertedRunId = insertedRun.id,
+                shiftedRunIds = shiftedRunsById.keys
         )
         if (!request.dryRun) {
-            resource.put(insertRun)
+            resource.put(insertedRun)
             shiftRuns.forEach { resource.put(it) }
         }
         return result

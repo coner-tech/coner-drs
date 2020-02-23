@@ -1,6 +1,7 @@
 package org.coner.drs.node.service
 
 import assertk.all
+import assertk.assertAll
 import assertk.assertThat
 import assertk.assertions.*
 import org.coner.drs.node.db.DigitalRawSheetDatabase
@@ -113,8 +114,8 @@ class RunServiceTest {
         val actual = service.findRunForNextTime(event.id)
 
         assertThat(actual).all {
-            sequenceIsEqualTo(run)
-            registrationIsEqualTo(run)
+            hasSequence(2)
+            registrationIsEmpty()
         }
     }
 
@@ -154,11 +155,9 @@ class RunServiceTest {
         assertThat(actual).all {
             hasRunsCount(3)
             runAt(0).all("0-index run not modified") {
-                idIsEqualTo(runs[0])
-                sequenceIsEqualTo(runs[0])
-                registrationIsEqualTo(runs[0])
-                rawTimeIsEqualTo(runs[0])
+                isDataClassEqualTo(runs[0])
             }
+            insertedRunIdMatchesRunAtIndex(1)
             runAt(1).all("1-index run was inserted") {
                 hasSequence(2)
                 hasRegistration(registrations[1])
@@ -170,11 +169,8 @@ class RunServiceTest {
                 hasRegistration(registrations[2])
                 hasRawTime(null)
             }
-            insertedRunIdMatches(runs[1])
-            shiftedRunIds {
-                hasSize(1)
-                containsOnly(runs[2].id)
-            }
+            shiftedRunIds { hasSize(1) }
+            shiftedRunIdsContainsRunIdAtIndex(2)
         }
     }
 
@@ -214,20 +210,19 @@ class RunServiceTest {
         assertThat(actual).all {
             hasRunsCount(3)
             runAt(0).all("0-index run not modified") {
-                idIsEqualTo(runs[0])
-                hasSequence(1)
-                hasRegistration(registrations[0])
-                rawTimeIsEqualTo(runs[0])
+                isDataClassEqualTo(runs[0])
             }
-            runAt(1).all("1-index run not modified") {
-                idIsEqualTo(runs[1])
+            insertedRunIdMatchesRunAtIndex(1)
+            runAt(1).all("1-index run was inserted") {
                 hasSequence(2)
-                hasRegistration(registrations[2])
+                hasRegistration(registrations[1])
                 rawTimeIsEqualTo(runs[1])
             }
-            runAt(2).all {
+            shiftedRunIdsContainsRunIdAtIndex(2)
+            shiftedRunIds { hasSize(1) }
+            runAt(2).all("2-index run was shifted") {
                 hasSequence(3)
-                hasRegistration(registrations[1])
+                hasRegistration(registrations[2])
                 hasRawTime(null)
             }
         }
@@ -258,8 +253,9 @@ class RunServiceTest {
         val actualResult = service.alterDriverSequence(request)
         val actualRunsOnDisk = service.listRuns(event.id)
 
-        assertThat(actualRunsOnDisk).all {
-            hasSameSizeAs(actualResult.runs)
+        assertAll {
+            assertThat(actualResult).hasRunsCount(2)
+            assertThat(actualRunsOnDisk).hasSize(1)
         }
     }
 
