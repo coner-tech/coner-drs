@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.api.io.TempDir
 import tornadofx.*
-import java.awt.Desktop
 import java.io.File
 
 @ExtendWith(TornadoFxAppExtension::class)

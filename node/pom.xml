@@ -15,18 +15,6 @@
         <snoozle.version>0.3.3</snoozle.version>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.coner.drs</groupId>
-                <artifactId>drs-test-common-dependencies</artifactId>
-                <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <!-- Runtime -->
         <dependency>
@@ -44,10 +32,25 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.coner.drs</groupId>
+            <artifactId>drs-test-fixtures</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>1.5.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
         <plugins>
@@ -71,6 +74,7 @@
                 </executions>
             </plugin>
         </plugins>
+
     </build>
 
 </project>
