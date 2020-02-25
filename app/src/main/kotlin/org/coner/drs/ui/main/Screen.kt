@@ -25,6 +25,6 @@ import java.nio.file.Path
 
 sealed class Screen {
     object Start : Screen()
-    class ChooseEvent(val pathToDrsDb: Path, val pathToCfDb: File) : Screen()
+    class Home(val pathToDrsDb: Path, val pathToCfDb: File) : Screen()
     class RunEvent(val event: Event) : Screen()
 }

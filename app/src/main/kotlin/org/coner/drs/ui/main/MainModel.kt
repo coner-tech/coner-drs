@@ -20,12 +20,14 @@
 package org.coner.drs.ui.main
 
 import javafx.beans.property.SimpleObjectProperty
-import org.coner.drs.ui.main.Screen
 import tornadofx.*
+import java.util.*
 
 class MainModel : ViewModel() {
+
+    val id = UUID.randomUUID()
     val screenProperty = SimpleObjectProperty<Screen>(this, "screen")
     var screen by screenProperty
 
-    var busRegistrations = mutableListOf<FXEventRegistration>()
+    var busRegistrations = mutableListOf<EventRegistration>()
 }

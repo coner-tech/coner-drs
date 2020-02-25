@@ -19,30 +19,53 @@
 
 package org.coner.drs.ui.main
 
+import org.coner.drs.di.katanaAppComponent
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.gateway.EventGateway
+import org.coner.drs.ui.home.HomeFragment
 import org.coner.drs.ui.runevent.RunEventFragment
 import org.coner.drs.ui.start.StartView
-import org.coner.drs.ui.chooseevent.ChooseEventView
+import org.coner.drs.ui.home.HomeScope
 import org.coner.drs.ui.start.StartModel
 import tornadofx.*
 
 class MainController : Controller() {
+    val view: MainView by inject()
     val model: MainModel by inject()
-    val drsIo: DrsIoController by inject()
     val eventGateway: EventGateway by inject()
 
-    fun onChangeToScreen(screen: Screen): UIComponent {
+    fun onChangeToScreen(event: ChangeToScreenEvent) {
+        println("MainView#${model.id} onChangeToScreen: ${event.screen}")
+        val newScreen = findUiComponentForScreen(event.screen)
+        if (view.root.children.isEmpty()) {
+            println("Adding ${newScreen.javaClass.simpleName}")
+            view.root.add(newScreen.root)
+        } else {
+            println("Replacing children with ${newScreen.javaClass.simpleName}")
+            view.root.replaceChildren(newScreen)
+        }
+        view.titleProperty.unbind()
+        view.titleProperty.bind(newScreen.titleProperty)
+    }
+
+    private fun findUiComponentForScreen(screen: Screen): UIComponent {
         val uiComponent = when (screen) {
             is Screen.Start -> find<StartView>()
-            is Screen.ChooseEvent -> {
-                if (model.screen == Screen.Start) {
-                    drsIo.open(
-                            pathToDrsDatabase = screen.pathToDrsDb,
-                            pathToCrispyFishDatabase = screen.pathToCfDb
-                    )
+            is Screen.Home -> {
+                HomeFragment.find(
+                        uiComponent = this,
+                        katanaScope = HomeScope(
+                                appComponent = katanaAppComponent,
+                                pathToDigitalRawSheetsDatabase = screen.pathToDrsDb
+                        )
+                ).apply {
+                    if (model.screen == Screen.Start) {
+                        prepareDrsIo(
+                                pathToDrsDb = screen.pathToDrsDb,
+                                pathToCfDb = screen.pathToCfDb
+                        )
+                    }
                 }
-                find<ChooseEventView>()
             }
             is Screen.RunEvent -> {
                 val runEvent = eventGateway.asRunEvent(screen.event)
@@ -54,5 +77,16 @@ class MainController : Controller() {
         }
         model.screen = screen
         return uiComponent
+    }
+
+    fun onDock() {
+        onChangeToScreen(ChangeToScreenEvent(Screen.Start))
+        runLater {
+            model.busRegistrations.add(subscribe<ChangeToScreenEvent> { onChangeToScreen(it) })
+        }
+    }
+
+    fun onUndock() {
+        model.busRegistrations.forEach { it.unsubscribe() }
     }
 }

@@ -25,7 +25,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import javafx.application.Platform
 import org.coner.drs.ui.helpabout.HelpAboutController
-import org.coner.drs.ui.helpabout.HelpAboutView
 import org.coner.drs.ui.main.ChangeToScreenEvent
 import org.coner.drs.ui.main.Screen
 import tornadofx.*
@@ -47,7 +46,7 @@ class StartController : Controller() {
 
     fun onClickStart() {
         model.commit {
-            fire(ChangeToScreenEvent(Screen.ChooseEvent(
+            fire(ChangeToScreenEvent(Screen.Home(
                     pathToDrsDb = model.rawSheetDatabase,
                     pathToCfDb = model.crispyFishDatabase
             )))
