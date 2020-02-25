@@ -19,20 +19,15 @@
 
 package org.coner.drs.ui.main
 
-import org.coner.drs.di.katanaAppComponent
-import org.coner.drs.io.DrsIoController
-import org.coner.drs.io.gateway.EventGateway
 import org.coner.drs.ui.home.HomeFragment
 import org.coner.drs.ui.runevent.RunEventFragment
 import org.coner.drs.ui.start.StartView
-import org.coner.drs.ui.home.HomeScope
 import org.coner.drs.ui.start.StartModel
 import tornadofx.*
 
 class MainController : Controller() {
     val view: MainView by inject()
     val model: MainModel by inject()
-    val eventGateway: EventGateway by inject()
 
     fun onChangeToScreen(event: ChangeToScreenEvent) {
         println("MainView#${model.id} onChangeToScreen: ${event.screen}")
@@ -52,12 +47,10 @@ class MainController : Controller() {
         val uiComponent = when (screen) {
             is Screen.Start -> find<StartView>()
             is Screen.Home -> {
-                HomeFragment.find(
-                        uiComponent = this,
-                        katanaScope = HomeScope(
-                                appComponent = katanaAppComponent,
-                                pathToDigitalRawSheetsDatabase = screen.pathToDrsDb
-                        )
+                HomeFragment.create(
+                        component = this,
+                        pathToDigitalRawSheetsDatabase = screen.pathToDrsDb,
+                        subscriber =
                 ).apply {
                     if (model.screen == Screen.Start) {
                         prepareDrsIo(
@@ -68,7 +61,10 @@ class MainController : Controller() {
                 }
             }
             is Screen.RunEvent -> {
-                val runEvent = eventGateway.asRunEvent(screen.event)
+                RunEventFragment.create(
+                        component = this,
+                        eventId = screen.event.id
+                )
                 find<RunEventFragment>(
                         RunEventFragment::event to runEvent,
                         RunEventFragment::subscriber to find<StartModel>().subscriber

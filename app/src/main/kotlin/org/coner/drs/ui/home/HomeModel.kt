@@ -5,6 +5,6 @@ import tornadofx.*
 
 class HomeModel : ViewModel() {
 
-    val katanaScopeProperty = SimpleObjectProperty<HomeScope>(this, "katanaScope")
+    val katanaScopeProperty = SimpleObjectProperty<HomeKatanaScope>(this, "katanaScope")
     var katanaScope by katanaScopeProperty
 }

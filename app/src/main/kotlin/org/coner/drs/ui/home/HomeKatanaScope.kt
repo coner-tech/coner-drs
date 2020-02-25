@@ -5,7 +5,7 @@ import org.rewedigital.katana.Component
 import org.rewedigital.katana.KatanaTrait
 import java.nio.file.Path
 
-class HomeScope(
+class HomeKatanaScope(
         private val appComponent: Component,
         private val pathToDigitalRawSheetsDatabase: Path
 ) : KatanaTrait {

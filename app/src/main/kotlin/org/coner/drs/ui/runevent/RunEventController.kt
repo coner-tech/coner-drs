@@ -27,6 +27,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Consumer
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import org.coner.drs.di.KatanaScopes
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.TimerConfiguration
@@ -39,10 +40,12 @@ import org.coner.drs.io.timer.TimerService
 import org.coner.drs.ui.start.StartModel
 import org.coner.timer.model.FinishTriggerElapsedTimeOnly
 import org.coner.timer.output.TimerOutputWriter
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
+import java.util.*
 import java.util.concurrent.TimeUnit
 
-class RunEventController : Controller() {
+class RunEventController : Controller(), KatanaTrait {
     val model: RunEventModel by inject()
     val registrationGateway: RegistrationGateway by inject()
     val runGateway: RunGateway by inject()
@@ -50,7 +53,9 @@ class RunEventController : Controller() {
     val timerService: TimerService by inject()
     val reportService: ReportService by inject()
 
-    fun init() {
+    fun init(eventId: UUID, subscriber: Boolean) {
+        TODO("global katana scope for RunEvent")
+        model.event = eventService
         Single.zip(
                 registrationGateway.list(model.event),
                 runGateway.list(model.event),
@@ -110,6 +115,7 @@ class RunEventController : Controller() {
         if (timerService.model.timer != null) {
             timerService.stop()
         }
+        scope.deregister()
     }
 
     fun toggleTimer() {

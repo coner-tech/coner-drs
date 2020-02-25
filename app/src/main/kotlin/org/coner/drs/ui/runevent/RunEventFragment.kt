@@ -21,34 +21,33 @@ package org.coner.drs.ui.runevent
 
 import javafx.scene.layout.Region
 import org.coner.drs.domain.entity.RunEvent
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
+import java.util.*
 
-class RunEventFragment : Fragment("Run Event") {
-    val event: RunEvent by param()
+class RunEventFragment : Fragment("Run Event"), KatanaTrait {
+    val eventId: UUID by param()
     val subscriber: Boolean by param()
-    val eventScope = Scope()
 
-    val model: RunEventModel by inject(eventScope)
-    val controller: RunEventController by inject(eventScope)
+    val model: RunEventModel by inject()
+    val controller: RunEventController by inject()
 
     init {
-        model.event = event
-        model.subscriber = subscriber
-        controller.init()
+        controller.init(eventId, subscriber)
     }
 
     override val root = borderpane {
         id = "run-event"
         top {
-            add(find<RunEventTopView>(eventScope))
+            add(find<RunEventTopView>())
         }
         left {
-            add(find<AddNextDriverView>(eventScope))
+            add(find<AddNextDriverView>())
         }
         center {
-            add(find<RunEventTableView>(eventScope))
+            add(find<RunEventTableView>())
         }
-        right { add(find<RunEventRightDrawerView>(eventScope)) }
+        right { add(find<RunEventRightDrawerView>()) }
     }
 
     override fun onDock() {
@@ -59,6 +58,24 @@ class RunEventFragment : Fragment("Run Event") {
     override fun onUndock() {
         super.onUndock()
         controller.undocked()
+    }
+
+    companion object {
+        fun create(
+                component: Component,
+                eventId: UUID,
+                subscriber: Boolean
+        ): RunEventFragment {
+            val fxScope = Scope()
+            return component.find(
+                    params = mapOf(
+                            RunEventFragment::eventId to eventId,
+                            RunEventFragment::subscriber to subscriber
+                    ),
+                    scope = fxScope,
+                    componentType = RunEventFragment::class.java
+            )
+        }
     }
 
 

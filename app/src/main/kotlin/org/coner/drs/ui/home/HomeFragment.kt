@@ -1,5 +1,7 @@
 package org.coner.drs.ui.home
 
+import org.coner.drs.di.KatanaScopes
+import org.coner.drs.di.katanaAppComponent
 import org.coner.drs.io.DrsIoController
 import org.coner.drs.ui.chooseevent.ChooseEventView
 import tornadofx.*
@@ -8,9 +10,9 @@ import java.nio.file.Path
 
 class HomeFragment : Fragment() {
 
-    override val scope = Scope()
+    override val scope: Scope by param()
 
-    val katanaScope: HomeScope by param()
+    val katanaScope: HomeKatanaScope by param()
 
     private val model: HomeModel by inject(scope)
 
@@ -39,11 +41,24 @@ class HomeFragment : Fragment() {
     }
 
     companion object {
-        fun find(
-                uiComponent: Component,
-                katanaScope: HomeScope
+        fun create(
+                component: Component,
+                pathToDigitalRawSheetsDatabase: Path
         ): HomeFragment {
-            return uiComponent.find(HomeFragment::katanaScope to katanaScope)
+            check(KatanaScopes.home == null) { "KatanaScopes.home must be null. Something didn't clean up properly." }
+            val fxScope = Scope()
+            val katanaScope = HomeKatanaScope(
+                    appComponent = component.katanaAppComponent,
+                    pathToDigitalRawSheetsDatabase = pathToDigitalRawSheetsDatabase
+            )
+            return component.find(
+                    params = mapOf(
+                            HomeFragment::scope to fxScope,
+                            HomeFragment::katanaScope to katanaScope
+                    ),
+                    scope = fxScope,
+                    componentType = HomeFragment::class.java
+            )
         }
     }
 }
