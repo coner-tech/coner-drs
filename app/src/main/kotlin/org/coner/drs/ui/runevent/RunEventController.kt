@@ -32,6 +32,7 @@ import org.coner.drs.di.katanaScopes
 import org.coner.drs.domain.entity.Registration
 import org.coner.drs.domain.entity.Run
 import org.coner.drs.domain.entity.TimerConfiguration
+import org.coner.drs.domain.gateway.RunEventGateway
 import org.coner.drs.domain.service.ReportService
 import org.coner.drs.domain.service.RunService
 import org.coner.drs.io.db.entityWatchEventConsumer
@@ -54,7 +55,7 @@ class RunEventController : Controller(), KatanaTrait {
 
     val model: RunEventModel by inject()
 
-    private val eventService: EventService by component.inject()
+    private val runEventGateway: RunEventGateway by component.inject()
     val registrationGateway: RegistrationGateway by inject()
     val runGateway: RunGateway by inject()
     val runService: RunService by inject()
@@ -63,7 +64,7 @@ class RunEventController : Controller(), KatanaTrait {
 
     fun init(eventId: UUID, subscriber: Boolean) {
         TODO("global katana scope for RunEvent")
-        model.event = eventService
+        model.event = runEventGateway.getRunEventById(eventId)
         Single.zip(
                 registrationGateway.list(model.event),
                 runGateway.list(model.event),

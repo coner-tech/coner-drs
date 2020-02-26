@@ -41,11 +41,6 @@ class EventGateway : Controller(), KatanaTrait {
     private val db = io.model.db!!
     val mapper by lazy { EventMapper(io.model.pathToCrispyFishDatabase!!) }
 
-    fun get(id: UUID) {
-
-        TODO("eventService findEventById()")
-    }
-
     fun list(): List<Event> {
         return db.entity<EventDbEntity>().list().map { mapper.toUiEntity(it)!! }
     }
