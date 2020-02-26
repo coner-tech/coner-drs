@@ -19,8 +19,12 @@
 
 package org.coner.drs.ui.main
 
+import org.coner.drs.di.katanaAppComponent
+import org.coner.drs.di.katanaScopes
 import org.coner.drs.ui.home.HomeFragment
+import org.coner.drs.ui.home.HomeKatanaScope
 import org.coner.drs.ui.runevent.RunEventFragment
+import org.coner.drs.ui.runevent.RunEventKatanaScope
 import org.coner.drs.ui.start.StartView
 import org.coner.drs.ui.start.StartModel
 import tornadofx.*
@@ -29,9 +33,39 @@ class MainController : Controller() {
     val view: MainView by inject()
     val model: MainModel by inject()
 
-    fun onChangeToScreen(event: ChangeToScreenEvent) {
+    private fun onChangeToScreen(event: ChangeToScreenEvent) {
         println("MainView#${model.id} onChangeToScreen: ${event.screen}")
         val newScreen = findUiComponentForScreen(event.screen)
+        beforeScreenChange(event, newScreen)
+        performScreenChange(newScreen)
+        afterScreenChange(event)
+        model.screen = event.screen
+        model.screenUiComponent = newScreen
+    }
+
+    private fun beforeScreenChange(event: ChangeToScreenEvent, uiComponent: UIComponent) {
+        when {
+            model.screen is Screen.Start && event.screen is Screen.Home -> {
+                // Start => Home
+                katanaScopes.home = HomeKatanaScope(
+                        appComponent = katanaAppComponent,
+                        pathToDigitalRawSheetsDatabase = event.screen.pathToDrsDb
+                )
+                (uiComponent as HomeFragment).prepareDrsIo(
+                        pathToDrsDb = event.screen.pathToDrsDb,
+                        pathToCfDb = event.screen.pathToCfDb
+                )
+            }
+            model.screen is Screen.Home && event.screen is Screen.RunEvent -> {
+                // Home => RunEvent
+                katanaScopes.runEvent = RunEventKatanaScope(
+                        katanaScopes = katanaScopes
+                )
+            }
+        }
+    }
+
+    private fun performScreenChange(newScreen: UIComponent) {
         if (view.root.children.isEmpty()) {
             println("Adding ${newScreen.javaClass.simpleName}")
             view.root.add(newScreen.root)
@@ -43,36 +77,34 @@ class MainController : Controller() {
         view.titleProperty.bind(newScreen.titleProperty)
     }
 
-    private fun findUiComponentForScreen(screen: Screen): UIComponent {
-        val uiComponent = when (screen) {
-            is Screen.Start -> find<StartView>()
-            is Screen.Home -> {
-                HomeFragment.create(
-                        component = this,
-                        pathToDigitalRawSheetsDatabase = screen.pathToDrsDb,
-                        subscriber =
-                ).apply {
-                    if (model.screen == Screen.Start) {
-                        prepareDrsIo(
-                                pathToDrsDb = screen.pathToDrsDb,
-                                pathToCfDb = screen.pathToCfDb
-                        )
-                    }
-                }
+    private fun afterScreenChange(event: ChangeToScreenEvent) {
+        when {
+            event.screen is Screen.Start && model.screen is Screen.Home -> {
+                // Start <= Home
+                katanaScopes.home = null
+                model.screenUiComponent.scope.deregister()
             }
-            is Screen.RunEvent -> {
-                RunEventFragment.create(
-                        component = this,
-                        eventId = screen.event.id
-                )
-                find<RunEventFragment>(
-                        RunEventFragment::event to runEvent,
-                        RunEventFragment::subscriber to find<StartModel>().subscriber
-                )
+            event.screen is Screen.Home && model.screen is Screen.RunEvent -> {
+                // Home <= RunEvent
+                katanaScopes.runEvent = null
+                model.screenUiComponent.scope.deregister()
             }
         }
-        model.screen = screen
-        return uiComponent
+    }
+
+    private fun findUiComponentForScreen(screen: Screen): UIComponent {
+        return when (screen) {
+            is Screen.Start -> find<StartView>()
+            is Screen.Home -> HomeFragment.create(
+                    component = this,
+                    pathToDigitalRawSheetsDatabase = screen.pathToDrsDb
+            )
+            is Screen.RunEvent -> RunEventFragment.create(
+                    component = this,
+                    eventId = screen.event.id,
+                    subscriber = find<StartModel>().subscriber
+            )
+        }
     }
 
     fun onDock() {

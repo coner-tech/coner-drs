@@ -21,6 +21,7 @@ package org.coner.drs.io.gateway
 
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
+import org.coner.drs.di.katanaScopes
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.domain.mapper.EventMapper
@@ -28,13 +29,22 @@ import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.db.EntityWatchEvent
 import org.coner.drs.node.db.entity.EventDbEntity
 import org.coner.drs.node.db.getEvent
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
+import java.util.*
 
-class EventGateway : Controller() {
+class EventGateway : Controller(), KatanaTrait {
+
+    override val component = katanaScopes.home.component
 
     val io: DrsIoController by inject()
     private val db = io.model.db!!
     val mapper by lazy { EventMapper(io.model.pathToCrispyFishDatabase!!) }
+
+    fun get(id: UUID) {
+
+        TODO("eventService findEventById()")
+    }
 
     fun list(): List<Event> {
         return db.entity<EventDbEntity>().list().map { mapper.toUiEntity(it)!! }

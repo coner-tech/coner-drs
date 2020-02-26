@@ -23,6 +23,7 @@ import javafx.application.Application
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import net.harawata.appdirs.AppDirsFactory
+import org.coner.drs.di.KatanaScopes
 import org.coner.drs.di.numberFormatModule
 import org.coner.drs.di.reportModule
 import org.coner.drs.ui.DrsStylesheet
@@ -52,6 +53,8 @@ open class DigitalRawSheetsApp : App(
             numberFormatModule,
             reportModule
     )
+
+    val katanaScopes: KatanaScopes = KatanaScopes()
 
     open val forceExitOnStop = true
 

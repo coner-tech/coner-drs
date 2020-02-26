@@ -19,9 +19,12 @@
 
 package org.coner.drs.di
 
+import org.coner.drs.DigitalRawSheetsApp
 import org.rewedigital.katana.Component
 import org.rewedigital.katana.KatanaTrait
 
 val tornadofx.Component.katanaAppComponent: Component
     get() = (app as KatanaTrait).component
 
+val tornadofx.Component.katanaScopes: KatanaScopes
+    get() = (app as DigitalRawSheetsApp).katanaScopes

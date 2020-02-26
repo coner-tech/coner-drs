@@ -20,6 +20,7 @@
 package org.coner.drs.ui.runevent
 
 import javafx.scene.layout.Region
+import org.coner.drs.di.katanaScopes
 import org.coner.drs.domain.entity.RunEvent
 import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
@@ -29,8 +30,11 @@ class RunEventFragment : Fragment("Run Event"), KatanaTrait {
     val eventId: UUID by param()
     val subscriber: Boolean by param()
 
+    override val component = katanaScopes.runEvent.component
+
     val model: RunEventModel by inject()
     val controller: RunEventController by inject()
+
 
     init {
         controller.init(eventId, subscriber)
