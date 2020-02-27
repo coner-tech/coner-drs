@@ -25,7 +25,6 @@ import tornadofx.*
 
 class AddEventGeneralInformationStepFragment : Fragment("General Information") {
     val event: EventModel by inject()
-    val io: DrsIoController by inject()
 
     override val root = form {
         fieldset(title) {
