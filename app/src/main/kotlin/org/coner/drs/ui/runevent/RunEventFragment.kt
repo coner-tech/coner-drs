@@ -29,12 +29,10 @@ import java.util.*
 class RunEventFragment : Fragment("Run Event"), KatanaTrait {
     val eventId: UUID by param()
     val subscriber: Boolean by param()
-
-    override val component = katanaScopes.runEvent.component
+    override val component: org.rewedigital.katana.Component by param()
 
     val model: RunEventModel by inject()
     val controller: RunEventController by inject()
-
 
     init {
         controller.init(eventId, subscriber)
@@ -63,24 +61,5 @@ class RunEventFragment : Fragment("Run Event"), KatanaTrait {
         super.onUndock()
         controller.undocked()
     }
-
-    companion object {
-        fun create(
-                component: Component,
-                eventId: UUID,
-                subscriber: Boolean
-        ): RunEventFragment {
-            val fxScope = Scope()
-            return component.find(
-                    params = mapOf(
-                            RunEventFragment::eventId to eventId,
-                            RunEventFragment::subscriber to subscriber
-                    ),
-                    scope = fxScope,
-                    componentType = RunEventFragment::class.java
-            )
-        }
-    }
-
 
 }
