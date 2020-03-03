@@ -48,8 +48,9 @@ class MainController : Controller() {
         when {
             model.screen is Screen.Start && event.screen is Screen.Home -> {
                 katanaScopes.home = HomeKatanaScope(
-                        appComponent = katanaAppComponent,
-                        pathToDigitalRawSheetsDatabase = event.screen.pathToDrsDb
+                        fxComponent = this,
+                        pathToDigitalRawSheetsDatabase = event.screen.pathToDrsDb,
+                        pathToCrispyFishDatabase = event.screen.pathToCfDb
                 )
             }
             model.screen is Screen.Home && event.screen is Screen.RunEvent -> {
@@ -65,10 +66,7 @@ class MainController : Controller() {
     private fun findUiComponentForScreen(screen: Screen): UIComponent {
         return when (screen) {
             is Screen.Start -> find<StartView>()
-            is Screen.Home -> HomeView.create(
-                    component = this,
-                    pathToDigitalRawSheetsDatabase = screen.pathToDrsDb
-            )
+            is Screen.Home -> katanaScopes.home.component.injectNow<HomeView>()
             is Screen.RunEvent -> katanaScopes.runEvent.component.injectNow<RunEventFragment>()
         }
     }
@@ -77,13 +75,10 @@ class MainController : Controller() {
         when {
             model.screen is Screen.Start && event.screen is Screen.Home -> {
                 // Start => Home
-
                 (uiComponent as HomeView).prepareDrsIo(
                         pathToDrsDb = event.screen.pathToDrsDb,
                         pathToCfDb = event.screen.pathToCfDb
                 )
-            }
-            model.screen is Screen.Home && event.screen is Screen.RunEvent -> {
             }
         }
     }

@@ -50,7 +50,7 @@ class RunEventController : Controller(), KatanaTrait {
 
     val model: RunEventModel by inject()
 
-    private val runEventRepository: RunEventRepository by component.inject()
+    private val runEventRepository: RunEventRepository by inject()
     val registrationGateway: RegistrationGateway by inject()
     val runGateway: RunGateway by inject()
     val runService: RunService by inject()
@@ -58,8 +58,8 @@ class RunEventController : Controller(), KatanaTrait {
     val reportService: ReportService by inject()
 
     fun init(eventId: UUID, subscriber: Boolean) {
-        TODO("global katana scope for RunEvent")
         model.event = runEventRepository.getRunEventById(eventId)
+        model.subscriber = subscriber
         Single.zip(
                 registrationGateway.list(model.event),
                 runGateway.list(model.event),

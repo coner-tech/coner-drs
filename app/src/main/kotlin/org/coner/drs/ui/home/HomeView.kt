@@ -33,24 +33,5 @@ class HomeView : View() {
         root.replaceChildren()
     }
 
-    companion object {
-        fun create(
-                component: Component,
-                pathToDigitalRawSheetsDatabase: Path
-        ): HomeView {
-            val fxScope = Scope()
-            component.katanaScopes.home = HomeKatanaScope(
-                    appComponent = component.katanaAppComponent,
-                    pathToDigitalRawSheetsDatabase = pathToDigitalRawSheetsDatabase
-            )
-            return component.find(
-                    params = mapOf(
-                            HomeView::scope to fxScope
-                    ),
-                    scope = fxScope,
-                    componentType = HomeView::class.java
-            )
-        }
-    }
 }
 
