@@ -75,10 +75,7 @@ class MainController : Controller() {
         when {
             model.screen is Screen.Start && event.screen is Screen.Home -> {
                 // Start => Home
-                (uiComponent as HomeView).prepareDrsIo(
-                        pathToDrsDb = event.screen.pathToDrsDb,
-                        pathToCfDb = event.screen.pathToCfDb
-                )
+                // TODO: evaluate need to prepare io
             }
         }
     }

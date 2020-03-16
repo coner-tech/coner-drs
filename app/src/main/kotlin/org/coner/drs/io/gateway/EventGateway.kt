@@ -25,42 +25,44 @@ import org.coner.drs.di.katanaScopes
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.RunEvent
 import org.coner.drs.domain.mapper.EventMapper
-import org.coner.drs.io.DrsIoController
-import org.coner.drs.io.db.EntityWatchEvent
-import org.coner.drs.node.db.entity.EventDbEntity
-import org.coner.drs.node.db.getEvent
+import org.coner.drs.node.payload.EntityWatchEvent
+import org.coner.drs.node.service.EventService
 import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
-import java.util.*
 
 class EventGateway : Controller(), KatanaTrait {
 
     override val component = katanaScopes.home.component
 
-    val io: DrsIoController by inject()
-    private val db = io.model.db!!
-    val mapper by lazy { EventMapper(io.model.pathToCrispyFishDatabase!!) }
+    private val service: EventService by component.inject()
+    private val mapper: EventMapper by component.inject()
 
     fun list(): List<Event> {
-        return db.entity<EventDbEntity>().list().map { mapper.toUiEntity(it)!! }
+        return service.list()
+                .mapNotNull { mapper.toRunEventUiEntity(it) }
     }
 
     fun asRunEvent(event: Event): RunEvent? {
-        val dbEntity = db.entity<EventDbEntity>().getEvent(event.id)
+        val dbEntity = service.findEventById(event.id)
         return mapper.toRunEventUiEntity(dbEntity)
     }
 
     fun save(event: Event) {
-        db.entity<EventDbEntity>().put(mapper.toDbEntity(event))
+        val dbEntity = mapper.toDbEntity(event)
+        service.save(dbEntity)
     }
 
-    fun watchList(): Observable<EntityWatchEvent<Event>> = db.entity<EventDbEntity>().watchListing()
-            .subscribeOn(Schedulers.io())
-            .map { EntityWatchEvent(
-                    entityEvent = it,
-                    id = it.id,
-                    entity = mapper.toUiEntity(it.entity)
-            ) }
+    fun watchList(): Observable<EntityWatchEvent<Event>> {
+        return service.watchList()
+                .subscribeOn(Schedulers.io())
+                .map {
+                    EntityWatchEvent(
+                            entityEvent = it.entityEvent,
+                            id = it.id,
+                            entity = mapper.toUiEntity(it.entity)
+                    )
+                }
+    }
 
 }
 

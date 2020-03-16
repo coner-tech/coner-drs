@@ -20,14 +20,27 @@
 package org.coner.drs.util
 
 import javafx.scene.control.TextInputControl
-import org.coner.drs.io.DrsIoController
+import org.coner.drs.ui.home.HomeModel
 import tornadofx.*
 import java.io.File
 
-fun TextInputControl.requireFileWithinCrispyFishDatabase() = validator(ValidationTrigger.OnChange()) {
-    val io = find<DrsIoController>()
-    if (!io.isInsideCrispyFishDatabase(File(it)))
+fun TextInputControl.requireFileWithinCrispyFishDatabase(crispyFishDatabase: File) = validator(ValidationTrigger.OnChange()) {
+    if (!File(it).isInsideCrispyFishDatabase(crispyFishDatabase)) {
         error("File must be inside Crispy Fish Database")
-    else
+    } else {
         null
+    }
+}
+
+private fun File.isInsideCrispyFishDatabase(crispyFishDatabase: File, recursion: Int = 0): Boolean {
+    check(recursion <= 1) { "Recursion exceeded maximum of 1" }
+    return if (isAbsolute) {
+        canonicalFile.startsWith(crispyFishDatabase)
+    } else {
+        crispyFishDatabase.resolve(this)
+                .isInsideCrispyFishDatabase(
+                        crispyFishDatabase = crispyFishDatabase,
+                        recursion = recursion + 1
+                )
+    }
 }

@@ -20,7 +20,6 @@
 package org.coner.drs.test.fixture
 
 import org.coner.drs.domain.entity.RunEvent
-import org.coner.drs.io.DrsIoController
 import org.coner.drs.io.gateway.EventGateway
 import org.coner.drs.io.gateway.RegistrationGateway
 import org.coner.drs.io.gateway.RunGateway
@@ -30,11 +29,7 @@ import java.util.*
 object FixtureUtil {
 
     fun loadRunEvent(app: App, fixture: TestEventFixture.Instance, eventId: UUID): RunEvent {
-        val drsIo: DrsIoController = find(app.scope)
-        drsIo.open(
-                pathToDrsDatabase = fixture.digitalRawSheetDatabase,
-                pathToCrispyFishDatabase = fixture.crispyFishDatabase
-        )
+        // TODO: evaluate need to open io
         val eventGateway: EventGateway = find(app.scope)
         val event = eventGateway.list().single { it.id == eventId }.let {
             eventGateway.asRunEvent(it)!!

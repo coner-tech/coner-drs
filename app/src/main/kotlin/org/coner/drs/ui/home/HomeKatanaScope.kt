@@ -20,7 +20,12 @@ class HomeKatanaScope(
 ) : KatanaTrait, TornadoFxDisposableScope {
 
     private val tornadoFxModule = Module {
-        singleton { fxComponent.find(scope = tornadoFxScope, componentType = HomeView::class.java) }
+        singleton { FX.find<HomeView>(scope = tornadoFxScope).apply {
+            find<HomeModel>().let { model ->
+                model.pathToDigitalRawSheetsDatabase = pathToCrispyFishDatabase
+                model.pathToCrispyFishDatabase = pathToCrispyFishDatabase
+            }
+        } }
     }
 
     private val mapperModule = Module {

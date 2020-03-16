@@ -19,18 +19,22 @@
 
 package org.coner.drs.io.gateway
 
+import org.coner.drs.di.katanaScopes
 import org.coner.drs.domain.entity.Event
 import org.coner.drs.domain.entity.TextReport
 import org.coner.drs.domain.mapper.ReportMapper
-import org.coner.drs.io.DrsIoController
+import org.coner.drs.node.db.DigitalRawSheetDatabase
 import org.coner.drs.node.db.blob.EventReport
+import org.rewedigital.katana.Component
+import org.rewedigital.katana.KatanaTrait
 import tornadofx.*
 import java.nio.file.Path
 
-class EventReportGateway : Controller() {
+class EventReportGateway : Controller(), KatanaTrait {
 
-    val io: DrsIoController by inject(FX.defaultScope)
-    private val db = requireNotNull(io.model.db)
+    override val component: Component = katanaScopes.runEvent.component
+
+    private val db: DigitalRawSheetDatabase by component.inject()
 
     fun saveAuditList(auditList: TextReport.AuditList) {
         val report = ReportMapper.toAuditList(auditList.event)

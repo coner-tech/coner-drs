@@ -20,13 +20,14 @@
 package org.coner.drs.io.db
 
 import io.reactivex.functions.Consumer
+import org.coner.drs.node.payload.EntityWatchEvent
 import org.coner.snoozle.db.entity.EntityEvent
 import java.nio.file.StandardWatchEventKinds
 import java.nio.file.WatchEvent
 import java.util.*
 import kotlin.reflect.KProperty1
 
-data class EntityWatchEvent<E : WatchedEntity<E>>(val entityEvent: EntityEvent<*>, val id: UUID, val entity: E?)
+
 
 fun <E : WatchedEntity<E>> entityWatchEventConsumer(
         idProperty: KProperty1<E, UUID>,
