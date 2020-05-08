@@ -33,7 +33,7 @@
     <properties>
         <coner-drs.version>${project.version}</coner-drs.version>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-        <tornadofx.version>1.7.20-SNAPSHOT</tornadofx.version>
+        <tornadofx.version>1.7.20</tornadofx.version>
         <controlsfx.version>8.40.14</controlsfx.version>
         <tornadofx-controlsfx.version>0.1.1</tornadofx-controlsfx.version>
         <rxkotlin.version>2.4.0</rxkotlin.version>
