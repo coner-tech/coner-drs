@@ -42,7 +42,7 @@
         <tornadofx-junit5.version>1.1.1</tornadofx-junit5.version>
         <awaitility.version>4.0.1</awaitility.version>
         <zip4j.version>2.2.4</zip4j.version>
-        <jsoup.version>1.12.1</jsoup.version>
+        <jsoup.version>1.14.2</jsoup.version>
     </properties>
 
     <dependencies>
