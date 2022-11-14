@@ -30,7 +30,7 @@
         <jackson.version>2.9.9</jackson.version>
         <crispy-fish.version>0.2.0</crispy-fish.version>
         <appdirs.version>1.0.3</appdirs.version>
-        <apache-commons-text.version>1.7</apache-commons-text.version>
+        <apache-commons-text.version>1.10.0</apache-commons-text.version>
         <j2html.version>1.4.0</j2html.version>
         <kotlinx.html.version>0.6.12</kotlinx.html.version>
         <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
